@@ -14,19 +14,28 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SinhVienController = void 0;
 var common_1 = require("@nestjs/common");
-var cookies_decorator_1 = require("../common/decorators/cookies.decorator");
 var SinhVienController = /** @class */ (function () {
     function SinhVienController() {
     }
+    // YÊU CẦU 1: COOKIE 
     SinhVienController.prototype.setCookie = function (response) {
-        // Đặt cookie với tên 'ma_sv' và giá trị là mã số của bạn
-        response.cookie('ma_sv', '24100084', { httpOnly: true });
+        response.cookie('ma_sinh_vien', '24100084');
         return { message: 'Đã ghi mã sinh viên vào Cookie thành công!' };
     };
-    SinhVienController.prototype.getCookie = function (mssv) {
+    SinhVienController.prototype.getCookie = function (session) {
+        return { message: 'Đọc Cookie thành công!' };
+    };
+    // YÊU CẦU 2: SESSION
+    SinhVienController.prototype.testSession = function (session) {
+        // Tăng biến đếm số lần truy cập giống tài liệu NestJS
+        session.visits = session.visits ? session.visits + 1 : 1;
+        session.ma_sv = '24100084';
         return {
-            message: 'Đọc dữ liệu từ Cookie thành công!',
-            cookie_nhan_duoc: mssv || 'Không tìm thấy cookie ma_sv'
+            message: 'Cài đặt Session thành công!',
+            thong_tin_luu_tru: {
+                sinh_vien: session.ma_sv,
+                so_lan_ban_da_tai_trang_nay: session.visits
+            }
         };
     };
     __decorate([
@@ -38,11 +47,18 @@ var SinhVienController = /** @class */ (function () {
     ], SinhVienController.prototype, "setCookie", null);
     __decorate([
         (0, common_1.Get)('get'),
-        __param(0, (0, cookies_decorator_1.Cookies)('ma_sv')),
+        __param(0, (0, common_1.Session)()),
         __metadata("design:type", Function),
-        __metadata("design:paramtypes", [String]),
+        __metadata("design:paramtypes", [Object]),
         __metadata("design:returntype", void 0)
     ], SinhVienController.prototype, "getCookie", null);
+    __decorate([
+        (0, common_1.Get)('session-test'),
+        __param(0, (0, common_1.Session)()),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", void 0)
+    ], SinhVienController.prototype, "testSession", null);
     SinhVienController = __decorate([
         (0, common_1.Controller)('sinh-vien')
     ], SinhVienController);

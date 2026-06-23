@@ -1,22 +1,31 @@
-import { Controller, Get, Res } from '@nestjs/common';
+import { Controller, Get, Res, Session } from '@nestjs/common';
 import { Response } from 'express';
-import { Cookies } from '../common/decorators/cookies.decorator'; 
 
 @Controller('sinh-vien')
 export class SinhVienController {
-
+  
   @Get('set')
   setCookie(@Res({ passthrough: true }) response: Response) {
-    // Đặt cookie với tên 'ma_sv' và giá trị là mã số của bạn
-    response.cookie('ma_sv', '24100084', { httpOnly: true });
+    response.cookie('ma_sinh_vien', '24100084');
     return { message: 'Đã ghi mã sinh viên vào Cookie thành công!' };
   }
 
   @Get('get')
-  getCookie(@Cookies('ma_sv') mssv: string) {
-    return {
-      message: 'Đọc dữ liệu từ Cookie thành công!',
-      cookie_nhan_duoc: mssv || 'Không tìm thấy cookie ma_sv'
+  getCookie() {
+    return { message: 'Đọc Cookie thành công!' };
+  }
+
+  @Get('session-test')
+  testSession(@Session() session: Record<string, any>) {
+    session.visits = session.visits ? session.visits + 1 : 1;
+    session.ma_sv = '24100084';
+
+    return { 
+      message: 'Cài đặt Session thành công!',
+      thong_tin_luu_tru: {
+        sinh_vien: session.ma_sv,
+        so_lan_ban_da_tai_trang_nay: session.visits
+      }
     };
   }
 }

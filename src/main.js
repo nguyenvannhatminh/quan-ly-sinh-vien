@@ -39,6 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@nestjs/core");
 var app_module_1 = require("./app.module");
 var cookieParser = require("cookie-parser");
+var session = require("express-session"); // <--- Import theo tài liệu
 function bootstrap() {
     return __awaiter(this, void 0, void 0, function () {
         var app;
@@ -48,6 +49,12 @@ function bootstrap() {
                 case 1:
                     app = _a.sent();
                     app.use(cookieParser());
+                    // <--- Cấu hình Session giống hệt tài liệu
+                    app.use(session({
+                        secret: 'my-secret',
+                        resave: false,
+                        saveUninitialized: false,
+                    }));
                     return [4 /*yield*/, app.listen(3000)];
                 case 2:
                     _a.sent();
