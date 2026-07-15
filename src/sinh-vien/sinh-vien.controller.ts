@@ -1,10 +1,9 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
-import { SinhVienService, SinhVien } from './sinh-vien.service';
+import { SinhVienService } from './sinh-vien.service';
+import { STUDENT } from '../entities/student.entity';
 
 @Controller('sinh-vien')
 export class SinhVienController {
-  
-  // Inject Service vào Controller thông qua constructor
   constructor(private readonly sinhVienService: SinhVienService) {}
 
   @Get()
@@ -12,33 +11,24 @@ export class SinhVienController {
     return this.sinhVienService.layDanhSach();
   }
 
-  @Get(':id')
-  layChiTiet(@Param('id') id: string) {
-    return this.sinhVienService.layChiTiet(id);
+  @Get(':sid')
+  layChiTiet(@Param('sid') sid: string) {
+    return this.sinhVienService.layChiTiet(sid);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  themMoi(@Body() duLieuMoi: SinhVien) {
-    const ketQua = this.sinhVienService.themMoi(duLieuMoi);
-    return {
-      message: 'Thêm sinh viên thành công!',
-      data: ketQua,
-    };
+  themMoi(@Body() duLieuMoi: STUDENT) {
+    return this.sinhVienService.themMoi(duLieuMoi);
   }
 
-  @Put(':id')
-  capNhat(@Param('id') id: string, @Body() duLieuCapNhat: Partial<SinhVien>) {
-    const ketQua = this.sinhVienService.capNhat(id, duLieuCapNhat);
-    return {
-      message: 'Cập nhật thành công!',
-      data: ketQua,
-    };
+  @Put(':sid')
+  capNhat(@Param('sid') sid: string, @Body() duLieuCapNhat: Partial<STUDENT>) {
+    return this.sinhVienService.capNhat(sid, duLieuCapNhat);
   }
 
-  @Delete(':id')
-  xoa(@Param('id') id: string) {
-    const message = this.sinhVienService.xoa(id);
-    return { message };
+  @Delete(':sid')
+  xoa(@Param('sid') sid: string) {
+    return this.sinhVienService.xoa(sid);
   }
 }

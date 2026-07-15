@@ -1,62 +1,46 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-
-// Định nghĩa cấu trúc (Interface) của một Sinh viên
-export interface SinhVien {
-  id: string;
-  hoTen: string;
-  chuyenNganh: string;
-}
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { STUDENT } from '../entities/student.entity';
 
 @Injectable()
 export class SinhVienService {
-  // Chuyển mảng dữ liệu từ Controller sang đây
-  private danhSachSinhVien: SinhVien[] = [
-    { id: 'SV001', hoTen: 'Nguyễn Văn A', chuyenNganh: 'Công nghệ thông tin' },
-    { id: 'SV002', hoTen: 'Trần Thị B', chuyenNganh: 'Kế toán' },
-  ];
+  constructor(
+    @InjectRepository(STUDENT)
+    private readonly studentRepository: Repository<STUDENT>,
+  ) {}
 
-  // Lấy toàn bộ danh sách
-  layDanhSach(): SinhVien[] {
-    return this.danhSachSinhVien;
+  // 1. Lấy toàn bộ danh sách sinh viên
+  async layDanhSach(): Promise<STUDENT[]> {
+    return await this.studentRepository.find();
   }
 
-  // Lấy chi tiết 1 sinh viên
-  layChiTiet(id: string): SinhVien {
-    const sinhVien = this.danhSachSinhVien.find(sv => sv.id === id);
+  // 2. Lấy chi tiết 1 sinh viên theo SID
+  async layChiTiet(sid: string): Promise<STUDENT> {
+    const sinhVien = await this.studentRepository.findOneBy({ SID: sid });
     if (!sinhVien) {
-      throw new NotFoundException(`Không tìm thấy sinh viên có ID: ${id}`);
+      throw new NotFoundException(`Không tìm thấy sinh viên có mã SID: ${sid}`);
     }
     return sinhVien;
   }
 
-  // Thêm mới sinh viên
-  themMoi(duLieuMoi: SinhVien): SinhVien {
-    this.danhSachSinhVien.push(duLieuMoi);
-    return duLieuMoi;
+  // 3. Thêm mới sinh viên
+  async themMoi(duLieuMoi: STUDENT): Promise<STUDENT> {
+    const sinhVienMoi = this.studentRepository.create(duLieuMoi);
+    return await this.studentRepository.save(sinhVienMoi);
   }
 
-  // Cập nhật sinh viên
-  capNhat(id: string, duLieuCapNhat: Partial<SinhVien>): SinhVien {
-    const index = this.danhSachSinhVien.findIndex(sv => sv.id === id);
-    
-    if (index === -1) {
-      throw new NotFoundException(`Không tìm thấy sinh viên có ID: ${id} để cập nhật`);
-    }
-
-    // Ghi đè dữ liệu mới vào dữ liệu cũ
-    this.danhSachSinhVien[index] = { ...this.danhSachSinhVien[index], ...duLieuCapNhat };
-    return this.danhSachSinhVien[index];
+  // 4. Cập nhật thông tin sinh viên
+  async capNhat(sid: string, duLieuCapNhat: Partial<STUDENT>): Promise<STUDENT> {
+    const sinhVien = await this.layChiTiet(sid);
+    const sinhVienSauUpdate = this.studentRepository.merge(sinhVien, duLieuCapNhat);
+    return await this.studentRepository.save(sinhVienSauUpdate);
   }
 
-  // Xóa sinh viên
-  xoa(id: string): string {
-    const index = this.danhSachSinhVien.findIndex(sv => sv.id === id);
-    
-    if (index === -1) {
-      throw new NotFoundException(`Không tìm thấy sinh viên có ID: ${id} để xóa`);
-    }
-
-    this.danhSachSinhVien.splice(index, 1);
-    return `Đã xóa thành công sinh viên ID: ${id}`;
+  // 5. Xóa sinh viên khỏi DB
+  async xoa(sid: string): Promise<string> {
+    const sinhVien = await this.layChiTiet(sid);
+    await this.studentRepository.remove(sinhVien);
+    return `Đã xóa thành công sinh viên có mã SID: ${sid}`;
   }
 }
