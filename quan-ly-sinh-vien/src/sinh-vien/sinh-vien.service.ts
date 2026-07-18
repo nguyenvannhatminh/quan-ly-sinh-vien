@@ -1,66 +1,64 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { STUDENT } from '../entities/student.entity';
-import { CreateSinhVienDto } from './dto/create-sinh-vien.dto';
+import { Repository, Like } from 'typeorm';
+import { SinhVien } from './entities/sinh-vien.entity';
+import { Tutor } from '../tutor/entities/tutor.entity';
+import { Subject } from '../subject/entities/subject.entity';
 
 @Injectable()
 export class SinhVienService {
   constructor(
-    @InjectRepository(STUDENT)
-    private readonly studentRepository: Repository<STUDENT>,
+    @InjectRepository(SinhVien) private svRepo: Repository<SinhVien>,
+    @InjectRepository(Tutor) private tutorRepo: Repository<Tutor>,
+    @InjectRepository(Subject) private subRepo: Repository<Subject>,
   ) {}
 
-  async create(data: CreateSinhVienDto): Promise<STUDENT> {
-    const { tutorId, subjectIds, ...studentData } = data;
-    const newStudent = this.studentRepository.create(studentData);
-    
-    if (tutorId) {
-      newStudent.tutor = { TID: tutorId } as any;
-    }
-
-    if (subjectIds && subjectIds.length > 0) {
-      newStudent.subjects = subjectIds.map(id => ({ SubID: id } as any));
-    }
-    
-    return await this.studentRepository.save(newStudent);
+  async create(body: any) {
+    const sv = this.svRepo.create({ name: body.name, email: body.email });
+    if (body.tutorId) sv.tutor = { TID: body.tutorId } as any;
+    if (body.subjectIds) sv.subjects = body.subjectIds.map(id => ({ SubID: id } as any));
+    return this.svRepo.save(sv);
   }
 
-  async findAll(): Promise<STUDENT[]> {
-    return await this.studentRepository.find({ 
-      relations: { tutor: true, subjects: true } 
+  // Hàm findAll cải tiến hỗ trợ Phân trang & Tìm kiếm
+  async findAll(page: number = 1, limit: number = 5, search: string = '') {
+    const skip = (page - 1) * limit;
+    
+    // Nếu có từ khóa tìm kiếm, áp dụng tìm theo cả Name HOẶC Email
+    const whereCondition = search 
+      ? [
+          { name: Like(`%${search}%`) },
+          { email: Like(`%${search}%`) }
+        ]
+      : {};
+
+    const [data, total] = await this.svRepo.findAndCount({
+      where: whereCondition,
+      relations: ['tutor', 'subjects'],
+      order: { SID: 'DESC' }, // Sinh viên mới tạo lên đầu
+      skip: skip,
+      take: limit
     });
+
+    return {
+      data,
+      total,
+      page,
+      lastPage: Math.ceil(total / limit)
+    };
   }
 
-  async findOne(id: number): Promise<STUDENT> {
-    const student = await this.studentRepository.findOne({ 
-      where: { SID: id },
-      relations: { tutor: true, subjects: true } 
-    });
-    if (!student) throw new NotFoundException(`Không tìm thấy sinh viên ID: ${id}`);
-    return student;
+  async update(id: number, body: any) {
+    const sv = await this.svRepo.findOne({ where: { SID: id }, relations: ['subjects'] });
+    if (!sv) return null;
+    sv.name = body.name;
+    sv.email = body.email;
+    sv.tutor = body.tutorId ? { TID: body.tutorId } as any : null;
+    if (body.subjectIds) sv.subjects = body.subjectIds.map(id => ({ SubID: id } as any));
+    return this.svRepo.save(sv);
   }
 
-  async update(id: number, data: CreateSinhVienDto): Promise<STUDENT> {
-    const student = await this.findOne(id);
-    const { tutorId, subjectIds, ...studentData } = data;
-    
-    Object.assign(student, studentData);
-    
-    if (tutorId) {
-      student.tutor = { TID: tutorId } as any;
-    }
-
-    if (subjectIds) {
-      student.subjects = subjectIds.map(id => ({ SubID: id } as any));
-    }
-    
-    return await this.studentRepository.save(student);
-  }
-
-  async xoa(id: number): Promise<string> {
-    const student = await this.findOne(id);
-    await this.studentRepository.remove(student);
-    return `Đã xóa thành công sinh viên ID: ${id}`;
+  async remove(id: number) {
+    return this.svRepo.delete(id);
   }
 }

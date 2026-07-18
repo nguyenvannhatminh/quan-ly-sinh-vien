@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ thống Quản lý Trường học - Phenikaa Style</title>
     <style>
-        /* Toàn bộ CSS phục vụ cho màn hình Login đỉnh cao */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; }
         
@@ -19,210 +18,34 @@
             padding: 20px;
             position: relative;
         }
-
-        /* Trường Đại Học Logo */
-        .brand-logo {
-            text-align: center;
-            margin-bottom: 25px;
-            color: white;
-        }
-        .brand-logo h1 {
-            font-size: 28px;
-            letter-spacing: 2px;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
+        .brand-logo { text-align: center; margin-bottom: 25px; color: white; }
+        .brand-logo h1 { font-size: 28px; letter-spacing: 2px; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .brand-logo h1 span { color: #f39c12; }
-        .brand-subtitle {
-            font-size: 13px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            opacity: 0.8;
-            margin-top: 2px;
-        }
-
-        /* Khung Auth Card siêu đẹp */
-        .auth-card {
-            background: #eef2f7;
-            width: 100%;
-            max-width: 440px;
-            border-radius: 24px;
-            padding: 40px 35px 35px 35px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            position: relative;
-            text-align: center;
-        }
-
-        /* Máy bay giấy trên đỉnh Card */
-        .airplane-icon {
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 75px;
-            height: 75px;
-            background: #eef2f7;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
-        }
-
-        .auth-card h2 {
-            color: #0b2d63;
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 25px;
-            margin-top: 10px;
-            letter-spacing: 1px;
-        }
-
-        /* Ô nhập liệu chuẩn chỉ */
-        .input-group {
-            position: relative;
-            margin-bottom: 18px;
-        }
-        .input-group input {
-            width: 100%;
-            padding: 14px 45px 14px 45px;
-            background: #9bb3cc;
-            border: 2px solid #7c9bb8;
-            border-radius: 10px;
-            color: #0c2042;
-            font-size: 15px;
-            font-weight: 500;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-        .input-group input::placeholder {
-            color: #556c85;
-        }
-        .input-group input:focus {
-            background: #b3c8de;
-            border-color: #3b66cc;
-            box-shadow: 0 0 8px rgba(59, 102, 204, 0.4);
-        }
-        .input-group .field-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #48617d;
-            display: flex;
-            align-items: center;
-        }
-        .input-group .eye-icon {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #48617d;
-            cursor: pointer;
-        }
-
-        /* Link hỗ trợ phụ bên dưới ô nhập liệu */
-        .auth-links {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            margin-bottom: 25px;
-            padding: 0 2px;
-        }
-        .auth-links a {
-            color: #3b66cc;
-            text-decoration: none;
-            font-weight: 500;
-        }
+        .brand-subtitle { font-size: 13px; letter-spacing: 4px; text-transform: uppercase; opacity: 0.8; margin-top: 2px; }
+        .auth-card { background: #eef2f7; width: 100%; max-width: 440px; border-radius: 24px; padding: 40px 35px 35px 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; text-align: center; }
+        .airplane-icon { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); width: 75px; height: 75px; background: #eef2f7; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); }
+        .auth-card h2 { color: #0b2d63; font-size: 24px; font-weight: 700; margin-bottom: 25px; margin-top: 10px; letter-spacing: 1px; }
+        .input-group { position: relative; margin-bottom: 18px; }
+        .input-group input { width: 100%; padding: 14px 45px; background: #9bb3cc; border: 2px solid #7c9bb8; border-radius: 10px; color: #0c2042; font-size: 15px; font-weight: 500; outline: none; transition: all 0.3s ease; }
+        .input-group input::placeholder { color: #556c85; }
+        .input-group input:focus { background: #b3c8de; border-color: #3b66cc; box-shadow: 0 0 8px rgba(59, 102, 204, 0.4); }
+        .input-group .field-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #48617d; display: flex; align-items: center; }
+        .input-group .eye-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #48617d; cursor: pointer; }
+        .auth-links { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 25px; padding: 0 2px; }
+        .auth-links a { color: #3b66cc; text-decoration: none; font-weight: 500; }
         .auth-links a:hover { text-decoration: underline; }
-
-        /* Nút đăng nhập Đậm chất Phenikaa */
-        .btn-auth-submit {
-            width: 100%;
-            padding: 14px;
-            background: #1a3863;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            letter-spacing: 1px;
-            transition: background 0.3s;
-        }
-        .btn-auth-submit:hover {
-            background: #112542;
-        }
-
-        /* Đường phân cách */
-        .divider {
-            margin: 25px 0;
-            position: relative;
-            text-align: center;
-        }
-        .divider::before {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #ccc;
-            z-index: 1;
-        }
-        .divider span {
-            background: #eef2f7;
-            padding: 0 15px;
-            color: #777;
-            font-size: 13px;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Nút Đăng nhập Google */
-        .btn-google {
-            width: 100%;
-            padding: 12px;
-            background: white;
-            color: #333;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
+        .btn-auth-submit { width: 100%; padding: 14px; background: #1a3863; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; letter-spacing: 1px; transition: background 0.3s; }
+        .btn-auth-submit:hover { background: #112542; }
+        .divider { margin: 25px 0; position: relative; text-align: center; }
+        .divider::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #ccc; z-index: 1; }
+        .divider span { background: #eef2f7; padding: 0 15px; color: #777; font-size: 13px; position: relative; z-index: 2; }
+        .btn-google { width: 100%; padding: 12px; background: white; color: #333; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: background 0.3s; }
         .btn-google:hover { background: #f1f1f1; }
+        .auth-footer { margin-top: 40px; color: rgba(255,255,255,0.5); font-size: 12px; letter-spacing: 0.5px; text-align: center; }
+        .toggle-mode-text { margin-top: 20px; font-size: 13px; color: #555; }
+        .toggle-mode-text span { color: #3b66cc; cursor: pointer; font-weight: bold; }
 
-        /* Footer trang trí cuối màn hình */
-        .auth-footer {
-            margin-top: 40px;
-            color: rgba(255,255,255,0.5);
-            font-size: 12px;
-            letter-spacing: 0.5px;
-            text-align: center;
-        }
-
-        /* Style cho nút Chuyển đổi Đăng Ký / Đăng Nhập phụ */
-        .toggle-mode-text {
-            margin-top: 20px;
-            font-size: 13px;
-            color: #555;
-        }
-        .toggle-mode-text span {
-            color: #3b66cc;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* ==================== STYLE CỦA DASHBOARD (GIỮ NGUYÊN) ==================== */
+        /* ==================== STYLE CỦA DASHBOARD ==================== */
         .dashboard-container { max-width: 1200px; margin: 30px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         .db-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; margin-bottom: 25px; }
         .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
@@ -238,6 +61,15 @@
         .form-group input[type="text"], .form-group input[type="email"], .form-group select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
         .checkbox-group { display: flex; gap: 15px; flex-wrap: wrap; }.checkbox-item { background: #fff; padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }th { background-color: #007bff; color: white; }tr:nth-child(even) { background-color: #f2f2f2; }.badge { background: #17a2b8; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; display: inline-block; margin: 2px; }.empty { color: #888; font-style: italic; }.flex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        
+        /* Cải tiến: Style cho thanh Tìm kiếm và Phân trang */
+        .search-box { padding: 8px 15px; border: 1px solid #ccc; border-radius: 6px; width: 280px; outline: none; font-size: 14px; transition: 0.3s; }
+        .search-box:focus { border-color: #007bff; box-shadow: 0 0 5px rgba(0,123,255,0.2); }
+        .pagination-container { margin-top: 20px; display: flex; gap: 5px; justify-content: center; align-items: center; }
+        .pagination-btn { padding: 6px 12px; background: white; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; }
+        .pagination-btn:hover:not(:disabled) { background: #f1f1f1; border-color: #bbb; }
+        .pagination-btn.active { background: #007bff; color: white; border-color: #007bff; }
+        .pagination-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -248,74 +80,38 @@
             <h1>PHENIKAA<span> UNIVERSITY</span></h1>
             <div class="brand-subtitle">Hệ thống quản lý toàn diện</div>
         </div>
-
         <div class="auth-card">
-            <!-- Máy bay giấy SVG -->
             <div class="airplane-icon">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22 2L2 10L10 14L14 22L22 2Z" fill="#3b66cc"/>
-                    <path d="M10 14L22 2" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 2L2 10L10 14L14 22L22 2Z" fill="#3b66cc"/><path d="M10 14L22 2" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-
             <h2 id="txtAuthTitle">ĐĂNG NHẬP</h2>
-
             <form id="formAuth" onsubmit="xuLyAuth(event)">
-                <!-- Tài khoản -->
                 <div class="input-group">
-                    <span class="field-icon">
-                        <svg width="18" height="18" fill="none" stroke="#48617d" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    </span>
+                    <span class="field-icon"><svg width="18" height="18" fill="none" stroke="#48617d" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></span>
                     <input type="text" name="username" required placeholder="Tên đăng nhập hoặc Email...">
                 </div>
-
-                <!-- Mật khẩu -->
                 <div class="input-group">
-                    <span class="field-icon">
-                        <svg width="18" height="18" fill="none" stroke="#48617d" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                    </span>
+                    <span class="field-icon"><svg width="18" height="18" fill="none" stroke="#48617d" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></span>
                     <input type="password" id="inputPassword" name="password" required placeholder="Mật khẩu...">
-                    <span class="eye-icon" onclick="togglePasswordVisibility()">
-                        <svg width="18" height="18" fill="none" stroke="#48617d" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                    </span>
+                    <span class="eye-icon" onclick="togglePasswordVisibility()"><svg width="18" height="18" fill="none" stroke="#48617d" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></span>
                 </div>
-
-                <!-- Links chức năng phụ -->
                 <div class="auth-links">
-                    <a href="#" onclick="alert('Tính năng đang được phát triển bro ơi!')">Quên mật khẩu</a>
-                    <a href="#" onclick="alert('Karl System luôn sẵn sàng trợ giúp bro!')">⚠️ Trợ giúp!</a>
+                    <a href="#" onclick="alert('Tính năng đang bảo trì bro!')">Quên mật khẩu</a>
+                    <a href="#" onclick="alert('Karl System trợ giúp bro!')">⚠️ Trợ giúp!</a>
                 </div>
-
                 <button type="submit" id="btnAuthSubmit" class="btn-auth-submit">ĐĂNG NHẬP</button>
             </form>
-
-            <div class="divider">
-                <span id="txtDivider">Hoặc đăng nhập bằng</span>
-            </div>
-
-            <!-- Nút liên kết Google đúng chuẩn thiết kế -->
-            <button class="btn-google" onclick="alert('Đăng nhập Google đang bảo trì, vui lòng dùng tài khoản hệ thống bro!')">
-                <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.79 2.7l2.76 2.13c1.61-1.49 2.54-3.67 2.54-6.19z" fill="#4285F4"/>
-                    <path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.76-2.13c-.76.51-1.74.82-3.2.82-2.46 0-4.55-1.66-5.3-3.89H.95v2.2C2.43 15.77 5.46 18 9 18z" fill="#34A853"/>
-                    <path d="M3.7 10.62c-.19-.57-.3-1.18-.3-1.8 0-.62.11-1.23.3-1.8V4.82H.95A8.977 8.977 0 000 9c0 1.55.39 3.03 1.07 4.34l2.63-2.14z" fill="#FBBC05"/>
-                    <path d="M9 3.58c1.32 0 2.5.45 3.44 1.35L15 2.4C13.46.96 11.42 0 9 0 5.46 0 2.43 2.23.95 4.82l2.75 2.14c.75-2.23 2.84-3.88 5.3-3.88z" fill="#EA4335"/>
-                </svg>
+            <div class="divider"><span id="txtDivider">Hoặc đăng nhập bằng</span></div>
+            <button class="btn-google" onclick="alert('Đăng nhập Google bảo trì bro!')">
+                <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.79 2.7l2.76 2.13c1.61-1.49 2.54-3.67 2.54-6.19z" fill="#4285F4"/><path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.76-2.13c-.76.51-1.74.82-3.2.82-2.46 0-4.55-1.66-5.3-3.89H.95v2.2C2.43 15.77 5.46 18 9 18z" fill="#34A853"/><path d="M3.7 10.62c-.19-.57-.3-1.18-.3-1.8 0-.62.11-1.23.3-1.8V4.82H.95A8.977 8.977 0 000 9c0 1.55.39 3.03 1.07 4.34l2.63-2.14z" fill="#FBBC05"/><path d="M9 3.58c1.32 0 2.5.45 3.44 1.35L15 2.4C13.46.96 11.42 0 9 0 5.46 0 2.43 2.23.95 4.82l2.75 2.14c.75-2.23 2.84-3.88 5.3-3.88z" fill="#EA4335"/></svg>
                 Sign in with Google
             </button>
-
-            <!-- Lối tắt chuyển đổi chế độ để không bị mất chức năng Đăng ký tài khoản cũ -->
-            <div class="toggle-mode-text">
-                <span id="btnToggleAuthMode" onclick="toggleAuthMode()">Chưa có tài khoản? Đăng ký ngay</span>
-            </div>
+            <div class="toggle-mode-text"><span id="btnToggleAuthMode" onclick="toggleAuthMode()">Chưa có tài khoản? Đăng ký ngay</span></div>
         </div>
-
-        <div class="auth-footer">
-            © 2026 Đại học Phenikaa - Hệ thống Karl
-        </div>
+        <div class="auth-footer">© 2026 Đại học Phenikaa - Hệ thống Karl</div>
     </div>
 
-    <!-- ==================== GIAO DIỆN CHÍNH DASHBOARD (ẨN KHI CHƯA LOGIN) ==================== -->
+    <!-- 2. GIAO DIỆN CHÍNH DASHBOARD -->
     <div id="dashboardScreen" class="dashboard-container" style="display: none;">
         <div class="db-header">
             <h2>🏫 Hệ thống Quản lý Trường học Toàn diện</h2>
@@ -331,9 +127,16 @@
             <button class="tab-btn" onclick="switchTab('subject-tab')">📚 Quản lý Môn học</button>
         </div>
 
-        <!-- TAB 1: SINH VIÊN -->
+        <!-- TAB 1: SINH VIÊN (ĐÃ NÂNG CẤP THANH SEARCH) -->
         <div id="sinh-vien-tab" class="tab-content active">
-            <div class="flex-header"><h3>Danh sách Sinh viên</h3><button class="btn" onclick="layDanhSachSinhVien()">🔄 Làm mới</button></div>
+            <div class="flex-header">
+                <h3>Danh sách Sinh viên</h3>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <!-- Ô Tìm kiếm xịn sò -->
+                    <input type="text" id="inputSearch" class="search-box" placeholder="🔍 Tìm theo tên hoặc email..." oninput="xuLyGoTimKiem(event)">
+                    <button class="btn" onclick="layDanhSachSinhVien(1)">🔄 Tải lại</button>
+                </div>
+            </div>
             <div class="form-card">
                 <h4 id="formTitle">➕ Thêm Sinh viên mới</h4>
                 <form id="formSinhVien" onsubmit="xuLySubmitSinhVien(event)">
@@ -345,7 +148,9 @@
                     <button type="button" id="cancelBtn" class="btn btn-secondary" style="display: none;" onclick="huyCheDoSua()">Hủy</button>
                 </form>
             </div>
+            <!-- Nơi vẽ bảng và phân trang -->
             <div id="ket-qua-sinh-vien"></div>
+            <div id="pagination-sinh-vien" class="pagination-container"></div>
         </div>
 
         <!-- TAB 2: GIẢNG VIÊN -->
@@ -376,15 +181,18 @@
     </div>
 
     <script>
+        // Các biến trạng thái Toàn cục mới
         let currentAuthMode = 'login';
         let isEditing = false;
         let editingStudentId = null;
         let listSinhVienBoNhoDem = [];
+        
+        let currentPage = 1;
+        let currentSearch = '';
+        let searchTimeout = null;
+        const limitSize = 5; // Hiện 5 đứa trên một trang
 
-        // Kiểm tra đăng nhập ban đầu
-        document.addEventListener("DOMContentLoaded", () => {
-            checkLoginState();
-        });
+        document.addEventListener("DOMContentLoaded", () => { checkLoginState(); });
 
         function checkLoginState() {
             const token = localStorage.getItem('token');
@@ -394,85 +202,120 @@
                 document.getElementById('dashboardScreen').style.display = 'block';
                 document.getElementById('txtUsername').innerText = username;
                 taiDuLieuFormSinhVien();
-                layDanhSachSinhVien(); layDanhSachTutor(); layDanhSachSubject();
+                layDanhSachSinhVien(1); layDanhSachTutor(); layDanhSachSubject();
             } else {
                 document.getElementById('authPage').style.display = 'flex';
                 document.getElementById('dashboardScreen').style.display = 'none';
             }
         }
 
-        // Hiện/Ẩn mật khẩu (Icon con mắt)
         function togglePasswordVisibility() {
             const pwdInput = document.getElementById('inputPassword');
             pwdInput.type = pwdInput.type === 'password' ? 'text' : 'password';
         }
 
-        // Chuyển đổi linh hoạt Đăng nhập / Đăng ký Phenikaa style
         function toggleAuthMode() {
             const btnSubmit = document.getElementById('btnAuthSubmit');
             const btnToggle = document.getElementById('btnToggleAuthMode');
             const txtTitle = document.getElementById('txtAuthTitle');
-            const txtDivider = document.getElementById('txtDivider');
-
             if (currentAuthMode === 'login') {
-                currentAuthMode = 'register';
-                txtTitle.innerText = 'ĐĂNG KÝ HỆ THỐNG';
-                btnSubmit.innerText = 'ĐĂNG KÝ NGAY';
-                btnSubmit.style.background = '#28a745';
-                txtDivider.innerText = 'Hoặc đăng ký bằng';
+                currentAuthMode = 'register'; txtTitle.innerText = 'ĐĂNG KÝ HỆ THỐNG';
+                btnSubmit.innerText = 'ĐĂNG KÝ NGAY'; btnSubmit.style.background = '#28a745';
                 btnToggle.innerText = 'Đã có tài khoản? Quay lại đăng nhập';
             } else {
-                currentAuthMode = 'login';
-                txtTitle.innerText = 'ĐĂNG NHẬP';
-                btnSubmit.innerText = 'ĐĂNG NHẬP';
-                btnSubmit.style.background = '#1a3863';
-                txtDivider.innerText = 'Hoặc đăng nhập bằng';
+                currentAuthMode = 'login'; txtTitle.innerText = 'ĐĂNG NHẬP';
+                btnSubmit.innerText = 'ĐĂNG NHẬP'; btnSubmit.style.background = '#1a3863';
                 btnToggle.innerText = 'Chưa có tài khoản? Đăng ký ngay';
             }
         }
 
-        // Xử lý gửi Form Auth (Login/Register)
         async function xuLyAuth(event) {
             event.preventDefault();
             const form = event.target;
-            const username = form.username.value;
-            const password = form.password.value;
             const url = currentAuthMode === 'login' ? '/auth/login' : '/auth/register';
-
             try {
                 const res = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ username: form.username.value, password: form.password.value })
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.message || 'Thao tác lỗi!');
-
                 if (currentAuthMode === 'login') {
                     localStorage.setItem('token', data.access_token);
-                    localStorage.setItem('username', username);
-                    form.reset();
-                    checkLoginState();
-                } else {
-                    alert('Đăng ký tài khoản thành công bro! Hãy đăng nhập nhé.');
-                    toggleAuthMode();
-                }
+                    localStorage.setItem('username', form.username.value);
+                    form.reset(); checkLoginState();
+                } else { alert('Đăng ký xong bro! Đăng nhập đi nào.'); toggleAuthMode(); }
             } catch (error) { alert('Lỗi: ' + error.message); }
         }
 
-        function dangXuat() {
-            localStorage.clear();
-            checkLoginState();
-        }
-
+        function dangXuat() { localStorage.clear(); checkLoginState(); }
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active'); event.currentTarget.classList.add('active');
         }
 
-        // ==================== LOGIC BACKEND SYNC (GIỮ NGUYÊN HOÀN HẢO) ====================
+        // ==================== LOGIC TÌM KIẾM & PHAN TRANG SINH VIÊN ====================
+        function xuLyGoTimKiem(event) {
+            clearTimeout(searchTimeout);
+            currentSearch = event.target.value;
+            // Debounce 400ms: Ngừng gõ 0.4s mới gọi API tránh overload
+            searchTimeout = setTimeout(() => {
+                layDanhSachSinhVien(1); 
+            }, 400);
+        }
+
+        function chuyenTrang(page) {
+            currentPage = page;
+            layDanhSachSinhVien(page);
+        }
+
+        async function layDanhSachSinhVien(page = 1) {
+            currentPage = page;
+            const divTable = document.getElementById('ket-qua-sinh-vien');
+            const divPagination = document.getElementById('pagination-sinh-vien');
+            divTable.innerHTML = '<p>Đang tải dữ liệu...</p>';
+            
+            try {
+                // Bắn request kèm theo query param chuẩn RESTful API
+                const res = await fetch(`/sinh-vien?page=${page}&limit=${limitSize}&search=${encodeURIComponent(currentSearch)}`);
+                const result = await res.json(); // Nhận object gồm {data, total, page, lastPage}
+                
+                listSinhVienBoNhoDem = result.data;
+
+                if(result.data.length === 0) {
+                    divTable.innerHTML = '<p class="empty">Không tìm thấy sinh viên nào phù hợp.</p>';
+                    divPagination.innerHTML = ''; return;
+                }
+
+                // Vẽ Bảng Dữ Liệu
+                let html = `<table><thead><tr><th>ID</th><th>Tên Sinh viên</th><th>Email</th><th>Giảng viên HD</th><th>Môn học</th><th>Hành động</th></tr></thead><tbody>`;
+                result.data.forEach(sv => {
+                    const tutor = sv.tutor ? sv.tutor.name : '<span class="empty">Chưa có</span>';
+                    const subs = sv.subjects && sv.subjects.length > 0 ? sv.subjects.map(s => `<span class="badge">${s.name}</span>`).join(' ') : '<span class="empty">Trống</span>';
+                    html += `<tr><td>${sv.SID}</td><td><strong>${sv.name}</strong></td><td>${sv.email || ''}</td><td>${tutor}</td><td>${subs}</td>
+                    <td>
+                        <button class="btn btn-warning" style="padding:5px 10px; font-size:12px;" onclick="kichHoatCheDoSua(${sv.SID})">✏️ Sửa</button>
+                        <button class="btn btn-danger" style="padding:5px 10px; font-size:12px;" onclick="xoaSinhVien(${sv.SID},'${sv.name}')">🗑️ Xóa</button>
+                    </td></tr>`;
+                });
+                divTable.innerHTML = html + '</tbody></table>';
+
+                // Vẽ Thanh Nút Phân Trang
+                let pagHTML = `<button class="pagination-btn" ${result.page === 1 ? 'disabled' : ''} onclick="chuyenTrang(${result.page - 1})">⏮️ Trước</button>`;
+                for (let i = 1; i <= result.lastPage; i++) {
+                    pagHTML += `<button class="pagination-btn ${result.page === i ? 'active' : ''}" onclick="chuyenTrang(${i})">${i}</button>`;
+                }
+                pagHTML += `<button class="pagination-btn" ${result.page === result.lastPage || result.lastPage === 0 ? 'disabled' : ''} onclick="chuyenTrang(${result.page + 1})">Sau ⏭️</button>`;
+                pagHTML += `<span style="font-size:13px; color:#666; margin-left:10px;">Tổng: ${result.total} dòng</span>`;
+                
+                divPagination.innerHTML = pagHTML;
+
+            } catch(e) { divTable.innerHTML = '<p style="color:red">Lỗi tải dữ liệu!</p>'; }
+        }
+
+        // ==================== CÁC CHỨC NĂNG KHÁC (GIỮ NGUYÊN) ====================
         async function taiDuLieuFormSinhVien() {
             try {
                 const [tutorRes, subjectRes] = await Promise.all([fetch('/tutor'), fetch('/subject')]);
@@ -483,25 +326,6 @@
                 const subjectDiv = document.getElementById('subjectCheckboxes'); subjectDiv.innerHTML = '';
                 subjects.forEach(s => { subjectDiv.innerHTML += `<label class="checkbox-item"><input type="checkbox" name="subjectIds" value="${s.SubID}"> ${s.name}</label>`; });
             } catch (e) { console.error(e); }
-        }
-
-        async function layDanhSachSinhVien() {
-            const div = document.getElementById('ket-qua-sinh-vien');
-            try {
-                const res = await fetch('/sinh-vien'); const data = await res.json(); listSinhVienBoNhoDem = data;
-                if(data.length === 0) { div.innerHTML = '<p class="empty">Chưa có sinh viên nào.</p>'; return; }
-                let html = `<table><thead><tr><th>ID</th><th>Tên Sinh viên</th><th>Email</th><th>Giảng viên HD</th><th>Môn học</th><th>Hành động</th></tr></thead><tbody>`;
-                data.forEach(sv => {
-                    const tutor = sv.tutor ? sv.tutor.name : '<span class="empty">Chưa có</span>';
-                    const subs = sv.subjects && sv.subjects.length > 0 ? sv.subjects.map(s => `<span class="badge">${s.name}</span>`).join(' ') : '<span class="empty">Trống</span>';
-                    html += `<tr><td>${sv.SID}</td><td><strong>${sv.name}</strong></td><td>${sv.email || ''}</td><td>${tutor}</td><td>${subs}</td>
-                    <td>
-                        <button class="btn btn-warning" style="padding:5px 10px; font-size:12px;" onclick="kichHoatCheDoSua(${sv.SID})">✏️ Sửa</button>
-                        <button class="btn btn-danger" style="padding:5px 10px; font-size:12px;" onclick="xoaSinhVien(${sv.SID},'${sv.name}')">🗑️ Xóa</button>
-                    </td></tr>`;
-                });
-                div.innerHTML = html + '</tbody></table>';
-            } catch(e) { div.innerHTML = '<p>Lỗi dữ liệu</p>'; }
         }
 
         async function xuLySubmitSinhVien(event) {
@@ -517,7 +341,7 @@
                 body: JSON.stringify(data)
             });
             if(res.status === 401) return hetHanToken();
-            if(res.ok) { alert('Thành công!'); huyCheDoSua(); layDanhSachSinhVien(); } else alert('Lỗi!');
+            if(res.ok) { alert('Thành công!'); huyCheDoSua(); layDanhSachSinhVien(currentPage); } else alert('Lỗi!');
         }
 
         function kichHoatCheDoSua(id) {
@@ -543,7 +367,7 @@
             if(!confirm(`Xóa sinh viên ${name}?`)) return;
             const res = await fetch(`/sinh-vien/${id}`, {method: 'DELETE', headers: {'Authorization': `Bearer ${localStorage.getItem('token')}`}});
             if(res.status === 401) return hetHanToken();
-            if(res.ok) { if(isEditing && editingStudentId===id) huyCheDoSua(); layDanhSachSinhVien(); }
+            if(res.ok) { if(isEditing && editingStudentId===id) huyCheDoSua(); layDanhSachSinhVien(currentPage); }
         }
 
         async function layDanhSachTutor() {
@@ -563,7 +387,7 @@
 
         async function xoaTutor(id, name) {
             if(!confirm(`Xóa giảng viên ${name}?`)) return;
-            if(await fetch(`/tutor/${id}`, { method: 'DELETE' }).then(r => r.ok)) { layDanhSachTutor(); layDanhSachSinhVien(); taiDuLieuFormSinhVien(); }
+            if(await fetch(`/tutor/${id}`, { method: 'DELETE' }).then(r => r.ok)) { layDanhSachTutor(); layDanhSachSinhVien(currentPage); taiDuLieuFormSinhVien(); }
         }
 
         async function layDanhSachSubject() {
@@ -583,7 +407,7 @@
 
         async function xoaSubject(id, name) {
             if(!confirm(`Xóa môn học ${name}?`)) return;
-            if(await fetch(`/subject/${id}`, { method: 'DELETE' }).then(r => r.ok)) { layDanhSachSubject(); layDanhSachSinhVien(); taiDuLieuFormSinhVien(); }
+            if(await fetch(`/subject/${id}`, { method: 'DELETE' }).then(r => r.ok)) { layDanhSachSubject(); layDanhSachSinhVien(currentPage); taiDuLieuFormSinhVien(); }
         }
 
         function hetHanToken() { alert('Hết hạn hoặc lỗi xác thực, vui lòng đăng nhập lại!'); dangXuat(); }

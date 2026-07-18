@@ -1,33 +1,35 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { SinhVienService } from './sinh-vien.service';
-import { CreateSinhVienDto } from './dto/create-sinh-vien.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('sinh-vien')
 export class SinhVienController {
   constructor(private readonly sinhVienService: SinhVienService) {}
 
-  @Post()
-  async create(@Body() body: CreateSinhVienDto) {
-    return await this.sinhVienService.create(body);
-  }
-
   @Get()
-  async findAll() {
-    return await this.sinhVienService.findAll();
+  findAll(
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '5',
+    @Query('search') search: string = ''
+  ) {
+    return this.sinhVienService.findAll(+page, +limit, search);
   }
 
-  @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number) {
-    return await this.sinhVienService.findOne(id);
+  @Post()
+  @UseGuards(AuthGuard)
+  create(@Body() body: any) {
+    return this.sinhVienService.create(body);
   }
 
-  @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() body: CreateSinhVienDto) {
-    return await this.sinhVienService.update(id, body);
+  @Patch(':id')
+  @UseGuards(AuthGuard)
+  update(@Param('id') id: string, @Body() body: any) {
+    return this.sinhVienService.update(+id, body);
   }
 
   @Delete(':id')
-  async xoa(@Param('id', ParseIntPipe) id: number) {
-    return await this.sinhVienService.xoa(id);
+  @UseGuards(AuthGuard)
+  remove(@Param('id') id: string) {
+    return this.sinhVienService.remove(+id);
   }
 }
