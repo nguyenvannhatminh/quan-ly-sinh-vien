@@ -22,4 +22,7 @@ export class CreateSinhVienDto {
   @IsArray({ message: 'Danh sách ID môn học phải là một mảng số' })
   @IsInt({ each: true, message: 'Mỗi ID môn học phải là số nguyên' })
   subjectIds?: number[];
+
+  @IsOptional()
+  diemSo?: any;
 }
