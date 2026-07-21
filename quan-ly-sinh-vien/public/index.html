@@ -714,14 +714,46 @@
         const studentId = document.getElementById('currentGradeStudentId').value;
         const inputs = document.querySelectorAll('.score-input');
         const diemSo = {};
+        let isValid = true;
 
         inputs.forEach(input => {
             const subId = input.getAttribute('data-subid');
             const val = input.value.trim();
             if (val !== '') {
-                diemSo[subId] = parseFloat(val);
+                const score = parseFloat(val);
+                if (isNaN(score) || score < 0 || score > 10) {
+                    isValid = false;
+                } else {
+                    diemSo[subId] = score;
+                }
             }
         });
+
+        if (!isValid) {
+            alert('⚠️ Điểm số không hợp lệ! Tất cả điểm phải nằm trong khoảng từ 0.0 đến 10.0.');
+            return;
+        }
+
+        try {
+            const res = await fetch('/sinh-vien/' + studentId, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ diemSo })
+            });
+
+            if (res.ok) {
+                alert('🎉 Đã cập nhật điểm số và tự động xếp loại thành công!');
+                closeModalGrade();
+                if (typeof loadSinhVienList === 'function') loadSinhVienList();
+                if (typeof updateDashboardStats === 'function') updateDashboardStats();
+            } else {
+                const errData = await res.json();
+                alert('❌ ' + (errData.message || 'Không thể lưu điểm số!'));
+            }
+        } catch (err) {
+            console.error('Lỗi khi gửi dữ liệu điểm:', err);
+        }
+    });
 
         try {
             const res = await fetch('/sinh-vien/' + studentId, {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import { SinhVien } from './entities/sinh-vien.entity';
@@ -14,7 +14,20 @@ export class SinhVienService {
   ) {}
 
   // Hàm nội bộ tự động tính GPA và Xếp loại
+  
   private calculateAcademic(diemSo: any): { gpa: number, xepLoai: string } {
+    if (!diemSo || Object.keys(diemSo).length === 0) return { gpa: null, xepLoai: null };
+
+    // Validate kiểm tra điểm từ 0 đến 10
+    for (const [subId, val] of Object.entries(diemSo)) {
+      if (val !== null && val !== undefined && val !== '') {
+        const score = Number(val);
+        if (isNaN(score) || score < 0 || score > 10) {
+          throw new BadRequestException('Điểm số phải nằm trong khoảng từ 0.0 đến 10.0!');
+        }
+      }
+    }
+ gpa: number, xepLoai: string } {
     if (!diemSo || Object.keys(diemSo).length === 0) return { gpa: null, xepLoai: null };
     
     const scores = Object.values(diemSo).map(Number).filter(n => !isNaN(n));
