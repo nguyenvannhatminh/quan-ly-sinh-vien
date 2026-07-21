@@ -228,6 +228,10 @@
                         <input type="text" id="inputSearch" class="search-box" placeholder="🔍 Tìm kiếm sinh viên..." oninput="xuLyGoTimKiem(event)">
                         <button type="button" class="btn btn-primary" onclick="reloadSinhVienVisual()">🔄 Tải lại</button>
     <button type="button" class="btn btn-success" onclick="xuatExcelSinhVien()" style="background-color: #10B981; border-color: #10B981; color: #ffffff; margin-left: 8px;">📥 Xuất Excel</button>
+    <button type="button" class="btn btn-warning" onclick="document.getElementById('excelFileInput').click()" style="background-color: #F59E0B; border-color: #F59E0B; color: #ffffff; margin-left: 8px; font-weight: 500;">📥 Nhập Excel</button>
+    <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;" onchange="xuLyImportExcel(event)">
+    
+    
                     </div>
                 </div>
                 <div class="form-card" id="cardFormSinhVien">
@@ -897,35 +901,36 @@
 
 
 
-<script id="custom-tools-script">
-// Hàm tải lại có hiệu ứng thông báo "Đang tải..."
+
+
+<script id="karl-system-tools">
+// 1. TẢI LẠI DANH SÁCH
 async function reloadSinhVienVisual() {
     const tbody = document.querySelector('table tbody');
     if (tbody) {
         const originalRows = tbody.innerHTML;
         tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #2563eb; font-weight: bold; font-size: 15px;">⏳ Đang tải lại danh sách sinh viên...</td></tr>';
-        
         setTimeout(async () => {
             try {
                 if (typeof layDanhSachSinhVien === 'function') {
                     const page = (typeof currentPage !== 'undefined') ? currentPage : 1;
                     await layDanhSachSinhVien(page);
+                } else if (typeof loadStudents === 'function') {
+                    await loadStudents();
                 } else {
-                    tbody.innerHTML = originalRows;
+                    location.reload();
                 }
             } catch (err) {
                 tbody.innerHTML = originalRows;
             }
         }, 300);
+    } else {
+        location.reload();
     }
 }
 
-// Hàm xuất Excel an toàn không leak code
+// 2. XUẤT EXCEL
 function xuatExcelSinhVien() {
-    if (typeof exportToExcel === 'function') {
-        exportToExcel();
-        return;
-    }
     const table = document.querySelector('table');
     if (!table) {
         alert('⚠️ Không tìm thấy bảng dữ liệu sinh viên!');
@@ -949,12 +954,70 @@ function xuatExcelSinhVien() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
-</script>
-</body>
-        </html>
-    `;
 
-    const blob = new Blob(['\uf
+// 3. NHẬP EXCEL HÀNG LOẠT
+async function xuLyImportExcel(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    event.target.value = '';
+
+    if (typeof XLSX === 'undefined') {
+        alert('⚠️ Thư viện XLSX đang tải, vui lòng bấm lại sau 2 giây!');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+            if (!jsonData || jsonData.length === 0) {
+                alert('⚠️ File Excel trống!');
+                return;
+            }
+
+            let successCount = 0;
+            let failCount = 0;
+
+            const token = localStorage.getItem('token');
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = 'Bearer ' + token;
+
+            for (const row of jsonData) {
+                const name = row['Họ và Tên'] || row['Họ tên'] || row['HỌ TÊN'] || row['HO TEN'] || row['Name'] || row['name'];
+                const email = row['Email'] || row['EMAIL'] || row['email'];
+
+                if (!name || !email) {
+                    failCount++;
+                    continue;
+                }
+
+                try {
+                    const res = await fetch('/sinh-vien', {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify({ name: String(name).trim(), email: String(email).trim() })
+                    });
+                    if (res.ok) successCount++;
+                    else failCount++;
+                } catch (err) {
+                    failCount++;
+                }
+            }
+
+            alert('🎉 Kết quả nhập Excel:\n- Thành công: ' + successCount + ' sinh viên\n- Lỗi / Bỏ qua: ' + failCount);
+            reloadSinhVienVisual();
+
+        } catch (error) {
+            console.error(error);
+            alert('❌ Có lỗi xảy ra khi đọc file Excel!');
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
 </script>
-</body>
-</html>
+</body></html>
