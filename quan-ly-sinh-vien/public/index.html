@@ -694,7 +694,7 @@
                         <input type="number" step="0.1" min="0" max="10" 
                                class="score-input" data-subid="${sub.SubID}" value="${scoreVal}" 
                                placeholder="Nhập điểm (0.0 - 10.0)" 
-                               style="width:100%; padding:0.55rem 0.75rem; border:1px solid #CBD5E1; border-radius:8px; font-size:0.95rem; box-sizing:border-box;" />
+                               style="position:relative; z-index:100000; pointer-events:auto !important; user-select:text !important; cursor:text !important; background-color:#ffffff !important; width:100%; padding:0.55rem 0.75rem; border:1px solid #CBD5E1; border-radius:8px; font-size:0.95rem; box-sizing:border-box;" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()" />
                     `;
                     container.appendChild(div);
                 });
