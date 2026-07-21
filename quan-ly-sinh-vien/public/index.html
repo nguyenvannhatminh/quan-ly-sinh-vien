@@ -140,6 +140,11 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style id="spin-style">
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.spin-icon { display: inline-block; animation: spin 0.6s ease-in-out; }
+</style>
 </head>
 <body>
 
@@ -221,7 +226,8 @@
                     <h3>🎓 Quản lý Hồ sơ Sinh viên</h3>
                     <div style="display: flex; gap: 10px;">
                         <input type="text" id="inputSearch" class="search-box" placeholder="🔍 Tìm kiếm sinh viên..." oninput="xuLyGoTimKiem(event)">
-                        <button class="btn btn-primary" onclick="layDanhSachSinhVien(1)">🔄 Tải lại</button>
+                        <button type="button" class="btn btn-primary" onclick="reloadSinhVienVisual()">🔄 Tải lại</button>
+    <button type="button" class="btn btn-success" onclick="xuatExcelSinhVien()" style="background-color: #10B981; border-color: #10B981; color: #ffffff; margin-left: 8px;">📥 Xuất Excel</button>
                     </div>
                 </div>
                 <div class="form-card" id="cardFormSinhVien">
@@ -886,5 +892,69 @@
     }
     </script>
     
+
+
+
+
+
+<script id="custom-tools-script">
+// Hàm tải lại có hiệu ứng thông báo "Đang tải..."
+async function reloadSinhVienVisual() {
+    const tbody = document.querySelector('table tbody');
+    if (tbody) {
+        const originalRows = tbody.innerHTML;
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #2563eb; font-weight: bold; font-size: 15px;">⏳ Đang tải lại danh sách sinh viên...</td></tr>';
+        
+        setTimeout(async () => {
+            try {
+                if (typeof layDanhSachSinhVien === 'function') {
+                    const page = (typeof currentPage !== 'undefined') ? currentPage : 1;
+                    await layDanhSachSinhVien(page);
+                } else {
+                    tbody.innerHTML = originalRows;
+                }
+            } catch (err) {
+                tbody.innerHTML = originalRows;
+            }
+        }, 300);
+    }
+}
+
+// Hàm xuất Excel an toàn không leak code
+function xuatExcelSinhVien() {
+    if (typeof exportToExcel === 'function') {
+        exportToExcel();
+        return;
+    }
+    const table = document.querySelector('table');
+    if (!table) {
+        alert('⚠️ Không tìm thấy bảng dữ liệu sinh viên!');
+        return;
+    }
+    const cloneTable = table.cloneNode(true);
+    const rows = cloneTable.querySelectorAll('tr');
+    rows.forEach(row => {
+        if (row.children.length > 0) {
+            row.children[row.children.length - 1].remove();
+        }
+    });
+    const excelHTML = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8" /></head><body>' + cloneTable.outerHTML + '</body></html>';
+    const blob = new Blob(['\ufeff' + excelHTML], { type: 'application/vnd.ms-excel;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Danh_Sach_Sinh_Vien_' + new Date().toISOString().slice(0,10) + '.xls';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+</script>
+</body>
+        </html>
+    `;
+
+    const blob = new Blob(['\uf
+</script>
 </body>
 </html>
