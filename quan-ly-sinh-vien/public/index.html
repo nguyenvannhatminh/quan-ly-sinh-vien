@@ -384,7 +384,7 @@
                 result.data.forEach(sv => {
                     const tutor = sv.tutor ? sv.tutor.name : '<span style="color:var(--text-muted)">Trống</span>'; const subs = sv.subjects && sv.subjects.length > 0 ? sv.subjects.map(s => `<span class="badge">${s.name}</span>`).join(' ') : '<span style="color:var(--text-muted)">Chưa ĐK</span>';
                     html += `<tr><td>${sv.SID}</td><td><strong>${sv.name}</strong></td><td>${sv.email || ''}</td><td>${tutor}</td><td>${subs}</td>`;
-                    if(isManager) html += `<td><button class="btn btn-warning" style="padding:4px 8px; font-size:12px;" onclick="kichHoatCheDoSua(${sv.SID})">✏️ Sửa</button> <button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="xoaSinhVien(${sv.SID},'${sv.name}')">🗑️</button></td>`;
+                    if(isManager) html += `<td><button class="btn btn-warning" style="padding:4px 8px; font-size:12px;" onclick="kichHoatCheDoSua(${sv.SID})">✏️ Sửa</button> <button onclick="openGradeModal(${sv.SID})" style="background:#0EA5E9; color:white; border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; margin-left:4px;">📝 Nhập điểm</button> <button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="xoaSinhVien(${sv.SID},'${sv.name}')">🗑️</button></td>`;
                     html += `</tr>`;
                 }); divTable.innerHTML = html + '</tbody></table>';
                 let pagHTML = `<button class="pagination-btn" ${result.page === 1 ? 'disabled' : ''} onclick="chuyenTrang(${result.page - 1})">⏮️ Trước</button>`;
@@ -444,7 +444,7 @@
             data.forEach(t => { 
                 html += '<tr><td>' + t.TID + '</td><td><strong>' + t.name + '</strong></td>'; 
                 if(isManager) { 
-                    html += '<td><button class="btn btn-warning" style="padding:4px 8px; font-size:12px; margin-right:5px;" onclick="kichHoatCheDoSuaTutor(' + t.TID + ')">✏️ Sửa</button><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="xoaTutor(' + t.TID + ',\'' + t.name + '\')">🗑️</button></td>'; 
+                    html += '<td><button class="btn btn-warning" style="padding:4px 8px; font-size:12px; margin-right:5px;" onclick="kichHoatCheDoSuaTutor(' + t.TID + ')">✏️ Sửa</button> <button onclick="openGradeModal(' + t.TID + ')" style="background:#0EA5E9; color:white; border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; margin-left:4px;">📝 Nhập điểm</button><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="xoaTutor(' + t.TID + ',\'' + t.name + '\')">🗑️</button></td>'; 
                 } 
                 html += '</tr>'; 
             });
@@ -494,7 +494,7 @@
             data.forEach(s => { 
                 html += '<tr><td>' + s.SubID + '</td><td><strong>' + s.name + '</strong></td>'; 
                 if(isManager) { 
-                    html += '<td><button class="btn btn-warning" style="padding:4px 8px; font-size:12px; margin-right:5px;" onclick="kichHoatCheDoSuaSubject(' + s.SubID + ')">✏️ Sửa</button><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="xoaSubject(' + s.SubID + ',\'' + s.name + '\')">🗑️</button></td>'; 
+                    html += '<td><button class="btn btn-warning" style="padding:4px 8px; font-size:12px; margin-right:5px;" onclick="kichHoatCheDoSuaSubject(' + s.SubID + ')">✏️ Sửa</button> <button onclick="openGradeModal(' + s.SubID + ')" style="background:#0EA5E9; color:white; border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; margin-left:4px;">📝 Nhập điểm</button><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="xoaSubject(' + s.SubID + ',\'' + s.name + '\')">🗑️</button></td>'; 
                 } 
                 html += '</tr>'; 
             });
