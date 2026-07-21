@@ -1,4 +1,49 @@
-import { Injectable } from '@nestjs/common';
+const fs = require('fs');
+
+// 1. Nâng cấp file SinhVien Entity
+const entityPath = './src/sinh-vien/entities/sinh-vien.entity.ts';
+const entityCode = `import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
+import { Tutor } from '../../tutor/entities/tutor.entity';
+import { Subject } from '../../subject/entities/subject.entity';
+
+@Entity('sinh_viens')
+export class SinhVien {
+  @PrimaryGeneratedColumn()
+  SID: number;
+
+  @Column()
+  name: string;
+
+  @Column({ nullable: true })
+  email: string;
+
+  // --- CÁC CỘT MỚI ĐƯỢC THÊM VÀO CHO TÍNH NĂNG ĐIỂM SỐ ---
+  @Column({ type: 'json', nullable: true })
+  diemSo: any;
+
+  @Column({ type: 'float', nullable: true })
+  gpa: number;
+
+  @Column({ nullable: true })
+  xepLoai: string;
+  // -----------------------------------------------------
+
+  @ManyToOne(() => Tutor)
+  @JoinColumn({ name: 'tutorId' })
+  tutor: Tutor;
+
+  @ManyToMany(() => Subject)
+  @JoinTable()
+  subjects: Subject[];
+}
+`;
+
+fs.writeFileSync(entityPath, entityCode);
+console.log('✅ Đã thêm 3 cột [diemSo, gpa, xepLoai] vào Entity SinhVien!');
+
+// 2. Nâng cấp file SinhVien Service để tự động tính điểm
+const servicePath = './src/sinh-vien/sinh-vien.service.ts';
+const serviceCode = `import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import { SinhVien } from './entities/sinh-vien.entity';
@@ -53,8 +98,8 @@ export class SinhVienService {
     const skip = (page - 1) * limit;
     const whereCondition = search 
       ? [
-          { name: Like(`%${search}%`) },
-          { email: Like(`%${search}%`) }
+          { name: Like(\`%\${search}%\`) },
+          { email: Like(\`%\${search}%\`) }
         ]
       : {};
 
@@ -97,3 +142,7 @@ export class SinhVienService {
     return this.svRepo.delete(id);
   }
 }
+`;
+
+fs.writeFileSync(servicePath, serviceCode);
+console.log('✅ Đã cập nhật logic tính GPA và Xếp loại tự động vào SinhVienService!');

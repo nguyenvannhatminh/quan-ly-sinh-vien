@@ -1,40 +1,32 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { SUBJECT } from '../entities/subject.entity';
-import { CreateSubjectDto } from './dto/create-subject.dto';
+import { Subject } from './entities/subject.entity';
 
 @Injectable()
 export class SubjectService {
   constructor(
-    @InjectRepository(SUBJECT)
-    private readonly subjectRepository: Repository<SUBJECT>,
+    @InjectRepository(Subject)
+    private subjectRepository: Repository<Subject>,
   ) {}
 
-  async create(data: CreateSubjectDto): Promise<SUBJECT> {
-    const newSubject = this.subjectRepository.create(data);
-    return await this.subjectRepository.save(newSubject);
+  create(createSubjectDto: any) {
+    return this.subjectRepository.save(createSubjectDto);
   }
 
-  async findAll(): Promise<SUBJECT[]> {
-    return await this.subjectRepository.find();
+  findAll() {
+    return this.subjectRepository.find();
   }
 
-  async findOne(id: number): Promise<SUBJECT> {
-    const subject = await this.subjectRepository.findOne({ where: { SubID: id } });
-    if (!subject) throw new NotFoundException(`Không tìm thấy môn học ID: ${id}`);
-    return subject;
+  findOne(id: number) {
+    return this.subjectRepository.findOne({ where: { SubID: id } as any });
   }
 
-  async update(id: number, data: CreateSubjectDto): Promise<SUBJECT> {
-    const subject = await this.findOne(id);
-    Object.assign(subject, data);
-    return await this.subjectRepository.save(subject);
+  update(id: number, updateSubjectDto: any) {
+    return this.subjectRepository.update({ SubID: id } as any, updateSubjectDto);
   }
 
-  async xoa(id: number): Promise<string> {
-    const subject = await this.findOne(id);
-    await this.subjectRepository.remove(subject);
-    return `Đã xóa thành công môn học ID: ${id}`;
+  remove(id: number) {
+    return this.subjectRepository.delete({ SubID: id } as any);
   }
 }

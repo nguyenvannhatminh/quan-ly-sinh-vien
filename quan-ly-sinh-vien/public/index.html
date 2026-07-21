@@ -3,414 +3,746 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Quản lý Trường học - Phenikaa Style</title>
+    <title>Karl System - Quản lý Sinh viên</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; }
-        
-        .auth-page {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #092552 0%, #0c1b33 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
+        /* ==================== BIẾN MÀU SẮC (THEME VARIABLES) ==================== */
+        :root {
+            /* CHẾ ĐỘ SÁNG (MẶC ĐỊNH) */
+            --bg-main: #f4f7fb;
+            --bg-card: #ffffff;
+            --bg-sidebar: #ffffff;
+            --bg-auth: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            --text-main: #2b3445;
+            --text-muted: #7a8b9e;
+            --border-color: #e2e8f0;
+            --hover-bg: #f1f5f9;
+            --input-bg: #ffffff;
+            --table-header: #f8fafc;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
-        .brand-logo { text-align: center; margin-bottom: 25px; color: white; }
-        .brand-logo h1 { font-size: 28px; letter-spacing: 2px; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .brand-logo h1 span { color: #f39c12; }
-        .brand-subtitle { font-size: 13px; letter-spacing: 4px; text-transform: uppercase; opacity: 0.8; margin-top: 2px; }
-        .auth-card { background: #eef2f7; width: 100%; max-width: 440px; border-radius: 24px; padding: 40px 35px 35px 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; text-align: center; }
-        .airplane-icon { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); width: 75px; height: 75px; background: #eef2f7; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); }
-        .auth-card h2 { color: #0b2d63; font-size: 24px; font-weight: 700; margin-bottom: 25px; margin-top: 10px; letter-spacing: 1px; }
+
+        [data-theme="dark"] {
+            /* CHẾ ĐỘ TỐI */
+            --bg-main: #0f1424;
+            --bg-card: #141b2d;
+            --bg-sidebar: #0a0e1a;
+            --bg-auth: linear-gradient(135deg, #070a12 0%, #0f1424 100%);
+            --text-main: #ffffff;
+            --text-muted: #7a8b9e;
+            --border-color: #1f293d;
+            --hover-bg: #16223f;
+            --input-bg: #0f1424;
+            --table-header: #192239;
+            --shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* ==================== BASE STYLES ==================== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-main); color: var(--text-main); overflow-x: hidden; transition: background-color 0.3s, color 0.3s; }
+        
+        /* ==================== MÀN HÌNH AUTH ==================== */
+        .auth-page { min-height: 100vh; background: var(--bg-auth); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; transition: background 0.3s; }
+        .brand-logo { text-align: center; margin-bottom: 25px; color: var(--text-main); }
+        .brand-logo h1 { font-size: 28px; letter-spacing: 2px; font-weight: 900; }
+        .brand-logo h1 span { color: #3b66cc; }
+        .auth-card { background: var(--bg-card); width: 100%; max-width: 420px; border-radius: 16px; padding: 40px 35px; box-shadow: var(--shadow); border: 1px solid var(--border-color); text-align: center; transition: 0.3s; }
+        .auth-card h2 { color: var(--text-main); font-size: 22px; font-weight: 700; margin-bottom: 25px; }
         .input-group { position: relative; margin-bottom: 18px; }
-        .input-group input { width: 100%; padding: 14px 45px; background: #9bb3cc; border: 2px solid #7c9bb8; border-radius: 10px; color: #0c2042; font-size: 15px; font-weight: 500; outline: none; transition: all 0.3s ease; }
-        .input-group input::placeholder { color: #556c85; }
-        .input-group input:focus { background: #b3c8de; border-color: #3b66cc; box-shadow: 0 0 8px rgba(59, 102, 204, 0.4); }
-        .input-group .field-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #48617d; display: flex; align-items: center; }
-        .input-group .eye-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #48617d; cursor: pointer; }
-        .auth-links { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 25px; padding: 0 2px; }
-        .auth-links a { color: #3b66cc; text-decoration: none; font-weight: 500; }
-        .auth-links a:hover { text-decoration: underline; }
-        .btn-auth-submit { width: 100%; padding: 14px; background: #1a3863; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; letter-spacing: 1px; transition: background 0.3s; }
-        .btn-auth-submit:hover { background: #112542; }
-        .divider { margin: 25px 0; position: relative; text-align: center; }
-        .divider::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #ccc; z-index: 1; }
-        .divider span { background: #eef2f7; padding: 0 15px; color: #777; font-size: 13px; position: relative; z-index: 2; }
-        .btn-google { width: 100%; padding: 12px; background: white; color: #333; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: background 0.3s; }
-        .btn-google:hover { background: #f1f1f1; }
-        .auth-footer { margin-top: 40px; color: rgba(255,255,255,0.5); font-size: 12px; letter-spacing: 0.5px; text-align: center; }
-        .toggle-mode-text { margin-top: 20px; font-size: 13px; color: #555; }
+        .input-group input { width: 100%; padding: 14px 45px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); font-size: 15px; outline: none; transition: 0.3s; }
+        .input-group input:focus { border-color: #3b66cc; }
+        .input-group .field-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .input-group .eye-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); cursor: pointer; }
+        .auth-links { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 25px; }
+        .auth-links a { color: #3b66cc; text-decoration: none; }
+        .btn-auth-submit { width: 100%; padding: 14px; background: #3b66cc; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-auth-submit:hover { background: #2a4fa3; }
+        .toggle-mode-text { margin-top: 20px; font-size: 13px; color: var(--text-muted); }
         .toggle-mode-text span { color: #3b66cc; cursor: pointer; font-weight: bold; }
 
-        /* ==================== STYLE CỦA DASHBOARD ==================== */
-        .dashboard-container { max-width: 1200px; margin: 30px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        .db-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; margin-bottom: 25px; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
-        .tab-btn { padding: 10px 20px; font-size: 15px; font-weight: bold; cursor: pointer; border: none; background: #e9ecef; border-radius: 5px; color: #495057; }
-        .tab-btn.active { background: #007bff; color: white; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .btn { padding: 10px 15px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
-        .btn-success { background: #28a745; margin-top: 10px; }.btn-warning { background: #ffc107; color: #212529; }.btn-danger { background: #dc3545; padding: 6px 12px; font-size: 13px; }.btn-secondary { background: #6c757d; margin-top: 10px; margin-left: 5px; }
-        .form-card { background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 20px; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; }
-        .form-group input[type="text"], .form-group input[type="email"], .form-group select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        .checkbox-group { display: flex; gap: 15px; flex-wrap: wrap; }.checkbox-item { background: #fff; padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }th { background-color: #007bff; color: white; }tr:nth-child(even) { background-color: #f2f2f2; }.badge { background: #17a2b8; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; display: inline-block; margin: 2px; }.empty { color: #888; font-style: italic; }.flex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        /* ==================== LAYOUT MAIN ==================== */
+        .app-wrapper { display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; position: fixed; top: 0; bottom: 0; left: 0; transition: 0.3s; }
+        .sidebar-brand { padding: 20px; font-size: 22px; font-weight: bold; color: var(--text-main); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); }
+        .sidebar-menu { list-style: none; padding: 15px 10px; display: flex; flex-direction: column; gap: 4px; }
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 500; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
+        .menu-item:hover { background-color: var(--hover-bg); color: var(--text-main); }
+        .menu-item.active { background-color: var(--hover-bg); color: #3b66cc; font-weight: 600; }
+        .sidebar-footer { padding: 15px; border-top: 1px solid var(--border-color); }
         
-        /* Cải tiến: Style cho thanh Tìm kiếm và Phân trang */
-        .search-box { padding: 8px 15px; border: 1px solid #ccc; border-radius: 6px; width: 280px; outline: none; font-size: 14px; transition: 0.3s; }
-        .search-box:focus { border-color: #007bff; box-shadow: 0 0 5px rgba(0,123,255,0.2); }
+        .main-content { flex: 1; margin-left: 260px; padding: 30px; background-color: var(--bg-main); min-height: 100vh; transition: 0.3s; }
+        .top-navbar { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 30px; gap: 20px; }
+        
+        .theme-btn { background: none; border: 1px solid var(--border-color); color: var(--text-main); width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: 0.3s; }
+        .theme-btn:hover { background: var(--hover-bg); }
+        
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-info { text-align: right; }
+        .user-name { font-size: 14px; font-weight: 600; color: var(--text-main); }
+        .user-role { font-size: 12px; color: var(--text-muted); }
+        .avatar { width: 36px; height: 36px; background: #3b66cc; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
+        .btn-logout { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; }
+        .btn-logout:hover { color: #dc3545; }
+
+        .dashboard-banner { margin-bottom: 30px; }
+        .dashboard-banner h2 { font-size: 28px; font-weight: bold; margin-bottom: 5px; }
+        .dashboard-banner p { color: var(--text-muted); font-size: 14px; }
+
+        .filter-row { display: flex; gap: 20px; margin-bottom: 25px; }
+        .filter-box { display: flex; flex-direction: column; gap: 5px; flex: 1; max-width: 300px; }
+        .filter-box label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: bold; }
+        .filter-box select { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px; border-radius: 6px; outline: none; width: 100%; font-size: 14px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 30px; }
+        .stats-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 15px; box-shadow: var(--shadow); transition: 0.3s; }
+        .stats-icon { width: 45px; height: 45px; background: rgba(59, 102, 204, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #3b66cc; font-size: 20px; }
+        .stats-info h3 { font-size: 24px; font-weight: bold; margin-bottom: 2px; }
+        .stats-info p { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+
+        .content-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .karl-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; min-height: 220px; box-shadow: var(--shadow); transition: 0.3s; }
+        .karl-card h4 { font-size: 16px; font-weight: 600; margin-bottom: 5px; }
+        .karl-card .subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 15px; }
+        .empty-state { display: flex; height: 140px; align-items: center; justify-content: center; color: var(--text-muted); font-size: 14px; font-style: italic; }
+
+        /* ==================== CÁC MODULE QUẢN LÝ ==================== */
+        .section-panel { display: none; }
+        .section-panel.active { display: block; }
+        .flex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .search-box { padding: 10px 15px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 6px; width: 280px; color: var(--text-main); outline: none; font-size: 14px; transition: 0.3s; }
+        .search-box:focus { border-color: #3b66cc; }
+        
+        .form-card { background: var(--bg-card); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: var(--shadow); transition: 0.3s; }
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+        .form-group input, .form-group select { background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px; border-radius: 6px; outline: none; transition: 0.3s; }
+        .checkbox-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px; }
+        .checkbox-item { background: var(--input-bg); padding: 6px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; color: var(--text-main); }
+        
+        .btn { padding: 10px 18px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .btn-primary { background: #3b66cc; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-secondary { background: var(--hover-bg); color: var(--text-muted); border: 1px solid var(--border-color); }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: var(--bg-card); border-radius: 8px; overflow: hidden; box-shadow: var(--shadow); transition: 0.3s; }
+        th, td { padding: 14px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 14px; color: var(--text-main); }
+        th { background-color: var(--table-header); color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; transition: 0.3s; }
+        tr:hover td { background-color: var(--hover-bg); }
+        .badge { background: rgba(59,102,204,0.1); color: #3b66cc; padding: 4px 8px; border-radius: 6px; font-size: 12px; display: inline-block; margin: 2px; font-weight: 600; border: 1px solid rgba(59,102,204,0.2); }
+        
         .pagination-container { margin-top: 20px; display: flex; gap: 5px; justify-content: center; align-items: center; }
-        .pagination-btn { padding: 6px 12px; background: white; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; }
-        .pagination-btn:hover:not(:disabled) { background: #f1f1f1; border-color: #bbb; }
-        .pagination-btn.active { background: #007bff; color: white; border-color: #007bff; }
-        .pagination-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .pagination-btn { padding: 8px 14px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 6px; cursor: pointer; font-size: 13px; transition: 0.3s; }
+        .pagination-btn.active { background: #3b66cc; color: white; border-color: #3b66cc; }
+        .pagination-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     </style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-    <!-- 1. MÀN HÌNH ĐĂNG NHẬP PHENIKAA STYLE -->
+    
+<div style="max-width: 1200px; margin: 0 auto; padding: 1.5rem;">
+    </div>
+    <!-- 1. MÀN HÌNH AUTH -->
     <div id="authPage" class="auth-page">
-        <div class="brand-logo">
-            <h1>PHENIKAA<span> UNIVERSITY</span></h1>
-            <div class="brand-subtitle">Hệ thống quản lý toàn diện</div>
+        <div style="position: absolute; top: 20px; right: 20px;">
+            <button class="theme-btn" onclick="toggleTheme()" id="authThemeIcon">🌙</button>
         </div>
+        <div class="brand-logo"><h1>Karl<span> System</span></h1></div>
         <div class="auth-card">
-            <div class="airplane-icon">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 2L2 10L10 14L14 22L22 2Z" fill="#3b66cc"/><path d="M10 14L22 2" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
             <h2 id="txtAuthTitle">ĐĂNG NHẬP</h2>
             <form id="formAuth" onsubmit="xuLyAuth(event)">
-                <div class="input-group">
-                    <span class="field-icon"><svg width="18" height="18" fill="none" stroke="#48617d" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></span>
-                    <input type="text" name="username" required placeholder="Tên đăng nhập hoặc Email...">
-                </div>
-                <div class="input-group">
-                    <span class="field-icon"><svg width="18" height="18" fill="none" stroke="#48617d" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></span>
-                    <input type="password" id="inputPassword" name="password" required placeholder="Mật khẩu...">
-                    <span class="eye-icon" onclick="togglePasswordVisibility()"><svg width="18" height="18" fill="none" stroke="#48617d" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></span>
-                </div>
-                <div class="auth-links">
-                    <a href="#" onclick="alert('Tính năng đang bảo trì bro!')">Quên mật khẩu</a>
-                    <a href="#" onclick="alert('Karl System trợ giúp bro!')">⚠️ Trợ giúp!</a>
-                </div>
+                <div class="input-group"><span class="field-icon">👤</span><input type="text" name="username" required placeholder="Tên đăng nhập..."></div>
+                <div class="input-group"><span class="field-icon">🔒</span><input type="password" id="inputPassword" name="password" required placeholder="Mật khẩu..."><span class="eye-icon" onclick="togglePasswordVisibility()">👁️</span></div>
                 <button type="submit" id="btnAuthSubmit" class="btn-auth-submit">ĐĂNG NHẬP</button>
             </form>
-            <div class="divider"><span id="txtDivider">Hoặc đăng nhập bằng</span></div>
-            <button class="btn-google" onclick="alert('Đăng nhập Google bảo trì bro!')">
-                <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.79 2.7l2.76 2.13c1.61-1.49 2.54-3.67 2.54-6.19z" fill="#4285F4"/><path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.76-2.13c-.76.51-1.74.82-3.2.82-2.46 0-4.55-1.66-5.3-3.89H.95v2.2C2.43 15.77 5.46 18 9 18z" fill="#34A853"/><path d="M3.7 10.62c-.19-.57-.3-1.18-.3-1.8 0-.62.11-1.23.3-1.8V4.82H.95A8.977 8.977 0 000 9c0 1.55.39 3.03 1.07 4.34l2.63-2.14z" fill="#FBBC05"/><path d="M9 3.58c1.32 0 2.5.45 3.44 1.35L15 2.4C13.46.96 11.42 0 9 0 5.46 0 2.43 2.23.95 4.82l2.75 2.14c.75-2.23 2.84-3.88 5.3-3.88z" fill="#EA4335"/></svg>
-                Sign in with Google
-            </button>
             <div class="toggle-mode-text"><span id="btnToggleAuthMode" onclick="toggleAuthMode()">Chưa có tài khoản? Đăng ký ngay</span></div>
         </div>
-        <div class="auth-footer">© 2026 Đại học Phenikaa - Hệ thống Karl</div>
     </div>
 
-    <!-- 2. GIAO DIỆN CHÍNH DASHBOARD -->
-    <div id="dashboardScreen" class="dashboard-container" style="display: none;">
-        <div class="db-header">
-            <h2>🏫 Hệ thống Quản lý Trường học Toàn diện</h2>
-            <div style="font-size: 14px; color: #555;">
-                Xin chào, <strong id="txtUsername" style="color:#007bff;">Admin</strong>! 🔒 
-                <button class="btn btn-danger" style="padding: 5px 10px; margin-left: 10px;" onclick="dangXuat()">Đăng xuất</button>
+    <!-- 2. MAIN APP LAYOUT -->
+    <div id="dashboardScreen" class="app-wrapper" style="display: none;">
+        <aside class="sidebar">
+            <div>
+                <div class="sidebar-brand"><span>🎓</span> Karl System</div>
+                <ul class="sidebar-menu">
+                    <li class="menu-item active" id="menu-tong-quan" onclick="switchSection('tong-quan')">📊 Tổng quan</li>
+                    <li class="menu-item" id="menu-sinh-vien" onclick="switchSection('sinh-vien')">👥 Quản lý Sinh viên</li>
+                    <li class="menu-item" id="menu-tutor" onclick="switchSection('tutor')">👨‍🏫 Danh sách Giảng viên</li>
+                    <li class="menu-item" id="menu-subject" onclick="switchSection('subject')">📚 Danh mục Môn học</li>
+                </ul>
             </div>
-        </div>
+            <div class="sidebar-footer"><a href="#" class="menu-item" style="padding: 5px;" onclick="dangXuat()">🚪 Đăng xuất</a></div>
+        </aside>
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('sinh-vien-tab')">🎓 Quản lý Sinh viên</button>
-            <button class="tab-btn" onclick="switchTab('tutor-tab')">👨‍🏫 Quản lý Giảng viên</button>
-            <button class="tab-btn" onclick="switchTab('subject-tab')">📚 Quản lý Môn học</button>
-        </div>
+        <main class="main-content">
+            <div class="top-navbar">
+                <!-- NÚT CHUYỂN ĐỔI THEME -->
+                <button class="theme-btn" onclick="toggleTheme()" id="mainThemeIcon" title="Đổi giao diện Sáng/Tối">🌙</button>
 
-        <!-- TAB 1: SINH VIÊN (ĐÃ NÂNG CẤP THANH SEARCH) -->
-        <div id="sinh-vien-tab" class="tab-content active">
-            <div class="flex-header">
-                <h3>Danh sách Sinh viên</h3>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <!-- Ô Tìm kiếm xịn sò -->
-                    <input type="text" id="inputSearch" class="search-box" placeholder="🔍 Tìm theo tên hoặc email..." oninput="xuLyGoTimKiem(event)">
-                    <button class="btn" onclick="layDanhSachSinhVien(1)">🔄 Tải lại</button>
+                <div class="user-profile">
+                    <div class="user-info"><div class="user-name" id="txtUsername">Admin</div><div class="user-role">Quản trị viên</div></div>
+                    <div class="avatar" id="txtAvatar">A</div>
+                </div>
+                <button class="btn-logout" onclick="dangXuat()" title="Đăng xuất">❌</button>
+            </div>
+
+            <!-- SECTION: TỔNG QUAN -->
+            <div id="section-tong-quan" class="section-panel active">
+                <div class="dashboard-banner">
+                    <h2 id="txtGreeting">Chào buổi tối</h2>
+                    <p id="txtCurrentDate">Hôm nay là Thứ Bảy, 18 tháng 7, 2026</p>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-box"><label>Năm học</label><select><option>2026-2027</option><option>2025-2026</option></select></div>
+                    <div class="filter-box"><label>Khoa / Viện</label><select><option>Công nghệ Thông tin</option><option>Kinh tế</option></select></div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stats-card"><div class="stats-icon">👥</div><div class="stats-info"><h3 id="stat-sinh-vien">0</h3><p>Sinh viên toàn trường</p></div></div>
+                    <div class="stats-card"><div class="stats-icon">🏫</div><div class="stats-info"><h3>35</h3><p>Lớp học</p></div></div>
+                    <div class="stats-card"><div class="stats-icon">👨‍🏫</div><div class="stats-info"><h3 id="stat-tutors">0</h3><p>Giảng viên</p></div></div>
+                    <div class="stats-card"><div class="stats-icon">📚</div><div class="stats-info"><h3 id="stat-subjects">0</h3><p>Môn học đang mở</p></div></div>
+                    <div class="stats-card"><div class="stats-icon" style="color:#dc3545; background:rgba(220,53,69,0.1)">⚠️</div><div class="stats-info"><h3 style="color:#dc3545">12</h3><p>Cảnh báo học vụ</p></div></div>
+                </div>
+                <div class="content-grid">
+                    <div class="karl-card"><h4>Thống kê học lực</h4><div class="subtitle">Tỷ lệ Xếp loại sinh viên trong học kỳ qua</div><div class="empty-state">Chưa có dữ liệu điểm thi</div></div>
+                    <div class="karl-card"><h4>Tình trạng học phí</h4><div class="subtitle">Thống kê nợ đọng và đã hoàn thành học phí</div><div class="empty-state">Chưa có dữ liệu tài chính</div></div>
+                    <div class="karl-card"><h4>Lịch thi sắp tới</h4><div class="subtitle">Các ca thi trong 7 ngày tới</div><div class="empty-state">Không có lịch thi nào sắp tới.</div></div>
+                    <div class="karl-card"><h4>Yêu cầu từ sinh viên</h4><div class="subtitle">Đơn từ, giấy xác nhận, khiếu nại điểm</div><div class="empty-state">Tuyệt vời! Không có yêu cầu tồn đọng.</div></div>
                 </div>
             </div>
-            <div class="form-card">
-                <h4 id="formTitle">➕ Thêm Sinh viên mới</h4>
-                <form id="formSinhVien" onsubmit="xuLySubmitSinhVien(event)">
-                    <div class="form-group"><label>Tên Sinh viên (*)</label><input type="text" name="name" required placeholder="Nhập họ và tên..."></div>
-                    <div class="form-group"><label>Email</label><input type="email" name="email" placeholder="Nhập email..."></div>
-                    <div class="form-group"><label>Chọn Giảng viên hướng dẫn</label><select name="tutorId" id="tutorSelect"><option value="">-- Không có --</option></select></div>
-                    <div class="form-group"><label>Chọn Môn học đăng ký</label><div class="checkbox-group" id="subjectCheckboxes"></div></div>
-                    <button type="submit" id="submitBtn" class="btn btn-success">Lưu Sinh viên</button>
-                    <button type="button" id="cancelBtn" class="btn btn-secondary" style="display: none;" onclick="huyCheDoSua()">Hủy</button>
-                </form>
-            </div>
-            <!-- Nơi vẽ bảng và phân trang -->
-            <div id="ket-qua-sinh-vien"></div>
-            <div id="pagination-sinh-vien" class="pagination-container"></div>
-        </div>
 
-        <!-- TAB 2: GIẢNG VIÊN -->
-        <div id="tutor-tab" class="tab-content">
-            <div class="flex-header"><h3>Danh sách Giảng viên</h3><button class="btn" onclick="layDanhSachTutor()">🔄 Làm mới</button></div>
-            <div class="form-card">
-                <h4>👨‍🏫 Thêm Giảng viên mới</h4>
-                <form id="formTutor" onsubmit="themTutor(event)">
-                    <div class="form-group"><label>Tên Giảng viên (*)</label><input type="text" name="name" required placeholder="Nhập tên giảng viên..."></div>
-                    <button type="submit" class="btn btn-success">Thêm Giảng viên</button>
-                </form>
+            <!-- SECTION: QUẢN LÝ SINH VIÊN -->
+            <div id="section-sinh-vien" class="section-panel">
+                <div class="flex-header">
+                    <h3>🎓 Quản lý Hồ sơ Sinh viên</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="inputSearch" class="search-box" placeholder="🔍 Tìm kiếm sinh viên..." oninput="xuLyGoTimKiem(event)">
+                        <button class="btn btn-primary" onclick="layDanhSachSinhVien(1)">🔄 Tải lại</button>
+                    </div>
+                </div>
+                <div class="form-card" id="cardFormSinhVien">
+                    <h4 id="formTitle">➕ Thêm Sinh viên mới</h4>
+                    <form id="formSinhVien" onsubmit="xuLySubmitSinhVien(event)" style="margin-top:15px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Họ và Tên (*)</label><input type="text" name="name" required placeholder="Nhập tên sinh viên..."></div>
+                            <div class="form-group"><label>Email cá nhân</label><input type="email" name="email" placeholder="Nhập email sinh viên..."></div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;"><label>Giảng viên Cố vấn (CVHT)</label><select name="tutorId" id="tutorSelect"><option value="">-- Không có --</option></select></div>
+                        <div class="form-group" style="margin-bottom: 15px;"><label>Môn học đang đăng ký</label><div class="checkbox-group" id="subjectCheckboxes"></div></div>
+                        <button type="submit" id="submitBtn" class="btn btn-success">Lưu Hồ sơ</button>
+                        <button type="button" id="cancelBtn" class="btn btn-secondary" style="display: none;" onclick="huyCheDoSua()">Hủy bỏ</button>
+                    </form>
+                </div>
+                <div id="ket-qua-sinh-vien"></div>
+                <div id="pagination-sinh-vien" class="pagination-container"></div>
             </div>
-            <div id="ket-qua-tutor"></div>
-        </div>
 
-        <!-- TAB 3: MÔN HỌC -->
-        <div id="subject-tab" class="tab-content">
-            <div class="flex-header"><h3>Danh sách Môn học</h3><button class="btn" onclick="layDanhSachSubject()">🔄 Làm mới</button></div>
-            <div class="form-card">
-                <h4>📚 Thêm Môn học mới</h4>
-                <form id="formSubject" onsubmit="themSubject(event)">
-                    <div class="form-group"><label>Tên Môn học (*)</label><input type="text" name="name" required placeholder="Nhập tên môn học..."></div>
-                    <button type="submit" class="btn btn-success">Thêm Môn học</button>
-                </form>
+            <!-- SECTION: GIẢNG VIÊN -->
+            <div id="section-tutor" class="section-panel">
+                <div class="flex-header"><h3>👨‍🏫 Quản lý Danh sách Giảng viên</h3></div>
+                <div class="form-card" id="cardFormTutor">
+                    <h4>➕ Thêm Giảng viên</h4>
+                    <form id="formTutor" onsubmit="themTutor(event)" style="display:flex; gap:10px; margin-top:15px;">
+                        <input type="text" name="name" required placeholder="Nhập tên giảng viên..." style="flex:1; border-radius: 6px; padding: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-main);">
+                        <button type="submit" id="btnSubmitTutor" class="btn btn-success">Thêm ngay</button> <button type="button" id="btnCancelTutor" class="btn btn-secondary" style="display:none; padding:10px; border-radius:6px; border:none; cursor:pointer;" onclick="huyCheDoSuaTutor()">Hủy</button>
+                    </form>
+                </div>
+                <div id="ket-qua-tutor"></div>
             </div>
-            <div id="ket-qua-subject"></div>
-        </div>
+
+            <!-- SECTION: MÔN HỌC -->
+            <div id="section-subject" class="section-panel">
+                <div class="flex-header"><h3>📚 Quản lý Danh mục Môn học</h3></div>
+                <div class="form-card" id="cardFormSubject">
+                    <h4>➕ Thêm Môn học</h4>
+                    <form id="formSubject" onsubmit="themSubject(event)" style="display:flex; gap:10px; margin-top:15px;">
+                        <input type="text" name="name" required placeholder="Nhập tên môn học..." style="flex:1; border-radius: 6px; padding: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-main);">
+                        <button type="submit" id="btnSubmitSubject" class="btn btn-success">Thêm ngay</button> <button type="button" id="btnCancelSubject" class="btn btn-secondary" style="display:none; padding:10px; border-radius:6px; border:none; cursor:pointer;" onclick="huyCheDoSuaSubject()">Hủy</button>
+                    </form>
+                </div>
+                <div id="ket-qua-subject"></div>
+            </div>
+
+        </main>
     </div>
 
+    <!-- JAVASCRIPT HỆ THỐNG -->
     <script>
-        // Các biến trạng thái Toàn cục mới
-        let currentAuthMode = 'login';
-        let isEditing = false;
-        let editingStudentId = null;
-        let listSinhVienBoNhoDem = [];
+        var listTutorBoNhoDem = []; var isEditingTutor = false; var editingTutorId = null;
+        var listSubjectBoNhoDem = []; var isEditingSubject = false; var editingSubjectId = null;
+
+
         
-        let currentPage = 1;
-        let currentSearch = '';
-        let searchTimeout = null;
-        const limitSize = 5; // Hiện 5 đứa trên một trang
 
-        document.addEventListener("DOMContentLoaded", () => { checkLoginState(); });
+        let currentAuthMode = 'login'; let isEditing = false; let editingStudentId = null; let listSinhVienBoNhoDem = [];
+        let currentPage = 1; let currentSearch = ''; let searchTimeout = null; const limitSize = 5;
 
-        function checkLoginState() {
-            const token = localStorage.getItem('token');
-            const username = localStorage.getItem('username');
-            if (token) {
-                document.getElementById('authPage').style.display = 'none';
-                document.getElementById('dashboardScreen').style.display = 'block';
-                document.getElementById('txtUsername').innerText = username;
-                taiDuLieuFormSinhVien();
-                layDanhSachSinhVien(1); layDanhSachTutor(); layDanhSachSubject();
-            } else {
-                document.getElementById('authPage').style.display = 'flex';
-                document.getElementById('dashboardScreen').style.display = 'none';
-            }
+        // --- XỬ LÝ THEME (SÁNG/TỐI) ---
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark'; // Mặc định là Dark
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcons(savedTheme);
         }
 
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcons(newTheme);
+        }
+
+        function updateThemeIcons(theme) {
+            const icon = theme === 'dark' ? '☀️' : '🌙';
+            const title = theme === 'dark' ? 'Chuyển sang nền Sáng' : 'Chuyển sang nền Tối';
+            document.getElementById('authThemeIcon').innerText = icon;
+            document.getElementById('mainThemeIcon').innerText = icon;
+            document.getElementById('mainThemeIcon').title = title;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => { 
+            initTheme(); // Chạy hàm khởi tạo Theme khi tải trang
+            checkLoginState(); 
+        });
+
+        function setGreetingTime() {
+            const now = new Date(); const hours = now.getHours();
+            let sessionGreeting = hours < 12 ? "Chào buổi sáng" : hours < 18 ? "Chào buổi chiều" : "Chào buổi tối";
+            const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+            document.getElementById('txtGreeting').innerText = `${sessionGreeting}, ${localStorage.getItem('username') || 'User'}`;
+            document.getElementById('txtCurrentDate').innerText = `Hôm nay là ${days[now.getDay()]} , ${now.getDate()} tháng ${now.getMonth() + 1}, ${now.getFullYear()}`;
+        }
+
+        function checkLoginState() {
+            const token = localStorage.getItem('token'); const username = localStorage.getItem('username'); const role = localStorage.getItem('role') || 'user';
+            if (token) {
+                document.getElementById('authPage').style.display = 'none'; document.getElementById('dashboardScreen').style.display = 'flex';
+                document.getElementById('txtUsername').innerText = username; document.getElementById('txtAvatar').innerText = username.charAt(0).toUpperCase();
+                
+                const roleEl = document.querySelector('.user-role');
+                if (role === 'giaovu') roleEl.innerText = 'Giáo vụ Khoa'; else if (role === 'admin') roleEl.innerText = 'Quản trị viên'; else roleEl.innerText = 'Sinh viên / Khách';
+
+                const showForms = (role === 'admin' || role === 'giaovu') ? 'block' : 'none';
+                document.getElementById('cardFormSinhVien').style.display = showForms; document.getElementById('cardFormTutor').style.display = showForms; document.getElementById('cardFormSubject').style.display = showForms;
+
+                setGreetingTime(); taiDuLieuFormSinhVien(); layDanhSachSinhVien(1); layDanhSachTutor(); layDanhSachSubject();
+            } else { document.getElementById('authPage').style.display = 'flex'; document.getElementById('dashboardScreen').style.display = 'none'; }
+        }
+
+        function switchSection(sectionId) { document.querySelectorAll('.section-panel').forEach(el => el.classList.remove('active')); document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active')); document.getElementById(`section-${sectionId}`).classList.add('active'); document.getElementById(`menu-${sectionId}`).classList.add('active'); }
+        
         function togglePasswordVisibility() {
-            const pwdInput = document.getElementById('inputPassword');
-            pwdInput.type = pwdInput.type === 'password' ? 'text' : 'password';
+            const pwd = document.getElementById('inputPassword');
+            if (pwd) pwd.type = pwd.type === 'password' ? 'text' : 'password';
         }
 
         function toggleAuthMode() {
+            const txtTitle = document.getElementById('txtAuthTitle');
             const btnSubmit = document.getElementById('btnAuthSubmit');
             const btnToggle = document.getElementById('btnToggleAuthMode');
-            const txtTitle = document.getElementById('txtAuthTitle');
+            if (!txtTitle || !btnSubmit || !btnToggle) return;
+
             if (currentAuthMode === 'login') {
-                currentAuthMode = 'register'; txtTitle.innerText = 'ĐĂNG KÝ HỆ THỐNG';
-                btnSubmit.innerText = 'ĐĂNG KÝ NGAY'; btnSubmit.style.background = '#28a745';
+                currentAuthMode = 'register';
+                txtTitle.innerText = 'ĐĂNG KÝ HỆ THỐNG';
+                btnSubmit.innerText = 'ĐĂNG KÝ NGAY';
+                btnSubmit.style.background = '#28a745';
                 btnToggle.innerText = 'Đã có tài khoản? Quay lại đăng nhập';
             } else {
-                currentAuthMode = 'login'; txtTitle.innerText = 'ĐĂNG NHẬP';
-                btnSubmit.innerText = 'ĐĂNG NHẬP'; btnSubmit.style.background = '#1a3863';
+                currentAuthMode = 'login';
+                txtTitle.innerText = 'ĐĂNG NHẬP';
+                btnSubmit.innerText = 'ĐĂNG NHẬP';
+                btnSubmit.style.background = '#3b66cc';
                 btnToggle.innerText = 'Chưa có tài khoản? Đăng ký ngay';
             }
         }
 
         async function xuLyAuth(event) {
-            event.preventDefault();
-            const form = event.target;
-            const url = currentAuthMode === 'login' ? '/auth/login' : '/auth/register';
+            event.preventDefault(); const form = event.target; const url = currentAuthMode === 'login' ? '/auth/login' : '/auth/register';
             try {
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: form.username.value, password: form.password.value })
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.message || 'Thao tác lỗi!');
-                if (currentAuthMode === 'login') {
-                    localStorage.setItem('token', data.access_token);
-                    localStorage.setItem('username', form.username.value);
-                    form.reset(); checkLoginState();
-                } else { alert('Đăng ký xong bro! Đăng nhập đi nào.'); toggleAuthMode(); }
-            } catch (error) { alert('Lỗi: ' + error.message); }
+                const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: form.username.value, password: form.password.value }) });
+                const data = await res.json(); if (!res.ok) throw new Error(data.message || 'Lỗi!');
+                if (currentAuthMode === 'login') { localStorage.setItem('token', data.access_token); localStorage.setItem('username', data.username || form.username.value); localStorage.setItem('role', data.role || 'user'); form.reset(); checkLoginState(); } 
+                else { alert('Đăng ký xong!'); toggleAuthMode(); }
+            } catch (e) { alert('Lỗi: ' + e.message); }
         }
 
-        function dangXuat() { localStorage.clear(); checkLoginState(); }
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active'); event.currentTarget.classList.add('active');
-        }
-
-        // ==================== LOGIC TÌM KIẾM & PHAN TRANG SINH VIÊN ====================
-        function xuLyGoTimKiem(event) {
-            clearTimeout(searchTimeout);
-            currentSearch = event.target.value;
-            // Debounce 400ms: Ngừng gõ 0.4s mới gọi API tránh overload
-            searchTimeout = setTimeout(() => {
-                layDanhSachSinhVien(1); 
-            }, 400);
-        }
-
-        function chuyenTrang(page) {
-            currentPage = page;
-            layDanhSachSinhVien(page);
-        }
+        function dangXuat() { localStorage.removeItem('token'); localStorage.removeItem('username'); localStorage.removeItem('role'); checkLoginState(); }
+        function xuLyGoTimKiem(event) { clearTimeout(searchTimeout); currentSearch = event.target.value; searchTimeout = setTimeout(() => { layDanhSachSinhVien(1); }, 400); }
+        function chuyenTrang(page) { currentPage = page; layDanhSachSinhVien(page); }
 
         async function layDanhSachSinhVien(page = 1) {
-            currentPage = page;
-            const divTable = document.getElementById('ket-qua-sinh-vien');
-            const divPagination = document.getElementById('pagination-sinh-vien');
-            divTable.innerHTML = '<p>Đang tải dữ liệu...</p>';
-            
+            currentPage = page; const divTable = document.getElementById('ket-qua-sinh-vien'); const divPagination = document.getElementById('pagination-sinh-vien'); const role = localStorage.getItem('role') || 'user'; const isManager = (role === 'admin' || role === 'giaovu');
             try {
-                // Bắn request kèm theo query param chuẩn RESTful API
-                const res = await fetch(`/sinh-vien?page=${page}&limit=${limitSize}&search=${encodeURIComponent(currentSearch)}`);
-                const result = await res.json(); // Nhận object gồm {data, total, page, lastPage}
-                
-                listSinhVienBoNhoDem = result.data;
-
-                if(result.data.length === 0) {
-                    divTable.innerHTML = '<p class="empty">Không tìm thấy sinh viên nào phù hợp.</p>';
-                    divPagination.innerHTML = ''; return;
-                }
-
-                // Vẽ Bảng Dữ Liệu
-                let html = `<table><thead><tr><th>ID</th><th>Tên Sinh viên</th><th>Email</th><th>Giảng viên HD</th><th>Môn học</th><th>Hành động</th></tr></thead><tbody>`;
+                const res = await fetch(`/sinh-vien?page=${page}&limit=${limitSize}&search=${encodeURIComponent(currentSearch)}`); const result = await res.json();
+                listSinhVienBoNhoDem = result.data; document.getElementById('stat-sinh-vien').innerText = result.total;
+                if(result.data.length === 0) { divTable.innerHTML = '<p class="empty-state">Không tìm thấy sinh viên nào.</p>'; divPagination.innerHTML = ''; return; }
+                let html = `<table><thead><tr><th>Mã SV</th><th>Họ Tên</th><th>Email</th><th>Cố vấn Học tập</th><th>Môn học</th>${isManager ? '<th>Hành động</th>' : ''}</tr></thead><tbody>`;
                 result.data.forEach(sv => {
-                    const tutor = sv.tutor ? sv.tutor.name : '<span class="empty">Chưa có</span>';
-                    const subs = sv.subjects && sv.subjects.length > 0 ? sv.subjects.map(s => `<span class="badge">${s.name}</span>`).join(' ') : '<span class="empty">Trống</span>';
-                    html += `<tr><td>${sv.SID}</td><td><strong>${sv.name}</strong></td><td>${sv.email || ''}</td><td>${tutor}</td><td>${subs}</td>
-                    <td>
-                        <button class="btn btn-warning" style="padding:5px 10px; font-size:12px;" onclick="kichHoatCheDoSua(${sv.SID})">✏️ Sửa</button>
-                        <button class="btn btn-danger" style="padding:5px 10px; font-size:12px;" onclick="xoaSinhVien(${sv.SID},'${sv.name}')">🗑️ Xóa</button>
-                    </td></tr>`;
-                });
-                divTable.innerHTML = html + '</tbody></table>';
-
-                // Vẽ Thanh Nút Phân Trang
+                    const tutor = sv.tutor ? sv.tutor.name : '<span style="color:var(--text-muted)">Trống</span>'; const subs = sv.subjects && sv.subjects.length > 0 ? sv.subjects.map(s => `<span class="badge">${s.name}</span>`).join(' ') : '<span style="color:var(--text-muted)">Chưa ĐK</span>';
+                    html += `<tr><td>${sv.SID}</td><td><strong>${sv.name}</strong></td><td>${sv.email || ''}</td><td>${tutor}</td><td>${subs}</td>`;
+                    if(isManager) html += `<td><button class="btn btn-warning" style="padding:4px 8px; font-size:12px;" onclick="kichHoatCheDoSua(${sv.SID})">✏️ Sửa</button> <button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="xoaSinhVien(${sv.SID},'${sv.name}')">🗑️</button></td>`;
+                    html += `</tr>`;
+                }); divTable.innerHTML = html + '</tbody></table>';
                 let pagHTML = `<button class="pagination-btn" ${result.page === 1 ? 'disabled' : ''} onclick="chuyenTrang(${result.page - 1})">⏮️ Trước</button>`;
-                for (let i = 1; i <= result.lastPage; i++) {
-                    pagHTML += `<button class="pagination-btn ${result.page === i ? 'active' : ''}" onclick="chuyenTrang(${i})">${i}</button>`;
-                }
+                for (let i = 1; i <= result.lastPage; i++) pagHTML += `<button class="pagination-btn ${result.page === i ? 'active' : ''}" onclick="chuyenTrang(${i})">${i}</button>`;
                 pagHTML += `<button class="pagination-btn" ${result.page === result.lastPage || result.lastPage === 0 ? 'disabled' : ''} onclick="chuyenTrang(${result.page + 1})">Sau ⏭️</button>`;
-                pagHTML += `<span style="font-size:13px; color:#666; margin-left:10px;">Tổng: ${result.total} dòng</span>`;
-                
                 divPagination.innerHTML = pagHTML;
-
-            } catch(e) { divTable.innerHTML = '<p style="color:red">Lỗi tải dữ liệu!</p>'; }
+            } catch(e) { divTable.innerHTML = '<p style="color:red">Lỗi tải dữ liệu. Hãy đảm bảo Server đang chạy!</p>'; }
         }
 
-        // ==================== CÁC CHỨC NĂNG KHÁC (GIỮ NGUYÊN) ====================
         async function taiDuLieuFormSinhVien() {
             try {
-                const [tutorRes, subjectRes] = await Promise.all([fetch('/tutor'), fetch('/subject')]);
-                const tutors = await tutorRes.json(); const subjects = await subjectRes.json();
-                const tutorSelect = document.getElementById('tutorSelect');
-                tutorSelect.innerHTML = '<option value="">-- Không có --</option>';
-                tutors.forEach(t => { tutorSelect.innerHTML += `<option value="${t.TID}">${t.name}</option>`; });
-                const subjectDiv = document.getElementById('subjectCheckboxes'); subjectDiv.innerHTML = '';
-                subjects.forEach(s => { subjectDiv.innerHTML += `<label class="checkbox-item"><input type="checkbox" name="subjectIds" value="${s.SubID}"> ${s.name}</label>`; });
+                const [tutorRes, subjectRes] = await Promise.all([fetch('/tutor'), fetch('/subject')]); const tutors = await tutorRes.json(); const subjects = await subjectRes.json();
+                document.getElementById('stat-tutors').innerText = tutors.length; document.getElementById('stat-subjects').innerText = subjects.length;
+                const tutorSelect = document.getElementById('tutorSelect'); tutorSelect.innerHTML = '<option value="">-- Không có --</option>'; tutors.forEach(t => { tutorSelect.innerHTML += `<option value="${t.TID}">${t.name}</option>`; });
+                const subjectDiv = document.getElementById('subjectCheckboxes'); subjectDiv.innerHTML = ''; subjects.forEach(s => { subjectDiv.innerHTML += `<label class="checkbox-item"><input type="checkbox" name="subjectIds" value="${s.SubID}"> ${s.name}</label>`; });
             } catch (e) { console.error(e); }
         }
 
         async function xuLySubmitSinhVien(event) {
             event.preventDefault(); const form = event.target;
-            const data = {
-                name: form.name.value, email: form.email.value,
-                tutorId: form.tutorId.value ? parseInt(form.tutorId.value) : null,
-                subjectIds: Array.from(form.querySelectorAll('input[name="subjectIds"]:checked')).map(cb => parseInt(cb.value))
-            };
-            const res = await fetch(isEditing ? `/sinh-vien/${editingStudentId}` : '/sinh-vien', {
-                method: isEditing ? 'PATCH' : 'POST',
-                headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}`},
-                body: JSON.stringify(data)
-            });
-            if(res.status === 401) return hetHanToken();
-            if(res.ok) { alert('Thành công!'); huyCheDoSua(); layDanhSachSinhVien(currentPage); } else alert('Lỗi!');
+            const data = { name: form.name.value, email: form.email.value, tutorId: form.tutorId.value ? parseInt(form.tutorId.value) : null, subjectIds: Array.from(form.querySelectorAll('input[name="subjectIds"]:checked')).map(cb => parseInt(cb.value)) };
+            const res = await fetch(isEditing ? `/sinh-vien/${editingStudentId}` : '/sinh-vien', { method: isEditing ? 'PATCH' : 'POST', headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}`}, body: JSON.stringify(data) });
+            if(res.status === 401 || res.status === 403) return alert('Lỗi bảo mật: Không có quyền thao tác!');
+            if(res.ok) { alert('Thành công!'); huyCheDoSua(); layDanhSachSinhVien(currentPage); } else alert('Lỗi Server!');
         }
 
         function kichHoatCheDoSua(id) {
             const sv = listSinhVienBoNhoDem.find(s => s.SID === id); if (!sv) return;
-            isEditing = true; editingStudentId = id;
-            document.getElementById('formTitle').innerText = `✏️ Cập nhật Sinh viên (ID: ${id})`;
-            const btn = document.getElementById('submitBtn'); btn.innerText = 'Cập nhật ngay'; btn.className = 'btn btn-warning';
-            document.getElementById('cancelBtn').style.display = 'inline-block';
+            isEditing = true; editingStudentId = id; document.getElementById('formTitle').innerText = `✏️ Cập nhật Hồ sơ (Mã SV: ${id})`;
+            const btn = document.getElementById('submitBtn'); btn.innerText = 'Cập nhật'; btn.className = 'btn btn-warning'; document.getElementById('cancelBtn').style.display = 'inline-block';
             const form = document.getElementById('formSinhVien'); form.name.value = sv.name; form.email.value = sv.email || ''; form.tutorId.value = sv.tutor ? sv.tutor.TID : '';
-            const subIds = sv.subjects ? sv.subjects.map(s => s.SubID) : [];
-            form.querySelectorAll('input[name="subjectIds"]').forEach(cb => cb.checked = subIds.includes(parseInt(cb.value)));
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const subIds = sv.subjects ? sv.subjects.map(s => s.SubID) : []; form.querySelectorAll('input[name="subjectIds"]').forEach(cb => cb.checked = subIds.includes(parseInt(cb.value)));
         }
 
         function huyCheDoSua() {
-            isEditing = false; editingStudentId = null;
-            document.getElementById('formTitle').innerText = '➕ Thêm Sinh viên mới';
-            const btn = document.getElementById('submitBtn'); btn.innerText = 'Lưu Sinh viên'; btn.className = 'btn btn-success';
+            isEditing = false; editingStudentId = null; document.getElementById('formTitle').innerText = '➕ Thêm Sinh viên mới';
+            const btn = document.getElementById('submitBtn'); btn.innerText = 'Lưu Hồ sơ'; btn.className = 'btn btn-success';
             document.getElementById('cancelBtn').style.display = 'none'; document.getElementById('formSinhVien').reset();
         }
 
         async function xoaSinhVien(id, name) {
             if(!confirm(`Xóa sinh viên ${name}?`)) return;
             const res = await fetch(`/sinh-vien/${id}`, {method: 'DELETE', headers: {'Authorization': `Bearer ${localStorage.getItem('token')}`}});
-            if(res.status === 401) return hetHanToken();
+            if(res.status === 401 || res.status === 403) return alert('Lỗi bảo mật!');
             if(res.ok) { if(isEditing && editingStudentId===id) huyCheDoSua(); layDanhSachSinhVien(currentPage); }
         }
 
+          
+
+          
+
         async function layDanhSachTutor() {
-            const div = document.getElementById('ket-qua-tutor');
-            const res = await fetch('/tutor'); const data = await res.json();
-            if(data.length === 0) { div.innerHTML = '<p class="empty">Chưa có.</p>'; return; }
-            let html = `<table><thead><tr><th>TID</th><th>Tên Giảng viên</th><th>Hành động</th></tr></thead><tbody>`;
-            data.forEach(t => { html += `<tr><td>${t.TID}</td><td><strong>${t.name}</strong></td><td><button class="btn btn-danger" style="padding:5px 10px; font-size:12px;" onclick="xoaTutor(${t.TID},'${t.name}')">🗑️ Xóa</button></td></tr>`; });
+            const div = document.getElementById('ket-qua-tutor'); const res = await fetch('/tutor'); const data = await res.json(); const role = localStorage.getItem('role') || 'user'; const isManager = (role === 'admin' || role === 'giaovu');
+            listTutorBoNhoDem = data;
+            if(data.length === 0) { div.innerHTML = '<p class="empty-state">Chưa có giảng viên nào.</p>'; return; }
+            let html = '<table><thead><tr><th>Mã GV</th><th>Tên Giảng viên</th>' + (isManager ? '<th>Hành động</th>' : '') + '</tr></thead><tbody>';
+            data.forEach(t => { 
+                html += '<tr><td>' + t.TID + '</td><td><strong>' + t.name + '</strong></td>'; 
+                if(isManager) { 
+                    html += '<td><button class="btn btn-warning" style="padding:4px 8px; font-size:12px; margin-right:5px;" onclick="kichHoatCheDoSuaTutor(' + t.TID + ')">✏️ Sửa</button><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="xoaTutor(' + t.TID + ',\'' + t.name + '\')">🗑️</button></td>'; 
+                } 
+                html += '</tr>'; 
+            });
             div.innerHTML = html + '</tbody></table>';
         }
 
-        async function themTutor(event) {
-            event.preventDefault(); const name = event.target.name.value;
-            await fetch('/tutor', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name}) });
-            event.target.reset(); layDanhSachTutor(); taiDuLieuFormSinhVien();
+        function kichHoatCheDoSuaTutor(id) {
+            const t = listTutorBoNhoDem.find(x => x.TID === id); if (!t) return;
+            isEditingTutor = true; editingTutorId = id;
+            const btnSubmit = document.getElementById('btnSubmitTutor') || document.querySelector('#formTutor button[type="submit"]');
+            if(btnSubmit) { btnSubmit.innerText = 'Cập nhật'; btnSubmit.className = 'btn btn-warning'; }
+            const btnCancel = document.getElementById('btnCancelTutor'); if(btnCancel) btnCancel.style.display = 'inline-block';
+            document.getElementById('formTutor').name.value = t.name;
         }
 
-        async function xoaTutor(id, name) {
-            if(!confirm(`Xóa giảng viên ${name}?`)) return;
-            if(await fetch(`/tutor/${id}`, { method: 'DELETE' }).then(r => r.ok)) { layDanhSachTutor(); layDanhSachSinhVien(currentPage); taiDuLieuFormSinhVien(); }
+        function huyCheDoSuaTutor() {
+            isEditingTutor = false; editingTutorId = null;
+            const btnSubmit = document.getElementById('btnSubmitTutor') || document.querySelector('#formTutor button[type="submit"]');
+            if(btnSubmit) { btnSubmit.innerText = 'Thêm ngay'; btnSubmit.className = 'btn btn-success'; }
+            const btnCancel = document.getElementById('btnCancelTutor'); if(btnCancel) btnCancel.style.display = 'none';
+            document.getElementById('formTutor').reset();
         }
+
+        async function themTutor(event) { 
+            event.preventDefault(); const name = event.target.name.value; 
+            const url = isEditingTutor ? '/tutor/' + editingTutorId : '/tutor';
+            const method = isEditingTutor ? 'PATCH' : 'POST';
+            await fetch(url, { method: method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name}) }); 
+            huyCheDoSuaTutor(); layDanhSachTutor(); taiDuLieuFormSinhVien(); 
+        }
+
+        async function xoaTutor(id, name) { 
+            if(!confirm('Xóa giảng viên ' + name + '?')) return; 
+            if(await fetch('/tutor/' + id, { method: 'DELETE' }).then(r => r.ok)) { 
+                if(isEditingTutor && editingTutorId === id) huyCheDoSuaTutor();
+                layDanhSachTutor(); layDanhSachSinhVien(currentPage); taiDuLieuFormSinhVien(); 
+            } 
+        }
+
+          
 
         async function layDanhSachSubject() {
-            const div = document.getElementById('ket-qua-subject');
-            const res = await fetch('/subject'); const data = await res.json();
-            if(data.length === 0) { div.innerHTML = '<p class="empty">Chưa có.</p>'; return; }
-            let html = `<table><thead><tr><th>SubID</th><th>Tên Môn học</th><th>Hành động</th></tr></thead><tbody>`;
-            data.forEach(s => { html += `<tr><td>${s.SubID}</td><td><strong>${s.name}</strong></td><td><button class="btn btn-danger" style="padding:5px 10px; font-size:12px;" onclick="xoaSubject(${s.SubID},'${s.name}')">🗑️ Xóa</button></td></tr>`; });
+            const div = document.getElementById('ket-qua-subject'); const res = await fetch('/subject'); const data = await res.json(); const role = localStorage.getItem('role') || 'user'; const isManager = (role === 'admin' || role === 'giaovu');
+            listSubjectBoNhoDem = data;
+            if(data.length === 0) { div.innerHTML = '<p class="empty-state">Chưa có môn học nào.</p>'; return; }
+            let html = '<table><thead><tr><th>Mã Môn</th><th>Tên Môn học</th>' + (isManager ? '<th>Hành động</th>' : '') + '</tr></thead><tbody>';
+            data.forEach(s => { 
+                html += '<tr><td>' + s.SubID + '</td><td><strong>' + s.name + '</strong></td>'; 
+                if(isManager) { 
+                    html += '<td><button class="btn btn-warning" style="padding:4px 8px; font-size:12px; margin-right:5px;" onclick="kichHoatCheDoSuaSubject(' + s.SubID + ')">✏️ Sửa</button><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="xoaSubject(' + s.SubID + ',\'' + s.name + '\')">🗑️</button></td>'; 
+                } 
+                html += '</tr>'; 
+            });
             div.innerHTML = html + '</tbody></table>';
         }
 
-        async function themSubject(event) {
-            event.preventDefault(); const name = event.target.name.value;
-            await fetch('/subject', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name}) });
-            event.target.reset(); layDanhSachSubject(); taiDuLieuFormSinhVien();
+        function kichHoatCheDoSuaSubject(id) {
+            const s = listSubjectBoNhoDem.find(x => x.SubID === id); if (!s) return;
+            isEditingSubject = true; editingSubjectId = id;
+            const btnSubmit = document.getElementById('btnSubmitSubject') || document.querySelector('#formSubject button[type="submit"]');
+            if(btnSubmit) { btnSubmit.innerText = 'Cập nhật'; btnSubmit.className = 'btn btn-warning'; }
+            const btnCancel = document.getElementById('btnCancelSubject'); if(btnCancel) btnCancel.style.display = 'inline-block';
+            document.getElementById('formSubject').name.value = s.name;
         }
 
-        async function xoaSubject(id, name) {
-            if(!confirm(`Xóa môn học ${name}?`)) return;
-            if(await fetch(`/subject/${id}`, { method: 'DELETE' }).then(r => r.ok)) { layDanhSachSubject(); layDanhSachSinhVien(currentPage); taiDuLieuFormSinhVien(); }
+        function huyCheDoSuaSubject() {
+            isEditingSubject = false; editingSubjectId = null;
+            const btnSubmit = document.getElementById('btnSubmitSubject') || document.querySelector('#formSubject button[type="submit"]');
+            if(btnSubmit) { btnSubmit.innerText = 'Thêm ngay'; btnSubmit.className = 'btn btn-success'; }
+            const btnCancel = document.getElementById('btnCancelSubject'); if(btnCancel) btnCancel.style.display = 'none';
+            document.getElementById('formSubject').reset();
         }
 
-        function hetHanToken() { alert('Hết hạn hoặc lỗi xác thực, vui lòng đăng nhập lại!'); dangXuat(); }
-    </script>
+        async function themSubject(event) { 
+            event.preventDefault(); const name = event.target.name.value; 
+            const url = isEditingSubject ? '/subject/' + editingSubjectId : '/subject';
+            const method = isEditingSubject ? 'PATCH' : 'POST';
+            await fetch(url, { method: method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name}) }); 
+            huyCheDoSuaSubject(); layDanhSachSubject(); taiDuLieuFormSinhVien(); 
+        }
+
+        async function xoaSubject(id, name) { 
+            if(!confirm('Xóa môn học ' + name + '?')) return; 
+            if(await fetch('/subject/' + id, { method: 'DELETE' }).then(r => r.ok)) { 
+                if(isEditingSubject && editingSubjectId === id) huyCheDoSuaSubject();
+                layDanhSachSubject(); layDanhSachSinhVien(currentPage); taiDuLieuFormSinhVien(); 
+            } 
+        }
+    
+        // 1. HÀM HỦY CHẾ ĐỘ SỬA (RESET FORM)
+        window.huyCheDoSua = function() {
+            isEditing = false;
+            editingStudentId = null;
+            const form = document.getElementById('formSinhVien');
+            if (form) {
+                form.reset();
+                const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(cb => cb.checked = false);
+            }
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) {
+                submitBtn.innerText = 'Lưu Hồ sơ';
+                submitBtn.className = 'btn btn-success';
+            }
+            const cancelBtn = document.getElementById('cancelBtn');
+            if (cancelBtn) cancelBtn.style.display = 'none';
+        };
+
+        // 2. HÀM KÍCH HOẠT CHẾ ĐỘ SỬA (ĐẨY DỮ LIỆU LÊN FORM)
+        window.kichHoatCheDoSua = function(id) {
+            const sv = listSinhVienBoNhoDem.find(x => x.SID === id);
+            if (!sv) return;
+            isEditing = true;
+            editingStudentId = id;
+            
+            const form = document.getElementById('formSinhVien');
+            if (!form) return;
+            
+            form.name.value = sv.name || '';
+            form.email.value = sv.email || '';
+            form.tutorId.value = sv.tutorId || (sv.tutor ? sv.tutor.TID : '');
+
+            // Kích hoạt các checkbox môn học mà sinh viên này đang đăng ký
+            const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                const subId = parseInt(cb.value);
+                cb.checked = sv.subjects ? sv.subjects.some(s => s.SubID === subId || s.id === subId) : false;
+            });
+
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) {
+                submitBtn.innerText = 'Cập nhật';
+                submitBtn.className = 'btn btn-warning';
+            }
+            const cancelBtn = document.getElementById('cancelBtn');
+            if (cancelBtn) cancelBtn.style.display = 'inline-block';
+        };
+
+        // 3. HÀM XỬ LÝ SUBMIT (THÊM MỚI HOẶC CẬP NHẬT)
+        window.xuLySubmitSinhVien = async function(event) {
+            event.preventDefault();
+            const form = event.target;
+            const name = form.name.value;
+            const email = form.email.value;
+            const tutorId = form.tutorId.value ? parseInt(form.tutorId.value) : null;
+            
+            // Gom toàn bộ ID môn học được tích chọn
+            const checkedBoxes = form.querySelectorAll('input[type="checkbox"]:checked');
+            const subjectIds = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+
+            const bodyData = { name, email, tutorId, subjectIds };
+            
+            const url = isEditing ? '/sinh-vien/' + editingStudentId : '/sinh-vien';
+            const method = isEditing ? 'PATCH' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bodyData)
+                });
+                if (res.ok) {
+                    window.huyCheDoSua();
+                    if (typeof layDanhSachSinhVien === 'function') layDanhSachSinhVien(currentPage);
+                    if (typeof taiDuLieuFormSinhVien === 'function') taiDuLieuFormSinhVien();
+                } else {
+                    const errData = await res.json();
+                    alert('Lỗi: ' + (errData.message || 'Không thể xử lý yêu cầu'));
+                }
+            } catch (err) {
+                alert('Lỗi kết nối mạng: ' + err.message);
+            }
+        };
+</script>
+<script>
+
+    
+        const nativeFetch = window.fetch;
+        window.fetch = async function(...args) {
+            const resp = await nativeFetch(...args);
+            if (args[0] && (args[0].includes('sinh-vien') || args[0].includes('student'))) {
+                setTimeout(updateDashboardStats, 400);
+            }
+            return resp;
+        };
+    });
+    
+</script>
+
+    <!-- === MODAL NHẬP ĐIỂM SỐ (GRADE ENTRY) === -->
+    <div id="modalDiem" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index:9999; justify-content:center; align-items:center;">
+      <div style="background:white; padding:1.75rem; border-radius:16px; width:460px; max-width:92%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); font-family: 'Segoe UI', system-ui, sans-serif;">
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid #F1F5F9; padding-bottom:0.75rem;">
+          <h3 style="margin:0; color:#0F172A; font-size:1.2rem; font-weight:700; display:flex; align-items:center; gap:0.5rem;">
+            📝 Nhập Điểm & Xếp Loại
+          </h3>
+          <button onclick="closeModalGrade()" style="background:none; border:none; font-size:1.25rem; color:#64748B; cursor:pointer;">✕</button>
+        </div>
+
+        <div id="studentNameGrade" style="font-weight:600; color:#2563EB; background:#EFF6FF; padding:0.6rem 0.8rem; border-radius:8px; margin-bottom:1.25rem; font-size:0.95rem;"></div>
+        <input type="hidden" id="currentGradeStudentId" />
+        
+        <div id="gradeInputsContainer" style="max-height:280px; overflow-y:auto; margin-bottom:1.25rem; padding-right:5px;">
+          <!-- Danh sách ô nhập điểm từng môn sẽ được sinh tự động tại đây -->
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:0.75rem; border-top:1px solid #F1F5F9; padding-top:1rem;">
+          <button onclick="closeModalGrade()" style="padding:0.6rem 1.2rem; border:1px solid #CBD5E1; background:white; color:#475569; border-radius:8px; cursor:pointer; font-weight:600;">Hủy</button>
+          <button onclick="submitGrades()" style="padding:0.6rem 1.2rem; background:#2563EB; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600; box-shadow:0 2px 4px rgba(37,99,235,0.2);">💾 Lưu Điểm Số</button>
+        </div>
+      </div>
+    </div>
+    <!-- ========================================== -->
+<script>
+
+    // --- LOGIC XỬ LÝ NHẬP ĐIỂM FRONTEND ---
+    async function openGradeModal(studentId) {
+        try {
+            const res = await fetch('/sinh-vien?page=1&limit=100');
+            const result = await res.json();
+            const student = result.data ? result.data.find(s => s.SID === studentId) : null;
+            
+            if (!student) {
+                alert('Không tìm thấy thông tin sinh viên!');
+                return;
+            }
+
+            document.getElementById('currentGradeStudentId').value = student.SID;
+            document.getElementById('studentNameGrade').innerText = `👤 Sinh viên: ${student.name} (MSSV: ${student.SID})`;
+            
+            const container = document.getElementById('gradeInputsContainer');
+            container.innerHTML = '';
+
+            if (!student.subjects || student.subjects.length === 0) {
+                container.innerHTML = '<p style="color:#64748B; font-style:italic; text-align:center; padding:1rem;">⚠️ Sinh viên này chưa đăng ký môn học nào.</p>';
+            } else {
+                const currentScores = student.diemSo || {};
+                student.subjects.forEach(sub => {
+                    const scoreVal = currentScores[sub.SubID] !== undefined ? currentScores[sub.SubID] : '';
+                    const div = document.createElement('div');
+                    div.style.marginBottom = '1rem';
+                    div.innerHTML = `
+                        <label style="display:block; font-size:0.875rem; font-weight:600; color:#334155; margin-bottom:0.35rem;">
+                            📖 ${sub.name} <span style="color:#94A3B8; font-weight:normal;">(Mã: ${sub.SubID})</span>
+                        </label>
+                        <input type="number" step="0.1" min="0" max="10" 
+                               class="score-input" data-subid="${sub.SubID}" value="${scoreVal}" 
+                               placeholder="Nhập điểm (0.0 - 10.0)" 
+                               style="width:100%; padding:0.55rem 0.75rem; border:1px solid #CBD5E1; border-radius:8px; font-size:0.95rem; box-sizing:border-box;" />
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            document.getElementById('modalDiem').style.display = 'flex';
+        } catch (err) {
+            console.error('Lỗi khi mở modal nhập điểm:', err);
+        }
+    }
+
+    function closeModalGrade() {
+        document.getElementById('modalDiem').style.display = 'none';
+    }
+
+    async function submitGrades() {
+        const studentId = document.getElementById('currentGradeStudentId').value;
+        const inputs = document.querySelectorAll('.score-input');
+        const diemSo = {};
+
+        inputs.forEach(input => {
+            const subId = input.getAttribute('data-subid');
+            const val = input.value.trim();
+            if (val !== '') {
+                diemSo[subId] = parseFloat(val);
+            }
+        });
+
+        try {
+            const res = await fetch('/sinh-vien/' + studentId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ diemSo })
+            });
+
+            if (res.ok) {
+                alert('🎉 Đã cập nhật điểm số và tự động xếp loại thành công!');
+                closeModalGrade();
+                if (typeof loadSinhVienList === 'function') loadSinhVienList();
+                if (typeof updateDashboardStats === 'function') updateDashboardStats();
+            } else {
+                alert('❌ Không thể lưu điểm số!');
+            }
+        } catch (err) {
+            console.error('Lỗi khi gửi dữ liệu điểm:', err);
+        }
+    }
+    
+</script>
 </body>
 </html>

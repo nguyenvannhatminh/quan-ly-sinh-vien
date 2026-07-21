@@ -1,11 +1,23 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { SinhVienController } from './sinh-vien.controller';
+import { JwtModule } from '@nestjs/jwt';
 import { SinhVienService } from './sinh-vien.service';
-import { STUDENT } from '../entities/student.entity';
+import { SinhVienController } from './sinh-vien.controller';
+import { SinhVien } from './entities/sinh-vien.entity';
+import { Tutor } from '../tutor/entities/tutor.entity';
+import { Subject } from '../subject/entities/subject.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([STUDENT])],
+  imports: [
+    // Đăng ký Entity cho Database
+    TypeOrmModule.forFeature([SinhVien, Tutor, Subject]),
+    
+    // Đăng ký JwtModule để AuthGuard có thể xài được JwtService
+    JwtModule.register({
+      secret: 'karl-secret-key', // Secret key tạm thời
+      signOptions: { expiresIn: '1d' },
+    }),
+  ],
   controllers: [SinhVienController],
   providers: [SinhVienService],
 })

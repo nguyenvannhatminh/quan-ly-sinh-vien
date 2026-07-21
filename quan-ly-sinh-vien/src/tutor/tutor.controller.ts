@@ -1,33 +1,33 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { TutorService } from './tutor.service';
-import { CreateTutorDto } from './dto/create-tutor.dto';
 
 @Controller('tutor')
 export class TutorController {
   constructor(private readonly tutorService: TutorService) {}
 
   @Post()
-  async create(@Body() body: CreateTutorDto) {
-    return await this.tutorService.create(body);
+  create(@Body() createTutorDto: any) {
+    return this.tutorService.create(createTutorDto);
   }
 
   @Get()
-  async findAll() {
-    return await this.tutorService.findAll();
+  findAll() {
+    return this.tutorService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number) {
-    return await this.tutorService.findOne(id);
+  findOne(@Param('id') id: string) {
+    return this.tutorService.findOne(+id);
   }
 
-  @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() body: CreateTutorDto) {
-    return await this.tutorService.update(id, body);
+  // Đổi từ Put thành Patch cho khớp với Frontend
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateTutorDto: any) {
+    return this.tutorService.update(+id, updateTutorDto);
   }
 
   @Delete(':id')
-  async xoa(@Param('id', ParseIntPipe) id: number) {
-    return await this.tutorService.xoa(id);
+  remove(@Param('id') id: string) {
+    return this.tutorService.remove(+id);
   }
 }
