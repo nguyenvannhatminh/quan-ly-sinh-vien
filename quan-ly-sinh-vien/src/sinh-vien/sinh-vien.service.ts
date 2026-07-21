@@ -14,10 +14,9 @@ export class SinhVienService {
   ) {}
 
   // Hàm nội bộ tự động tính GPA và Xếp loại
-  
   private calculateAcademic(diemSo: any): { gpa: number, xepLoai: string } {
     if (!diemSo || Object.keys(diemSo).length === 0) return { gpa: null, xepLoai: null };
-
+    
     // Validate kiểm tra điểm từ 0 đến 10
     for (const [subId, val] of Object.entries(diemSo)) {
       if (val !== null && val !== undefined && val !== '') {
@@ -27,9 +26,7 @@ export class SinhVienService {
         }
       }
     }
- gpa: number, xepLoai: string } {
-    if (!diemSo || Object.keys(diemSo).length === 0) return { gpa: null, xepLoai: null };
-    
+
     const scores = Object.values(diemSo).map(Number).filter(n => !isNaN(n));
     if (scores.length === 0) return { gpa: null, xepLoai: null };
 
