@@ -59,24 +59,39 @@ export class SinhVienService {
     return this.svRepo.save(sv);
   }
 
-  async findAll(page: number = 1, limit: number = 5, search: string = '') {
+      async findAll(page: number = 1, limit: number = 5, search: string = '', tutorFilter?: string, subjectFilter?: string) {
     const skip = (page - 1) * limit;
-    const whereCondition = search 
-      ? [
-          { name: Like(`%${search}%`) },
-          { email: Like(`%${search}%`) }
-        ]
-      : {};
+    const qb = this.svRepo.createQueryBuilder('sv')
+      .leftJoinAndSelect('sv.tutor', 'tutor')
+      .leftJoinAndSelect('sv.subjects', 'subjects')
+      .orderBy('sv.SID', 'DESC');
 
-    const [data, total] = await this.svRepo.findAndCount({
-      where: whereCondition,
-      relations: { tutor: true, subjects: true },
-      order: { SID: 'DESC' },
-      skip: skip,
-      take: limit
-    });
+    if (search) {
+      qb.andWhere('(sv.name LIKE :search OR sv.email LIKE :search)', { search: `%${search}%` });
+    }
 
-    return { data, total, page, lastPage: Math.ceil(total / limit) };
+    if (tutorFilter && tutorFilter.trim() !== '') {
+      const numTutor = Number(tutorFilter);
+      if (!isNaN(numTutor) && numTutor > 0) {
+        qb.andWhere('(tutor.TID = :numTutor OR tutor.id = :numTutor)', { numTutor });
+      } else {
+        qb.andWhere('tutor.name LIKE :tutorName', { tutorName: `%${tutorFilter}%` });
+      }
+    }
+
+    if (subjectFilter && subjectFilter.trim() !== '') {
+      const numSub = Number(subjectFilter);
+      if (!isNaN(numSub) && numSub > 0) {
+        qb.andWhere('(subjects.SubID = :numSub OR subjects.id = :numSub)', { numSub });
+      } else {
+        qb.andWhere('subjects.name LIKE :subName', { subName: `%${subjectFilter}%` });
+      }
+    }
+
+    qb.skip(skip).take(limit);
+
+    const [data, total] = await qb.getManyAndCount();
+    return { data, total, page, lastPage: Math.ceil(total / limit) || 1 };
   }
 
   async update(id: number, body: any) {

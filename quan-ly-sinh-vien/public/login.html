@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karl System - Đăng Nhập</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #0b0f19;
+            color: #f1f5f9;
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 32px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        .brand {
+            font-size: 24px;
+            font-weight: bold;
+            color: #38bdf8;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        label { font-size: 13px; color: #94a3b8; }
+        input {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+        }
+        input:focus { border-color: #38bdf8; }
+        .btn-login {
+            width: 100%;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-login:hover { background-color: #1d4ed8; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="brand">🎓 Karl System</div>
+        <form onsubmit="xuLyDangNhap(event)">
+            <div class="form-group">
+                <label>Tên đăng nhập</label>
+                <input type="text" id="username" value="admin" required placeholder="Nhập username...">
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu</label>
+                <input type="password" id="password" value="123456" required placeholder="Nhập password...">
+            </div>
+            <button type="submit" class="btn-login">Đăng nhập</button>
+        </form>
+    </div>
+
+    <script>
+        function xuLyDangNhap(e) {
+            e.preventDefault();
+            // Lưu token đăng nhập giả lập
+            localStorage.setItem('token', 'karl_authenticated_user');
+            localStorage.setItem('user', JSON.stringify({ name: 'admin', role: 'Quản trị viên' }));
+            // Chuyển hướng về trang chủ Admin
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

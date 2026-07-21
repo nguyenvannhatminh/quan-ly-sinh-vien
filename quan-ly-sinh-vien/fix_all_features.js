@@ -1,13 +1,9 @@
-<!DOCTYPE html>
+const fs = require('fs');
+const filePath = './public/index.html';
+
+const fullHTML = `<!DOCTYPE html>
 <html lang="vi">
 <head>
-    <script>
-        // Kiểm tra quyền đăng nhập ngay khi load trang
-        if (!localStorage.getItem('token')) {
-            window.location.href = '/login.html';
-        }
-    </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Karl System - Hệ Thống Quản Lý</title>
@@ -577,40 +573,14 @@
 
         // 4. XỬ LÝ NÚT TẢI LẠI
         async function reloadSinhVienVisual() {
-            try {
-                // 1. Xóa sạch Form nhập liệu
-                const tenSV = document.getElementById('tenSV');
-                const emailSV = document.getElementById('emailSV');
-                const tutorSelect = document.getElementById('tutorSelect');
-                if (tenSV) tenSV.value = '';
-                if (emailSV) emailSV.value = '';
-                if (tutorSelect) tutorSelect.value = '';
-
-                document.querySelectorAll('input[name="monhoc"]').forEach(cb => cb.checked = false);
-
-                // 2. Xóa sạch Bộ lọc & Ô tìm kiếm
-                const tk = document.getElementById('timKiemInput');
-                const ft = document.getElementById('filterTutor');
-                const fs = document.getElementById('filterSubject');
-                if (tk) tk.value = '';
-                if (ft) ft.value = '';
-                if (fs) fs.value = '';
-
-                // 3. Reset các ô chọn Checkbox chọn tất cả & Nút xóa hàng loạt
-                const selectAll = document.getElementById('selectAll');
-                if (selectAll) selectAll.checked = false;
-
-                const btnXoa = document.getElementById('btnXoaHangLoat');
-                if (btnXoa) btnXoa.style.display = 'none';
-
-                // 4. Load lại dữ liệu từ Server
-                if (typeof napDuLieuBoLoc === 'function') await napDuLieuBoLoc();
-                if (typeof layDanhSachSinhVien === 'function') await layDanhSachSinhVien(1);
-
-            } catch(e) {
-                console.error("Lỗi khi tải lại:", e);
-                window.location.reload();
-            }
+            const tk = document.getElementById('timKiemInput');
+            const ft = document.getElementById('filterTutor');
+            const fs = document.getElementById('filterSubject');
+            if (tk) tk.value = '';
+            if (ft) ft.value = '';
+            if (fs) fs.value = '';
+            await napDuLieuBoLoc();
+            await layDanhSachSinhVien(1);
         }
 
         // ================= GIẢNG VIÊN APIs =================
@@ -634,16 +604,16 @@
                     const id = gv.TID || gv.id || '--';
                     const name = gv.name || 'Chưa đặt tên';
                     const email = gv.email || '--';
-                    return `
+                    return \`
                         <tr>
-                            <td style="font-weight: 600; color: #60a5fa;">${id}</td>
-                            <td style="font-weight: bold; color: var(--text-main);">${name}</td>
-                            <td style="color: var(--text-muted);">${email}</td>
+                            <td style="font-weight: 600; color: #60a5fa;">\${id}</td>
+                            <td style="font-weight: bold; color: var(--text-main);">\${name}</td>
+                            <td style="color: var(--text-muted);">\${email}</td>
                             <td style="text-align: right;">
                                 <button class="btn btn-orange" style="display:inline-block; padding:4px 10px; font-size:12px;">✏️ Sửa</button>
-                                <button class="btn btn-red" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="xoaGiangVien(${id}, '${name}')">🗑️</button>
+                                <button class="btn btn-red" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="xoaGiangVien(\${id}, '\${name}')">🗑️</button>
                             </td>
-                        </tr>`;
+                        </tr>\`;
                 }).join('');
             } catch(e) {
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#ef4444;">❌ Lỗi kết nối API Giảng viên!</td></tr>';
@@ -672,7 +642,7 @@
         }
 
         async function xoaGiangVien(id, name) {
-            if (!confirm(`⚠️ Bạn có chắc muốn xóa giảng viên "${name}"?`)) return;
+            if (!confirm(\`⚠️ Bạn có chắc muốn xóa giảng viên "\${name}"?\`)) return;
             try {
                 const res = await fetch('/tutor/' + id, { method: 'DELETE' });
                 if (res.ok) {
@@ -703,15 +673,15 @@
                 tbody.innerHTML = list.map(mh => {
                     const id = mh.SubID || mh.id || '--';
                     const name = mh.name || 'Chưa đặt tên';
-                    return `
+                    return \`
                         <tr>
-                            <td style="font-weight: 600; color: #60a5fa;">${id}</td>
-                            <td style="font-weight: bold; color: var(--text-main);">${name}</td>
+                            <td style="font-weight: 600; color: #60a5fa;">\${id}</td>
+                            <td style="font-weight: bold; color: var(--text-main);">\${name}</td>
                             <td style="text-align: right;">
                                 <button class="btn btn-orange" style="display:inline-block; padding:4px 10px; font-size:12px;">✏️ Sửa</button>
-                                <button class="btn btn-red" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="xoaMonHoc(${id}, '${name}')">🗑️</button>
+                                <button class="btn btn-red" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="xoaMonHoc(\${id}, '\${name}')">🗑️</button>
                             </td>
-                        </tr>`;
+                        </tr>\`;
                 }).join('');
             } catch(e) {
                 tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:#ef4444;">❌ Lỗi kết nối API Môn học!</td></tr>';
@@ -738,7 +708,7 @@
         }
 
         async function xoaMonHoc(id, name) {
-            if (!confirm(`⚠️ Bạn có chắc muốn xóa môn học "${name}"?`)) return;
+            if (!confirm(\`⚠️ Bạn có chắc muốn xóa môn học "\${name}"?\`)) return;
             try {
                 const res = await fetch('/subject/' + id, { method: 'DELETE' });
                 if (res.ok) {
@@ -756,9 +726,9 @@
             const tutorVal = document.getElementById('filterTutor')?.value || '';
             const subjectVal = document.getElementById('filterSubject')?.value || '';
 
-            let url = `/sinh-vien?page=${page}&limit=10&search=${encodeURIComponent(searchVal)}`;
-            if (tutorVal) url += `&tutorId=${encodeURIComponent(tutorVal)}`;
-            if (subjectVal) url += `&subjectId=${encodeURIComponent(subjectVal)}`;
+            let url = \`/sinh-vien?page=\${page}&limit=10&search=\${encodeURIComponent(searchVal)}\`;
+            if (tutorVal) url += \`&tutorId=\${encodeURIComponent(tutorVal)}\`;
+            if (subjectVal) url += \`&subjectId=\${encodeURIComponent(subjectVal)}\`;
 
             const tbody = document.getElementById('tbody-sinhvien');
 
@@ -791,24 +761,24 @@
                     if (Array.isArray(sv.subjects) && sv.subjects.length > 0) {
                         subjectsBadge = sv.subjects.map(s => {
                             const sName = typeof s === 'object' ? s.name : s;
-                            return `<span style="background:var(--input-bg); color:var(--text-main); border:1px solid var(--border-color); padding:3px 8px; border-radius:4px; font-size:12px; margin-right:4px;">${sName}</span>`;
+                            return \`<span style="background:var(--input-bg); color:var(--text-main); border:1px solid var(--border-color); padding:3px 8px; border-radius:4px; font-size:12px; margin-right:4px;">\${sName}</span>\`;
                         }).join('');
                     }
 
-                    return `
+                    return \`
                         <tr>
-                            <td style="text-align: center;"><input type="checkbox" class="sv-checkbox" value="${id}" onchange="capNhatNutXoaHangLoat()"></td>
-                            <td style="font-weight: 600; color: #60a5fa;">${id}</td>
-                            <td style="font-weight: bold; color: var(--text-main);">${name}</td>
-                            <td style="color: var(--text-muted);">${email}</td>
-                            <td style="color: var(--text-muted);">${tutorName}</td>
-                            <td>${subjectsBadge}</td>
+                            <td style="text-align: center;"><input type="checkbox" class="sv-checkbox" value="\${id}" onchange="capNhatNutXoaHangLoat()"></td>
+                            <td style="font-weight: 600; color: #60a5fa;">\${id}</td>
+                            <td style="font-weight: bold; color: var(--text-main);">\${name}</td>
+                            <td style="color: var(--text-muted);">\${email}</td>
+                            <td style="color: var(--text-muted);">\${tutorName}</td>
+                            <td>\${subjectsBadge}</td>
                             <td style="text-align: right;">
-                                <button class="btn btn-orange" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="kichHoatCheDoSua(${id})">✏️ Sửa</button>
-                                <button class="btn btn-blue" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="openGradeModal(${id})">📝 Nhập điểm</button>
-                                <button class="btn btn-red" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="xoaSinhVien(${id}, '${name}')">🗑️</button>
+                                <button class="btn btn-orange" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="kichHoatCheDoSua(\${id})">✏️ Sửa</button>
+                                <button class="btn btn-blue" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="openGradeModal(\${id})">📝 Nhập điểm</button>
+                                <button class="btn btn-red" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="xoaSinhVien(\${id}, '\${name}')">🗑️</button>
                             </td>
-                        </tr>`;
+                        </tr>\`;
                 }).join('');
 
             } catch(err) {
@@ -838,7 +808,7 @@
         }
 
         async function xoaSinhVien(id, name) {
-            if (!confirm(`⚠️ Bạn có chắc muốn xóa sinh viên "${name}" (Mã: ${id}) không?`)) return;
+            if (!confirm(\`⚠️ Bạn có chắc muốn xóa sinh viên "\${name}" (Mã: \${id}) không?\`)) return;
             try {
                 const res = await fetch('/sinh-vien/' + id, { method: 'DELETE' });
                 if (res.ok) {
@@ -853,7 +823,7 @@
             const btnXoa = document.getElementById('btnXoaHangLoat');
             if (btnXoa) {
                 btnXoa.style.display = selected.length > 0 ? 'inline-block' : 'none';
-                btnXoa.innerHTML = `🗑️ Xóa đã chọn (${selected.length})`;
+                btnXoa.innerHTML = \`🗑️ Xóa đã chọn (\${selected.length})\`;
             }
         }
 
@@ -862,7 +832,7 @@
             if (!table) return;
             const cloneTable = table.cloneNode(true);
             const excelHTML = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8" /></head><body>' + cloneTable.outerHTML + '</body></html>';
-            const blob = new Blob(['\ufeff' + excelHTML], { type: 'application/vnd.ms-excel;charset=utf-8' });
+            const blob = new Blob(['\\ufeff' + excelHTML], { type: 'application/vnd.ms-excel;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -886,7 +856,7 @@
                     const sel = document.getElementById('filterTutor');
                     const tutorSel = document.getElementById('tutorSelect');
                     const data = Array.isArray(list) ? list : (list.data || []);
-                    const opts = data.map(t => `<option value="${t.TID || t.id}">${t.name}</option>`).join('');
+                    const opts = data.map(t => \`<option value="\${t.TID || t.id}">\${t.name}</option>\`).join('');
                     if (sel) sel.innerHTML = '<option value="">-- Tất cả CVHT --</option>' + opts;
                     if (tutorSel) tutorSel.innerHTML = '<option value="">-- Không có --</option>' + opts;
                 }
@@ -894,7 +864,7 @@
                     const list = await subjectRes.json();
                     const sel = document.getElementById('filterSubject');
                     const data = Array.isArray(list) ? list : (data.data || []);
-                    if (sel) sel.innerHTML = '<option value="">-- Tất cả Môn học --</option>' + data.map(s => `<option value="${s.SubID || s.id}">${s.name}</option>`).join('');
+                    if (sel) sel.innerHTML = '<option value="">-- Tất cả Môn học --</option>' + data.map(s => \`<option value="\${s.SubID || s.id}">\${s.name}</option>\`).join('');
                 }
             } catch(e) {}
         }
@@ -906,4 +876,7 @@
         });
     </script>
 </body>
-</html>
+</html>`;
+
+fs.writeFileSync(filePath, fullHTML, 'utf8');
+console.log('🎉 Đã fix xong: Nút tải lại + Đăng xuất + Đổi giao diện Sáng/Tối!');

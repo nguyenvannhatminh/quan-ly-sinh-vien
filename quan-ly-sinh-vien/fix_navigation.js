@@ -1,44 +1,18 @@
-<!DOCTYPE html>
+const fs = require('fs');
+const filePath = './public/index.html';
+
+const multiTabHTML = `<!DOCTYPE html>
 <html lang="vi">
 <head>
-    <script>
-        // Kiểm tra quyền đăng nhập ngay khi load trang
-        if (!localStorage.getItem('token')) {
-            window.location.href = '/login.html';
-        }
-    </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Karl System - Hệ Thống Quản Lý</title>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <style>
-        :root {
-            --bg-main: #0b0f19;
-            --bg-card: #1e293b;
-            --bg-sidebar: #0f172a;
-            --border-color: #334155;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --input-bg: #0f172a;
-            --th-bg: #0f172a;
-        }
-
-        body.light-mode {
-            --bg-main: #f1f5f9;
-            --bg-card: #ffffff;
-            --bg-sidebar: #ffffff;
-            --border-color: #cbd5e1;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --input-bg: #f8fafc;
-            --th-bg: #e2e8f0;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.2s, color 0.2s; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
+            background-color: #0b0f19;
+            color: #f1f5f9;
             font-family: system-ui, -apple-system, sans-serif;
             display: flex;
             min-height: 100vh;
@@ -47,8 +21,8 @@
         /* Sidebar */
         .sidebar {
             width: 240px;
-            background-color: var(--bg-sidebar);
-            border-right: 1px solid var(--border-color);
+            background-color: #0f172a;
+            border-right: 1px solid #1e293b;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -58,7 +32,7 @@
         .sidebar-brand {
             font-size: 20px;
             font-weight: bold;
-            color: var(--text-main);
+            color: #f8fafc;
             padding: 0 20px 20px 20px;
             display: flex;
             align-items: center;
@@ -70,14 +44,15 @@
             align-items: center;
             gap: 12px;
             padding: 12px 20px;
-            color: var(--text-muted);
+            color: #94a3b8;
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
+            transition: all 0.2s;
             cursor: pointer;
         }
         .sidebar-menu li a:hover, .sidebar-menu li.active a {
-            background-color: var(--bg-card);
+            background-color: #1e293b;
             color: #38bdf8;
             border-left: 3px solid #38bdf8;
         }
@@ -90,7 +65,6 @@
             align-items: center;
             gap: 8px;
             cursor: pointer;
-            font-weight: 600;
         }
 
         /* Main Wrapper */
@@ -102,25 +76,13 @@
         }
         .topbar {
             height: 60px;
-            background-color: var(--bg-sidebar);
-            border-bottom: 1px solid var(--border-color);
+            background-color: #0f172a;
+            border-bottom: 1px solid #1e293b;
             display: flex;
             justify-content: flex-end;
             align-items: center;
             padding: 0 24px;
             gap: 16px;
-        }
-        .theme-toggle-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 6px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
         .user-profile {
             display: flex;
@@ -164,7 +126,7 @@
         .header-title {
             font-size: 22px;
             font-weight: 700;
-            color: var(--text-main);
+            color: #f8fafc;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -200,9 +162,9 @@
             flex-wrap: wrap;
         }
         .filter-row input, .filter-row select {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            color: #f8fafc;
             padding: 9px 12px;
             border-radius: 6px;
             font-size: 14px;
@@ -213,8 +175,8 @@
 
         /* Form Add Card */
         .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
+            background-color: #1e293b;
+            border: 1px solid #334155;
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 24px;
@@ -235,11 +197,11 @@
             margin-bottom: 16px;
         }
         .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-group label { font-size: 12px; color: var(--text-muted); }
+        .form-group label { font-size: 12px; color: #94a3b8; }
         .form-group input, .form-group select {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            color: #f8fafc;
             padding: 9px 12px;
             border-radius: 6px;
             font-size: 14px;
@@ -253,10 +215,10 @@
             flex-wrap: wrap;
         }
         .checkbox-item {
-            background-color: var(--input-bg);
+            background-color: #0f172a;
             padding: 6px 12px;
             border-radius: 6px;
-            border: 1px solid var(--border-color);
+            border: 1px solid #334155;
             font-size: 13px;
             display: flex;
             align-items: center;
@@ -266,8 +228,8 @@
 
         /* Table */
         .table-container {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
+            background-color: #1e293b;
+            border: 1px solid #334155;
             border-radius: 8px;
             overflow-x: auto;
         }
@@ -277,18 +239,18 @@
             text-align: left;
         }
         th {
-            background-color: var(--th-bg);
-            color: var(--text-muted);
+            background-color: #0f172a;
+            color: #94a3b8;
             padding: 12px 16px;
             font-size: 12px;
             text-transform: uppercase;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid #334155;
         }
         td {
             padding: 14px 16px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid #334155;
             font-size: 14px;
-            color: var(--text-main);
+            color: #e2e8f0;
         }
         tr:last-child td { border-bottom: none; }
 
@@ -300,9 +262,9 @@
             margin-top: 20px;
         }
         .page-btn {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            color: #94a3b8;
             padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
@@ -329,22 +291,17 @@
             </ul>
         </div>
         <div class="sidebar-bottom">
-            <a onclick="dangXuat()">🚪 Đăng xuất</a>
+            <a href="#">🚪 Đăng xuất</a>
         </div>
     </div>
 
     <!-- Main Wrapper -->
     <div class="main-wrapper">
         <div class="topbar">
-            <!-- Nút Bật Tắt Chế Độ Sáng/Tối -->
-            <button class="theme-toggle-btn" onclick="toggleTheme()" id="btnThemeToggle">
-                <span id="themeIcon">🌙</span> <span id="themeText">Dark</span>
-            </button>
-
             <div class="user-profile">
                 <div>
                     <div style="font-weight: bold; text-align: right;">admin</div>
-                    <div style="color: var(--text-muted); font-size: 11px;">Quản trị viên</div>
+                    <div style="color: #94a3b8; font-size: 11px;">Quản trị viên</div>
                 </div>
                 <div class="avatar">A</div>
             </div>
@@ -359,7 +316,7 @@
                 </div>
                 <div class="card">
                     <h3 style="color:#38bdf8; margin-bottom:10px;">Thống kê hệ thống</h3>
-                    <p style="color: var(--text-muted);">Chào mừng bạn quay trở lại với Karl System. Hãy chọn menu bên trái để quản lý Sinh viên, Giảng viên hoặc Môn học.</p>
+                    <p style="color:#cbd5e1;">Chào mừng bạn quay trở lại với Karl System. Hãy chọn menu bên trái để quản lý Sinh viên, Giảng viên hoặc Môn học.</p>
                 </div>
             </div>
 
@@ -527,39 +484,7 @@
     <script>
         let currentPage = 1;
 
-        // 1. QUẢN LÝ THEME SÁNG / TỐI
-        function initTheme() {
-            const savedTheme = localStorage.getItem('karl_theme') || 'dark';
-            if (savedTheme === 'light') {
-                document.body.classList.add('light-mode');
-                document.getElementById('themeIcon').innerText = '☀️';
-                document.getElementById('themeText').innerText = 'Light';
-            } else {
-                document.body.classList.remove('light-mode');
-                document.getElementById('themeIcon').innerText = '🌙';
-                document.getElementById('themeText').innerText = 'Dark';
-            }
-        }
-
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            localStorage.setItem('karl_theme', isLight ? 'light' : 'dark');
-            document.getElementById('themeIcon').innerText = isLight ? '☀️' : '🌙';
-            document.getElementById('themeText').innerText = isLight ? 'Light' : 'Dark';
-        }
-
-        // 2. CHỨC NĂNG ĐĂNG XUẤT
-        function dangXuat() {
-            if (confirm('🔒 Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?')) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                sessionStorage.clear();
-                window.location.href = '/login.html';
-            }
-        }
-
-        // 3. ĐIỀU HƯỚNG TAB
+        // BỘ ĐIỀU HƯỚNG CHUYỂN TAB
         function switchTab(tabName) {
             document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.sidebar-menu li').forEach(el => el.classList.remove('active'));
@@ -575,44 +500,6 @@
             else if (tabName === 'monhoc') layDanhSachMonHoc();
         }
 
-        // 4. XỬ LÝ NÚT TẢI LẠI
-        async function reloadSinhVienVisual() {
-            try {
-                // 1. Xóa sạch Form nhập liệu
-                const tenSV = document.getElementById('tenSV');
-                const emailSV = document.getElementById('emailSV');
-                const tutorSelect = document.getElementById('tutorSelect');
-                if (tenSV) tenSV.value = '';
-                if (emailSV) emailSV.value = '';
-                if (tutorSelect) tutorSelect.value = '';
-
-                document.querySelectorAll('input[name="monhoc"]').forEach(cb => cb.checked = false);
-
-                // 2. Xóa sạch Bộ lọc & Ô tìm kiếm
-                const tk = document.getElementById('timKiemInput');
-                const ft = document.getElementById('filterTutor');
-                const fs = document.getElementById('filterSubject');
-                if (tk) tk.value = '';
-                if (ft) ft.value = '';
-                if (fs) fs.value = '';
-
-                // 3. Reset các ô chọn Checkbox chọn tất cả & Nút xóa hàng loạt
-                const selectAll = document.getElementById('selectAll');
-                if (selectAll) selectAll.checked = false;
-
-                const btnXoa = document.getElementById('btnXoaHangLoat');
-                if (btnXoa) btnXoa.style.display = 'none';
-
-                // 4. Load lại dữ liệu từ Server
-                if (typeof napDuLieuBoLoc === 'function') await napDuLieuBoLoc();
-                if (typeof layDanhSachSinhVien === 'function') await layDanhSachSinhVien(1);
-
-            } catch(e) {
-                console.error("Lỗi khi tải lại:", e);
-                window.location.reload();
-            }
-        }
-
         // ================= GIẢNG VIÊN APIs =================
         async function layDanhSachGiangVien() {
             const tbody = document.getElementById('tbody-giangvien');
@@ -626,7 +513,7 @@
                 const list = Array.isArray(data) ? data : (data.data || []);
 
                 if (list.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-muted);">📂 Chưa có giảng viên nào.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#94a3b8;">📂 Chưa có giảng viên nào.</td></tr>';
                     return;
                 }
 
@@ -634,16 +521,16 @@
                     const id = gv.TID || gv.id || '--';
                     const name = gv.name || 'Chưa đặt tên';
                     const email = gv.email || '--';
-                    return `
+                    return \`
                         <tr>
-                            <td style="font-weight: 600; color: #60a5fa;">${id}</td>
-                            <td style="font-weight: bold; color: var(--text-main);">${name}</td>
-                            <td style="color: var(--text-muted);">${email}</td>
+                            <td style="font-weight: 600; color: #60a5fa;">\${id}</td>
+                            <td style="font-weight: bold; color: #f8fafc;">\${name}</td>
+                            <td style="color: #cbd5e1;">\${email}</td>
                             <td style="text-align: right;">
                                 <button class="btn btn-orange" style="display:inline-block; padding:4px 10px; font-size:12px;">✏️ Sửa</button>
-                                <button class="btn btn-red" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="xoaGiangVien(${id}, '${name}')">🗑️</button>
+                                <button class="btn btn-red" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="xoaGiangVien(\${id}, '\${name}')">🗑️</button>
                             </td>
-                        </tr>`;
+                        </tr>\`;
                 }).join('');
             } catch(e) {
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#ef4444;">❌ Lỗi kết nối API Giảng viên!</td></tr>';
@@ -672,7 +559,7 @@
         }
 
         async function xoaGiangVien(id, name) {
-            if (!confirm(`⚠️ Bạn có chắc muốn xóa giảng viên "${name}"?`)) return;
+            if (!confirm(\`⚠️ Bạn có chắc muốn xóa giảng viên "\${name}"?\`)) return;
             try {
                 const res = await fetch('/tutor/' + id, { method: 'DELETE' });
                 if (res.ok) {
@@ -696,22 +583,22 @@
                 const list = Array.isArray(data) ? data : (data.data || []);
 
                 if (list.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:var(--text-muted);">📂 Chưa có môn học nào.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:#94a3b8;">📂 Chưa có môn học nào.</td></tr>';
                     return;
                 }
 
                 tbody.innerHTML = list.map(mh => {
                     const id = mh.SubID || mh.id || '--';
                     const name = mh.name || 'Chưa đặt tên';
-                    return `
+                    return \`
                         <tr>
-                            <td style="font-weight: 600; color: #60a5fa;">${id}</td>
-                            <td style="font-weight: bold; color: var(--text-main);">${name}</td>
+                            <td style="font-weight: 600; color: #60a5fa;">\${id}</td>
+                            <td style="font-weight: bold; color: #f8fafc;">\${name}</td>
                             <td style="text-align: right;">
                                 <button class="btn btn-orange" style="display:inline-block; padding:4px 10px; font-size:12px;">✏️ Sửa</button>
-                                <button class="btn btn-red" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="xoaMonHoc(${id}, '${name}')">🗑️</button>
+                                <button class="btn btn-red" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="xoaMonHoc(\${id}, '\${name}')">🗑️</button>
                             </td>
-                        </tr>`;
+                        </tr>\`;
                 }).join('');
             } catch(e) {
                 tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:#ef4444;">❌ Lỗi kết nối API Môn học!</td></tr>';
@@ -738,7 +625,7 @@
         }
 
         async function xoaMonHoc(id, name) {
-            if (!confirm(`⚠️ Bạn có chắc muốn xóa môn học "${name}"?`)) return;
+            if (!confirm(\`⚠️ Bạn có chắc muốn xóa môn học "\${name}"?\`)) return;
             try {
                 const res = await fetch('/subject/' + id, { method: 'DELETE' });
                 if (res.ok) {
@@ -756,9 +643,9 @@
             const tutorVal = document.getElementById('filterTutor')?.value || '';
             const subjectVal = document.getElementById('filterSubject')?.value || '';
 
-            let url = `/sinh-vien?page=${page}&limit=10&search=${encodeURIComponent(searchVal)}`;
-            if (tutorVal) url += `&tutorId=${encodeURIComponent(tutorVal)}`;
-            if (subjectVal) url += `&subjectId=${encodeURIComponent(subjectVal)}`;
+            let url = \`/sinh-vien?page=\${page}&limit=10&search=\${encodeURIComponent(searchVal)}\`;
+            if (tutorVal) url += \`&tutorId=\${encodeURIComponent(tutorVal)}\`;
+            if (subjectVal) url += \`&subjectId=\${encodeURIComponent(subjectVal)}\`;
 
             const tbody = document.getElementById('tbody-sinhvien');
 
@@ -773,7 +660,7 @@
                 const list = Array.isArray(rawData) ? rawData : (rawData.data || []);
 
                 if (list.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:25px; color:var(--text-muted);">📂 Chưa có sinh viên nào.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:25px; color:#94a3b8;">📂 Chưa có sinh viên nào.</td></tr>';
                     return;
                 }
 
@@ -787,28 +674,28 @@
                         tutorName = typeof sv.tutor === 'object' ? (sv.tutor.name || 'Chưa ĐK') : sv.tutor;
                     }
 
-                    let subjectsBadge = '<span style="color:var(--text-muted);">Trống</span>';
+                    let subjectsBadge = '<span style="color:#94a3b8;">Trống</span>';
                     if (Array.isArray(sv.subjects) && sv.subjects.length > 0) {
                         subjectsBadge = sv.subjects.map(s => {
                             const sName = typeof s === 'object' ? s.name : s;
-                            return `<span style="background:var(--input-bg); color:var(--text-main); border:1px solid var(--border-color); padding:3px 8px; border-radius:4px; font-size:12px; margin-right:4px;">${sName}</span>`;
+                            return \`<span style="background:#334155; color:#f8fafc; padding:3px 8px; border-radius:4px; font-size:12px; margin-right:4px;">\${sName}</span>\`;
                         }).join('');
                     }
 
-                    return `
+                    return \`
                         <tr>
-                            <td style="text-align: center;"><input type="checkbox" class="sv-checkbox" value="${id}" onchange="capNhatNutXoaHangLoat()"></td>
-                            <td style="font-weight: 600; color: #60a5fa;">${id}</td>
-                            <td style="font-weight: bold; color: var(--text-main);">${name}</td>
-                            <td style="color: var(--text-muted);">${email}</td>
-                            <td style="color: var(--text-muted);">${tutorName}</td>
-                            <td>${subjectsBadge}</td>
+                            <td style="text-align: center;"><input type="checkbox" class="sv-checkbox" value="\${id}" onchange="capNhatNutXoaHangLoat()"></td>
+                            <td style="font-weight: 600; color: #60a5fa;">\${id}</td>
+                            <td style="font-weight: bold; color: #f8fafc;">\${name}</td>
+                            <td style="color: #cbd5e1;">\${email}</td>
+                            <td style="color: #94a3b8;">\${tutorName}</td>
+                            <td>\${subjectsBadge}</td>
                             <td style="text-align: right;">
-                                <button class="btn btn-orange" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="kichHoatCheDoSua(${id})">✏️ Sửa</button>
-                                <button class="btn btn-blue" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="openGradeModal(${id})">📝 Nhập điểm</button>
-                                <button class="btn btn-red" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="xoaSinhVien(${id}, '${name}')">🗑️</button>
+                                <button class="btn btn-orange" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="kichHoatCheDoSua(\${id})">✏️ Sửa</button>
+                                <button class="btn btn-blue" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="openGradeModal(\${id})">📝 Nhập điểm</button>
+                                <button class="btn btn-red" style="display:inline-block; padding:4px 10px; font-size:12px;" onclick="xoaSinhVien(\${id}, '\${name}')">🗑️</button>
                             </td>
-                        </tr>`;
+                        </tr>\`;
                 }).join('');
 
             } catch(err) {
@@ -833,12 +720,14 @@
                     document.getElementById('tenSV').value = '';
                     document.getElementById('emailSV').value = '';
                     layDanhSachSinhVien(1);
-                } else { alert('❌ Thêm thất bại!'); }
+                } else {
+                    alert('❌ Thêm thất bại!');
+                }
             } catch(e) { alert('❌ Lỗi kết nối!'); }
         }
 
         async function xoaSinhVien(id, name) {
-            if (!confirm(`⚠️ Bạn có chắc muốn xóa sinh viên "${name}" (Mã: ${id}) không?`)) return;
+            if (!confirm(\`⚠️ Bạn có chắc muốn xóa sinh viên "\${name}" (Mã: \${id}) không?\`)) return;
             try {
                 const res = await fetch('/sinh-vien/' + id, { method: 'DELETE' });
                 if (res.ok) {
@@ -853,8 +742,15 @@
             const btnXoa = document.getElementById('btnXoaHangLoat');
             if (btnXoa) {
                 btnXoa.style.display = selected.length > 0 ? 'inline-block' : 'none';
-                btnXoa.innerHTML = `🗑️ Xóa đã chọn (${selected.length})`;
+                btnXoa.innerHTML = \`🗑️ Xóa đã chọn (\${selected.length})\`;
             }
+        }
+
+        function reloadSinhVienVisual() {
+            document.getElementById('timKiemInput').value = '';
+            document.getElementById('filterTutor').value = '';
+            document.getElementById('filterSubject').value = '';
+            layDanhSachSinhVien(1);
         }
 
         function xuatExcelSinhVien() {
@@ -862,7 +758,7 @@
             if (!table) return;
             const cloneTable = table.cloneNode(true);
             const excelHTML = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8" /></head><body>' + cloneTable.outerHTML + '</body></html>';
-            const blob = new Blob(['\ufeff' + excelHTML], { type: 'application/vnd.ms-excel;charset=utf-8' });
+            const blob = new Blob(['\\ufeff' + excelHTML], { type: 'application/vnd.ms-excel;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -886,24 +782,26 @@
                     const sel = document.getElementById('filterTutor');
                     const tutorSel = document.getElementById('tutorSelect');
                     const data = Array.isArray(list) ? list : (list.data || []);
-                    const opts = data.map(t => `<option value="${t.TID || t.id}">${t.name}</option>`).join('');
+                    const opts = data.map(t => \`<option value="\${t.TID || t.id}">\${t.name}</option>\`).join('');
                     if (sel) sel.innerHTML = '<option value="">-- Tất cả CVHT --</option>' + opts;
                     if (tutorSel) tutorSel.innerHTML = '<option value="">-- Không có --</option>' + opts;
                 }
                 if (subjectRes.ok) {
                     const list = await subjectRes.json();
                     const sel = document.getElementById('filterSubject');
-                    const data = Array.isArray(list) ? list : (data.data || []);
-                    if (sel) sel.innerHTML = '<option value="">-- Tất cả Môn học --</option>' + data.map(s => `<option value="${s.SubID || s.id}">${s.name}</option>`).join('');
+                    const data = Array.isArray(list) ? list : (list.data || []);
+                    if (sel) sel.innerHTML = '<option value="">-- Tất cả Môn học --</option>' + data.map(s => \`<option value="\${s.SubID || s.id}">\${s.name}</option>\`).join('');
                 }
             } catch(e) {}
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            initTheme();
             napDuLieuBoLoc();
             layDanhSachSinhVien(1);
         });
     </script>
 </body>
-</html>
+</html>`;
+
+fs.writeFileSync(filePath, multiTabHTML, 'utf8');
+console.log('🎉 Đã kích hoạt Router chuyển Tab cho Giảng viên & Môn học thành công!');
