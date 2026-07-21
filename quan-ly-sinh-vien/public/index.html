@@ -444,7 +444,7 @@
             data.forEach(t => { 
                 html += '<tr><td>' + t.TID + '</td><td><strong>' + t.name + '</strong></td>'; 
                 if(isManager) { 
-                    html += '<td><button class="btn btn-warning" style="padding:4px 8px; font-size:12px; margin-right:5px;" onclick="kichHoatCheDoSuaTutor(' + t.TID + ')">✏️ Sửa</button> <button onclick="openGradeModal(' + t.TID + ')" style="background:#0EA5E9; color:white; border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; margin-left:4px;">📝 Nhập điểm</button><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="xoaTutor(' + t.TID + ',\'' + t.name + '\')">🗑️</button></td>'; 
+                    html += '<td><button class="btn btn-warning" style="padding:4px 8px; font-size:12px; margin-right:5px;" onclick="kichHoatCheDoSuaTutor(' + t.TID + ')">✏️ Sửa</button><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="xoaTutor(' + t.TID + ',\'' + t.name + '\')">🗑️</button></td>'; 
                 } 
                 html += '</tr>'; 
             });
@@ -494,7 +494,7 @@
             data.forEach(s => { 
                 html += '<tr><td>' + s.SubID + '</td><td><strong>' + s.name + '</strong></td>'; 
                 if(isManager) { 
-                    html += '<td><button class="btn btn-warning" style="padding:4px 8px; font-size:12px; margin-right:5px;" onclick="kichHoatCheDoSuaSubject(' + s.SubID + ')">✏️ Sửa</button> <button onclick="openGradeModal(' + s.SubID + ')" style="background:#0EA5E9; color:white; border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; margin-left:4px;">📝 Nhập điểm</button><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="xoaSubject(' + s.SubID + ',\'' + s.name + '\')">🗑️</button></td>'; 
+                    html += '<td><button class="btn btn-warning" style="padding:4px 8px; font-size:12px; margin-right:5px;" onclick="kichHoatCheDoSuaSubject(' + s.SubID + ')">✏️ Sửa</button><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="xoaSubject(' + s.SubID + ',\'' + s.name + '\')">🗑️</button></td>'; 
                 } 
                 html += '</tr>'; 
             });
@@ -725,7 +725,7 @@
 
         try {
             const res = await fetch('/sinh-vien/' + studentId, {
-                method: 'PUT',
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ diemSo })
             });
