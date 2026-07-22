@@ -15,7 +15,7 @@ export class SinhVienController {
     @Query('tutorId') tutorId?: string,
     @Query('subjectId') subjectId?: string,
   ) {
-    return this.sinhVienService.findAll(+page, +limit, search, tutorId ? +tutorId : undefined, subjectId ? +subjectId : undefined);
+    return this.sinhVienService.findAll(+page, +limit, search, tutorId ? tutorId : undefined, subjectId ? subjectId : undefined);
   }
 
   @Post()
