@@ -10,12 +10,12 @@ export class SinhVienController {
   @Get()
   findAll(
     @Query('page') page: string = '1',
-    @Query('limit') limit: string = '5',
-    @Query('search') search: string = '',
+    @Query('limit') limit: string = '10',
+    @Query('search') search?: string,
     @Query('tutorId') tutorId?: string,
     @Query('subjectId') subjectId?: string,
   ) {
-    return this.sinhVienService.findAll(+page, +limit, search, tutorId ? tutorId : undefined, subjectId ? subjectId : undefined);
+    return this.sinhVienService.findAll(+page, +limit, search, tutorId, subjectId);
   }
 
   @Post()

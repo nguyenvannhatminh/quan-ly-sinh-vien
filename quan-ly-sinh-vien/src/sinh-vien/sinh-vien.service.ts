@@ -67,22 +67,22 @@ export class SinhVienService {
       .orderBy('sv.SID', 'DESC');
 
     if (search) {
-      qb.andWhere('(sv.name LIKE :search OR sv.email LIKE :search)', { search: `%${search}%` });
+      qb.andWhere('(sv.name LIKE :search OR sv.email LIKE :search OR CAST(sv.SID AS CHAR) LIKE :search)', { search: `%${search}%` });
     }
 
-    if (tutorFilter && tutorFilter.trim() !== '') {
+    if (tutorFilter && String(tutorFilter || '').trim() !== '') {
       const numTutor = Number(tutorFilter);
       if (!isNaN(numTutor) && numTutor > 0) {
-        qb.andWhere('(tutor.TID = :numTutor OR tutor.id = :numTutor)', { numTutor });
+        qb.andWhere('(tutor.TID = :numTutor OR tutor.TID = :numTutor)', { numTutor });
       } else {
         qb.andWhere('tutor.name LIKE :tutorName', { tutorName: `%${tutorFilter}%` });
       }
     }
 
-    if (subjectFilter && subjectFilter.trim() !== '') {
+    if (subjectFilter && String(subjectFilter || '').trim() !== '') {
       const numSub = Number(subjectFilter);
       if (!isNaN(numSub) && numSub > 0) {
-        qb.andWhere('(subjects.SubID = :numSub OR subjects.id = :numSub)', { numSub });
+        qb.andWhere('(subjects.SubID = :numSub OR subjects.SubID = :numSub)', { numSub });
       } else {
         qb.andWhere('subjects.name LIKE :subName', { subName: `%${subjectFilter}%` });
       }
