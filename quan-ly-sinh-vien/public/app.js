@@ -1,54 +1,88 @@
-// URL Backend NestJS của dự án
-const API_URL = '/students'; // Hoặc đường dẫn API sinh viên của dự án bro
+// Danh sách dữ liệu mẫu ban đầu
+let students = [
+    { maSV: 'SV001', hoTen: 'Nguyễn Văn A', email: 'nva@karl.edu.vn', lop: 'CNTT1', trangThai: 'Đang học' }
+];
 
-// Khi trang load xong
+// Hàm hiển thị danh sách sinh viên ra bảng HTML
+function renderStudents() {
+    const tbody = document.getElementById('bang-sinh-vien');
+    if (!tbody) return;
+
+    // Xóa sạch dòng cũ
+    tbody.innerHTML = '';
+
+    // Lặp qua mảng students và tạo từng dòng <tr>
+    students.forEach((sv, index) => {
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid #334155';
+        tr.innerHTML = `
+            <td style="padding: 12px;"><input type="checkbox"></td>
+            <td style="padding: 12px; font-weight: bold; color: #60a5fa;">${sv.maSV}</td>
+            <td style="padding: 12px; font-weight: bold;">${sv.hoTen}</td>
+            <td style="padding: 12px; color: #94a3b8;">${sv.email}</td>
+            <td style="padding: 12px;">${sv.lop}</td>
+            <td style="padding: 12px;">
+                <span style="background: #064e3b; color: #34d399; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold;">
+                    ${sv.trangThai || 'Đang học'}
+                </span>
+            </td>
+            <td style="padding: 12px;">
+                <button onclick="editStudent(${index})" style="background: #f59e0b; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️ Sửa</button>
+                <button onclick="deleteStudent(${index})" style="background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">🗑️</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Khi trang vừa load xong
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Mở Modal khi bấm nút Thêm Sinh Viên
-    const btnThem = document.querySelector('button:has(span), button') ; // Nút Thêm
-    
-    // Gán sự kiện mở modal cho nút Thêm Sinh Viên
-    window.openModal = function() {
-        const modal = document.getElementById('modalSinhVien');
-        if (modal) {
-            document.getElementById('formSinhVien').reset();
-            document.getElementById('modalTitle').innerText = 'Thêm Sinh Viên Mới';
-            modal.style.display = 'flex';
-        }
-    };
+    // 1. Render danh sách ban đầu
+    renderStudents();
 
-    // Gán sự kiện cho nút Thêm Sinh Viên trên UI
+    // 2. Bắt sự kiện bật Modal cho nút "+ Thêm Sinh Viên"
     const buttons = document.querySelectorAll('button');
     buttons.forEach(btn => {
         if (btn.textContent.includes('Thêm Sinh Viên')) {
-            btn.onclick = window.openModal;
+            btn.onclick = () => {
+                document.getElementById('formSinhVien').reset();
+                document.getElementById('modalTitle').innerText = 'Thêm Sinh Viên Mới';
+                document.getElementById('modalSinhVien').style.display = 'flex';
+            };
         }
     });
 
-    // 2. Xử lý submit Form Thêm/Sửa Sinh Viên
+    // 3. Xử lý Form Submit (Thêm sinh viên mới vào mảng và Render lại)
     const form = document.getElementById('formSinhVien');
     if (form) {
-        form.addEventListener('submit', async (e) => {
+        form.addEventListener('submit', (e) => {
             e.preventDefault();
-            
-            const studentData = {
+
+            // Lấy dữ liệu từ ô input
+            const newSV = {
                 maSV: document.getElementById('maSV').value,
                 hoTen: document.getElementById('hoTen').value,
                 email: document.getElementById('email').value,
                 lop: document.getElementById('lop').value,
+                trangThai: 'Đang học'
             };
 
-            console.log('Dữ liệu gửi đi:', studentData);
+            // Đẩy vào mảng students
+            students.push(newSV);
 
-            // Tạm thời thông báo thành công & đóng modal
-            alert(`Đã lưu sinh viên: ${studentData.hoTen} (${studentData.maSV})`);
+            // Render lại bảng ngay lập tức
+            renderStudents();
+
+            // Ẩn Popup Form
             document.getElementById('modalSinhVien').style.display = 'none';
         });
     }
 });
 
-// Hàm hỗ trợ Xóa Sinh Viên
-function deleteStudent(maSV) {
-    if (confirm(`Bro có chắc muốn xóa sinh viên ${maSV} không?`)) {
-        alert(`Đã xóa thành công ${maSV}!`);
+// Hàm Xóa sinh viên
+function deleteStudent(index) {
+    if (confirm(`Bro có chắc muốn xóa sinh viên ${students[index].hoTen}?`)) {
+        students.splice(index, 1);
+        renderStudents(); // Cập nhật lại bảng
     }
 }
