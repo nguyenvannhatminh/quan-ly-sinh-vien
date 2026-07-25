@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - Karl System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 420px;
+            padding: 32px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .brand-title {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            color: #818cf8;
+            margin-bottom: 8px;
+        }
+
+        .brand-sub {
+            text-align: center;
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #6366f1;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            background: #4338ca;
+        }
+
+        .demo-accounts {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #334155;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .demo-title {
+            font-weight: bold;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+        }
+
+        .account-badge {
+            display: inline-block;
+            background: #334155;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 2px;
+            transition: 0.2s;
+        }
+        .account-badge:hover { background: #475569; color: white; }
+
+        .error-msg {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #f87171;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="brand-title">🎓 KARL SYSTEM</div>
+        <div class="brand-sub">Hệ thống Quản lý Sinh viên Trung tâm</div>
+
+        <div id="errorMsg" class="error-msg"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Tên đăng nhập</label>
+                <input type="text" id="username" placeholder="Nhập username..." required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mật khẩu</label>
+                <input type="password" id="password" placeholder="Nhập mật khẩu..." required>
+            </div>
+
+            <button type="submit" class="btn-login">Đăng Nhập ➔</button>
+        </form>
+
+        <!-- Thẻ gợi ý tài khoản Demo cho nhanh -->
+        <div class="demo-accounts">
+            <div class="demo-title">🔑 Tài khoản Demo (Click để điền nhanh):</div>
+            <div>
+                <span class="account-badge" onclick="fillAccount('admin', '123')">🔴 Admin (admin/123)</span><br>
+                <span class="account-badge" onclick="fillAccount('giangvien', '123')">🔵 Giảng viên (giangvien/123)</span><br>
+                <span class="account-badge" onclick="fillAccount('sinhvien', '123')">🟢 Sinh viên (sinhvien/123)</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Danh sách tài khoản mẫu cố định
+        const users = [
+            { username: 'admin', password: '123', name: 'Nguyễn Quản Trị', role: 'Admin' },
+            { username: 'giangvien', password: '123', name: 'TS. Lê Giảng Viên', role: 'Giảng viên' },
+            { username: 'sinhvien', password: '123', name: 'Trần Sinh Viên', role: 'Sinh viên' }
+        ];
+
+        function fillAccount(u, p) {
+            document.getElementById('username').value = u;
+            document.getElementById('password').value = p;
+        }
+
+        document.getElementById('loginForm').onsubmit = (e) => {
+            e.preventDefault();
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+            const errorMsg = document.getElementById('errorMsg');
+
+            const foundUser = users.find(item => item.username === u && item.password === p);
+
+            if (foundUser) {
+                // Lưu session vào LocalStorage
+                localStorage.setItem('currentUser', JSON.stringify({
+                    username: foundUser.username,
+                    name: foundUser.name,
+                    role: foundUser.role
+                }));
+                // Chuyển hướng sang trang chính
+                window.location.href = 'index.html';
+            } else {
+                errorMsg.innerText = '❌ Tên đăng nhập hoặc mật khẩu không đúng!';
+                errorMsg.style.display = 'block';
+            }
+        };
+    </script>
+</body>
+</html>

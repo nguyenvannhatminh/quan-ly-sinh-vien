@@ -23,7 +23,7 @@
         body { background-color: var(--bg-main); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
         /* Sidebar bên trái */
-        .sidebar { width: 260px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .sidebar { width: 260px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between; }
         .sidebar-logo { padding: 20px; font-size: 18px; font-weight: bold; color: white; border-bottom: 1px solid var(--border); }
         
         .menu-group { margin-top: 15px; }
@@ -35,67 +35,72 @@
 
         /* Main Content bên phải */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        .header { height: 60px; background-color: var(--bg-sidebar); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; padding: 0 20px; }
-        .user-info { font-size: 14px; font-weight: 500; }
+        .header { height: 60px; background-color: var(--bg-sidebar); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; padding: 0 20px; gap: 12px; }
+        
+        /* Badges cho Phân quyền */
+        .role-badge { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .role-admin { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .role-giangvien { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+        .role-sinhvien { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
 
         .content-area { padding: 24px; }
         .page-title { font-size: 20px; font-weight: bold; margin-bottom: 20px; }
 
-        /* Badge Trạng thái */
         .badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; display: inline-block; }
         .badge-active { background-color: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
 
-        /* Action Buttons */
         .btn-action { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; margin-left: 5px; transition: 0.2s; }
         .btn-edit { background: #f59e0b; color: white; }
         .btn-edit:hover { background: #d97706; }
         .btn-delete { background: var(--danger); color: white; }
         .btn-delete:hover { background: var(--danger-hover); }
+
+        .btn-logout-top { background: #334155; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-logout-top:hover { background: var(--danger); }
     </style>
 
-    <!-- Thư viện đọc & xuất Excel SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
-    <!-- 1. Thanh điều hướng (Sidebar) -->
+    <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="sidebar-logo">🎓 Karl System</div>
+        <div>
+            <div class="sidebar-logo">🎓 Karl System</div>
 
-        <div class="menu-group">
-            <ul class="menu-list">
-                <li class="menu-item">📊 Dashboard Tổng quan</li>
-            </ul>
+            <div class="menu-group">
+                <ul class="menu-list">
+                    <li class="menu-item">📊 Dashboard Tổng quan</li>
+                </ul>
+            </div>
+
+            <div class="menu-group">
+                <div class="menu-title">Quản lý sinh viên</div>
+                <ul class="menu-list">
+                    <li class="menu-item active">👨‍🎓 Danh sách sinh viên</li>
+                    <li class="menu-item">📁 Hồ sơ chi tiết</li>
+                    <li class="menu-item">🏫 Lớp học & Khoa/Ngành</li>
+                </ul>
+            </div>
         </div>
 
-        <div class="menu-group">
-            <div class="menu-title">Quản lý sinh viên</div>
-            <ul class="menu-list">
-                <li class="menu-item active">👨‍🎓 Danh sách sinh viên</li>
-                <li class="menu-item">📁 Hồ sơ chi tiết</li>
-                <li class="menu-item">🏫 Lớp học & Khoa/Ngành</li>
-            </ul>
-        </div>
-
-        <div class="menu-group">
-            <div class="menu-title">Quản lý tài khoản</div>
-            <ul class="menu-list">
-                <li class="menu-item">🔐 Phân quyền người dùng</li>
-                <li class="menu-item">🚪 Đăng xuất</li>
-            </ul>
+        <div style="padding: 15px; border-top: 1px solid var(--border);">
+            <button onclick="dangXuat()" style="width: 100%; padding: 10px; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; cursor: pointer; font-weight: bold; text-align: center;">🚪 Đăng xuất</button>
         </div>
     </aside>
 
-    <!-- 2. Khu vực chính -->
+    <!-- Main Content -->
     <main class="main-content">
         <header class="header">
-            <div class="user-info">👤 admin (Quản trị viên)</div>
+            <span id="roleBadgeHeader" class="role-badge">ADMIN</span>
+            <div style="font-size: 14px; font-weight: 500;">👤 <span id="userNameHeader">Admin</span></div>
+            <button class="btn-logout-top" onclick="dangXuat()">Đăng xuất</button>
         </header>
 
         <div class="content-area">
             <h1 class="page-title">Quản lý Sinh viên</h1>
             
-            <!-- Thanh công cụ (Tìm kiếm & Nút bấm) -->
+            <!-- Toolbar -->
             <div style="display: flex; justify-content: space-between; margin-bottom: 20px; gap: 10px; flex-wrap: wrap;">
                 <div style="display: flex; gap: 10px; flex: 1; min-width: 300px;">
                     <input type="text" id="timKiemInput" placeholder="🔍 Tìm theo tên, mã SV..." style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-main); color: white; width: 280px; outline: none;">
@@ -109,26 +114,26 @@
                 </div>
 
                 <div style="display: flex; gap: 8px;">
-                    <button id="btnXoaChon" style="display: none; padding: 10px 16px; background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;">🗑️ Xóa đã chọn (<span id="countSelected">0</span>)</button>
-                    <button id="btnThemSV" style="padding: 10px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;">➕ Thêm Sinh Viên</button>
-                    <button id="btnNhapExcel" style="padding: 10px 16px; background: #16a34a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;">📂 Nhập Excel</button>
-                    <button id="btnXuatExcel" style="padding: 10px 16px; background: #eab308; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;">📤 Xuất Excel</button>
+                    <button id="btnXoaChon" style="display: none; padding: 10px 16px; background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">🗑️ Xóa đã chọn (<span id="countSelected">0</span>)</button>
+                    <button id="btnThemSV" style="padding: 10px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">➕ Thêm Sinh Viên</button>
+                    <button id="btnNhapExcel" style="padding: 10px 16px; background: #16a34a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">📂 Nhập Excel</button>
+                    <button id="btnXuatExcel" style="padding: 10px 16px; background: #eab308; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">📤 Xuất Excel</button>
                 </div>
             </div>
 
-            <!-- Bảng dữ liệu Sinh Viên -->
+            <!-- Bảng -->
             <div style="background: var(--bg-card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border);">
                 <table style="width: 100%; border-collapse: collapse; text-align: left;">
                     <thead>
                         <tr style="background: #334155; border-bottom: 2px solid var(--border);">
-                            <th style="padding: 16px; width: 50px; text-align: center;"><input type="checkbox" id="checkAll" style="cursor: pointer;"></th>
+                            <th id="colCheckAll" style="padding: 16px; width: 50px; text-align: center;"><input type="checkbox" id="checkAll" style="cursor: pointer;"></th>
                             <th style="padding: 16px; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Mã SV</th>
                             <th style="padding: 16px; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Họ và Tên</th>
                             <th style="padding: 16px; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Giới tính</th>
                             <th style="padding: 16px; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Ngày sinh</th>
                             <th style="padding: 16px; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Lớp</th>
                             <th style="padding: 16px; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Trạng thái</th>
-                            <th style="padding: 16px; text-align: right; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Hành động</th>
+                            <th id="colHanhDong" style="padding: 16px; text-align: right; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Hành động</th>
                         </tr>
                     </thead>
                     <tbody id="bang-sinh-vien">
@@ -139,28 +144,27 @@
         </div>
     </main>
 
-    <!-- Modal Thêm/Sửa Sinh Viên -->
+    <!-- Modal Thêm/Sửa -->
     <div id="modalSinhVien" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
-        <div style="background: #1e293b; padding: 24px; border-radius: 8px; width: 450px; border: 1px solid #334155; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);">
+        <div style="background: #1e293b; padding: 24px; border-radius: 8px; width: 450px; border: 1px solid #334155; color: white;">
             <h2 id="modalTitle" style="margin-top: 0; margin-bottom: 20px; font-size: 20px;">Thêm Sinh Viên Mới</h2>
-            
             <form id="formSinhVien">
                 <input type="hidden" id="editIndex" value="-1">
                 <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                     <div style="flex: 1;">
                         <label style="display: block; margin-bottom: 5px; font-size: 14px; color: #94a3b8;">Mã Sinh Viên</label>
-                        <input type="text" id="maSV" required placeholder="VD: SV001" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; box-sizing: border-box;">
+                        <input type="text" id="maSV" required placeholder="VD: SV001" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; outline: none;">
                     </div>
                     <div style="flex: 2;">
                         <label style="display: block; margin-bottom: 5px; font-size: 14px; color: #94a3b8;">Họ và Tên</label>
-                        <input type="text" id="hoTen" required placeholder="Nhập tên sinh viên..." style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; box-sizing: border-box;">
+                        <input type="text" id="hoTen" required placeholder="Nhập tên..." style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; outline: none;">
                     </div>
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                     <div style="flex: 1;">
                         <label style="display: block; margin-bottom: 5px; font-size: 14px; color: #94a3b8;">Giới tính</label>
-                        <select id="gioiTinh" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; box-sizing: border-box; cursor: pointer;">
+                        <select id="gioiTinh" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; outline: none;">
                             <option value="Nam">Nam</option>
                             <option value="Nữ">Nữ</option>
                             <option value="Khác">Khác</option>
@@ -168,18 +172,18 @@
                     </div>
                     <div style="flex: 1;">
                         <label style="display: block; margin-bottom: 5px; font-size: 14px; color: #94a3b8;">Ngày sinh</label>
-                        <input type="date" id="ngaySinh" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; box-sizing: border-box; color-scheme: dark;">
+                        <input type="date" id="ngaySinh" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; color-scheme: dark;">
                     </div>
                 </div>
                 
                 <div style="display: flex; gap: 10px; margin-bottom: 24px;">
                     <div style="flex: 2;">
                         <label style="display: block; margin-bottom: 5px; font-size: 14px; color: #94a3b8;">Email</label>
-                        <input type="email" id="email" required placeholder="sv@truong.edu.vn" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; box-sizing: border-box;">
+                        <input type="email" id="email" required placeholder="sv@truong.edu.vn" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; outline: none;">
                     </div>
                     <div style="flex: 1;">
                         <label style="display: block; margin-bottom: 5px; font-size: 14px; color: #94a3b8;">Lớp Học</label>
-                        <select id="lop" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; box-sizing: border-box; cursor: pointer;">
+                        <select id="lop" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; outline: none;">
                             <option value="CNTT1">CNTT1</option>
                             <option value="CNTT2">CNTT2</option>
                             <option value="CNTT3">CNTT3</option>
@@ -197,12 +201,10 @@
 
     <!-- Modal Nhập Excel -->
     <div id="modalExcel" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
-        <div style="background: #1e293b; padding: 24px; border-radius: 8px; width: 420px; border: 1px solid #334155; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);">
+        <div style="background: #1e293b; padding: 24px; border-radius: 8px; width: 420px; border: 1px solid #334155; color: white;">
             <h2 style="margin-top: 0; margin-bottom: 10px; font-size: 20px;">📂 Nhập Danh Sách Từ Excel</h2>
-            <p style="font-size: 13px; color: #94a3b8; margin-bottom: 15px;">Chọn file Excel (.xlsx, .xls) chứa các cột: <b>Mã SV, Họ và tên, Giới tính, Ngày sinh, Email, Lớp</b>.</p>
-
-            <input type="file" id="fileExcelInput" accept=".xlsx, .xls, .csv" style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 6px; border: 1px dashed #60a5fa; background: #0f172a; color: white; cursor: pointer; box-sizing: border-box;">
-
+            <p style="font-size: 13px; color: #94a3b8; margin-bottom: 15px;">Chọn file Excel (.xlsx, .xls) có đủ thông tin sinh viên.</p>
+            <input type="file" id="fileExcelInput" accept=".xlsx, .xls, .csv" style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 6px; border: 1px dashed #60a5fa; background: #0f172a; color: white;">
             <div style="display: flex; justify-content: flex-end; gap: 10px;">
                 <button type="button" id="btnHuyExcelModal" style="padding: 10px 16px; background: transparent; color: white; border: 1px solid #334155; border-radius: 6px; cursor: pointer;">Hủy</button>
                 <button type="button" id="btnImportExcel" style="padding: 10px 16px; background: #22c55e; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">📥 Nhập Data</button>
