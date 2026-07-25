@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karl System - Quản lý Sinh viên & Trường học</title>
+    <title>Karl System - Quản lý Đào tạo</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
@@ -56,6 +56,7 @@
                 <li class="menu-item" data-tab="students">👨‍🎓 Quản lý Sinh viên</li>
                 <li class="menu-item" data-tab="classes">🏫 Quản lý Lớp học</li>
                 <li class="menu-item" data-tab="departments">🏢 Quản lý Khoa / Ngành</li>
+                <li class="menu-item" data-tab="users" id="menuUsers">👥 Quản lý Tài khoản</li>
             </ul>
         </div>
         <div style="padding: 15px; border-top: 1px solid var(--border);">
@@ -117,14 +118,8 @@
                 <div style="display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
                     <div style="display: flex; gap: 8px; flex: 1; min-width: 300px;">
                         <input type="text" id="timKiemInput" placeholder="🔍 Tìm theo Tên, Mã SV, Email..." style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-main); color: white; width: 220px;">
-                        
-                        <select id="filterKhoa" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-main); color: white;">
-                            <option value="">🏢 Tất cả Khoa</option>
-                        </select>
-
-                        <select id="filterLop" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-main); color: white;">
-                            <option value="">🏫 Tất cả Lớp</option>
-                        </select>
+                        <select id="filterKhoa" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-main); color: white;"><option value="">🏢 Tất cả Khoa</option></select>
+                        <select id="filterLop" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-main); color: white;"><option value="">🏫 Tất cả Lớp</option></select>
                     </div>
 
                     <div style="display: flex; gap: 8px;">
@@ -171,7 +166,7 @@
                                 <th>Tên Lớp Học</th>
                                 <th>Khoa / Ngành Trực Thuộc</th>
                                 <th>Sĩ số Sinh viên</th>
-                                <th style="text-align: right;">Hành động</th>
+                                <th class="colHanhDongChung" style="text-align: right;">Hành động</th>
                             </tr>
                         </thead>
                         <tbody id="bang-lop-hoc"></tbody>
@@ -193,17 +188,40 @@
                                 <th>Mã Khoa</th>
                                 <th>Tên Khoa / Ngành</th>
                                 <th>Mô tả / Trưởng khoa</th>
-                                <th style="text-align: right;">Hành động</th>
+                                <th class="colHanhDongChung" style="text-align: right;">Hành động</th>
                             </tr>
                         </thead>
                         <tbody id="bang-khoa"></tbody>
                     </table>
                 </div>
             </section>
+
+            <!-- 5. QUẢN LÝ TÀI KHOẢN -->
+            <section id="section-users" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>👥 Quản lý Tài khoản & Phân quyền</h2>
+                    <button id="btnThemUser" style="padding: 8px 14px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">➕ Thêm Tài khoản</button>
+                </div>
+                <div style="background: var(--bg-card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border);">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên Đăng Nhập</th>
+                                <th>Họ và Tên</th>
+                                <th>Email</th>
+                                <th>Vai Trò (Role)</th>
+                                <th style="text-align: right;">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bang-tai-khoan"></tbody>
+                    </table>
+                </div>
+            </section>
         </div>
     </main>
 
-    <!-- Modal Thêm/Sửa Sinh Viên -->
+    <!-- Modal Sinh Viên -->
     <div class="modal-overlay" id="modalSinhVien">
         <div class="modal-box">
             <h3 id="modalTitle" style="margin-bottom: 16px;">Thêm Sinh Viên Mới</h3>
@@ -240,7 +258,7 @@
         </div>
     </div>
 
-    <!-- Modal Thêm/Sửa Lớp -->
+    <!-- Modal Lớp -->
     <div class="modal-overlay" id="modalLop">
         <div class="modal-box">
             <h3 id="modalLopTitle" style="margin-bottom: 16px;">Thêm Lớp Học Mới</h3>
@@ -261,7 +279,7 @@
         </div>
     </div>
 
-    <!-- Modal Thêm/Sửa Khoa -->
+    <!-- Modal Khoa -->
     <div class="modal-overlay" id="modalKhoa">
         <div class="modal-box">
             <h3 id="modalKhoaTitle" style="margin-bottom: 16px;">Thêm Khoa / Ngành Mới</h3>
@@ -277,6 +295,38 @@
                 <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px;">
                     <button type="button" onclick="dongModal('modalKhoa')" style="padding: 8px 16px; background: transparent; border: 1px solid var(--border); color: white; border-radius: 6px; cursor: pointer;">Hủy</button>
                     <button type="submit" style="padding: 8px 16px; background: var(--primary); border: none; color: white; border-radius: 6px; cursor: pointer; font-weight: bold;">💾 Lưu Khoa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Tài Khoản -->
+    <div class="modal-overlay" id="modalUser">
+        <div class="modal-box">
+            <h3 id="modalUserTitle" style="margin-bottom: 16px;">Thêm Tài Khoản Mới</h3>
+            <form id="formUser">
+                <input type="hidden" id="editUserIndex" value="-1">
+                <div class="form-row">
+                    <div class="form-col"><label>Tên đăng nhập</label><input type="text" id="inputUsername" required placeholder="VD: gv_nguyen"></div>
+                    <div class="form-col"><label>Mật khẩu</label><input type="password" id="inputUserPassword" required placeholder="••••••••"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col"><label>Họ và Tên</label><input type="text" id="inputUserHoTen" required placeholder="VD: Nguyễn Văn A"></div>
+                    <div class="form-col"><label>Email</label><input type="email" id="inputUserEmail" required placeholder="user@truong.edu.vn"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col">
+                        <label>Vai trò (Role)</label>
+                        <select id="selectUserRole">
+                            <option value="Admin">🔑 Admin (Toàn quyền)</option>
+                            <option value="Giảng viên">👨‍🏫 Giảng viên (Xem & Chỉnh sửa SV)</option>
+                            <option value="Sinh viên">🎓 Sinh viên (Chỉ xem)</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px;">
+                    <button type="button" onclick="dongModal('modalUser')" style="padding: 8px 16px; background: transparent; border: 1px solid var(--border); color: white; border-radius: 6px; cursor: pointer;">Hủy</button>
+                    <button type="submit" style="padding: 8px 16px; background: var(--primary); border: none; color: white; border-radius: 6px; cursor: pointer; font-weight: bold;">💾 Lưu Tài khoản</button>
                 </div>
             </form>
         </div>
