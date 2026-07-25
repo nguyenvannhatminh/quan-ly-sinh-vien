@@ -82,6 +82,54 @@
         <div class="content-area">
             <h1 class="page-title">Quản lý Sinh viên</h1>
             <!-- Chỗ này Bước 2 chúng ta sẽ lắp Bảng + Thanh tìm kiếm vào -->
+             <!-- Thanh công cụ (Tìm kiếm & Nút bấm) -->
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; gap: 10px;">
+                <div style="display: flex; gap: 10px; flex: 1;">
+                    <input type="text" id="timKiemInput" placeholder="🔍 Tìm theo tên, mã SV..." style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-main); color: white; width: 300px; outline: none;">
+                    
+                    <select id="filterLop" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-main); color: white; outline: none; cursor: pointer;">
+                        <option value="">🏫 Tất cả các lớp</option>
+                        <option value="CNTT1">CNTT1</option>
+                        <option value="CNTT2">CNTT2</option>
+                    </select>
+                </div>
+                <div>
+                    <button style="padding: 10px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;" onmouseover="this.style.backgroundColor='var(--primary-hover)'" onmouseout="this.style.backgroundColor='var(--primary)'">➕ Thêm Sinh Viên</button>
+                    <button style="padding: 10px 16px; background: #16a34a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; margin-left: 5px;" onmouseover="this.style.backgroundColor='#15803d'" onmouseout="this.style.backgroundColor='#16a34a'">📁 Nhập Excel</button>
+                </div>
+            </div>
+
+            <!-- Bảng dữ liệu Sinh Viên -->
+            <div style="background: var(--bg-card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border);">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="background: #334155; border-bottom: 2px solid var(--border);">
+                            <th style="padding: 16px; width: 50px; text-align: center;"><input type="checkbox" id="checkAll"></th>
+                            <th style="padding: 16px; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Mã SV</th>
+                            <th style="padding: 16px; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Họ và Tên</th>
+                            <th style="padding: 16px; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Email</th>
+                            <th style="padding: 16px; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Lớp</th>
+                            <th style="padding: 16px; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Trạng thái</th>
+                            <th style="padding: 16px; text-align: right; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-sinhvien">
+                        <!-- Code Fake data (Mockup) để bro xem trước giao diện, sau này JS sẽ ghi đè lên đây -->
+                        <tr style="border-bottom: 1px solid var(--border); transition: 0.2s;">
+                            <td style="padding: 16px; text-align: center;"><input type="checkbox"></td>
+                            <td style="padding: 16px; color: #60a5fa; font-weight: bold;">SV001</td>
+                            <td style="padding: 16px; font-weight: 500;">Nguyễn Văn A</td>
+                            <td style="padding: 16px; color: var(--text-sub);">nva@karl.edu.vn</td>
+                            <td style="padding: 16px;">CNTT1</td>
+                            <td style="padding: 16px;"><span style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;">Đang học</span></td>
+                            <td style="padding: 16px; text-align: right;">
+                                <button style="padding: 6px 12px; background: #ea580c; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; margin-right: 5px;">✏️ Sửa</button>
+                                <button style="padding: 6px 12px; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">🗑️</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
