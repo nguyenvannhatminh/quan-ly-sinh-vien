@@ -81,8 +81,8 @@
 
         <div class="content-area">
             <h1 class="page-title">Quản lý Sinh viên</h1>
-            <!-- Chỗ này Bước 2 chúng ta sẽ lắp Bảng + Thanh tìm kiếm vào -->
-             <!-- Thanh công cụ (Tìm kiếm & Nút bấm) -->
+            
+            <!-- Thanh công cụ (Tìm kiếm & Nút bấm) -->
             <div style="display: flex; justify-content: space-between; margin-bottom: 20px; gap: 10px;">
                 <div style="display: flex; gap: 10px; flex: 1;">
                     <input type="text" id="timKiemInput" placeholder="🔍 Tìm theo tên, mã SV..." style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-main); color: white; width: 300px; outline: none;">
@@ -94,7 +94,7 @@
                     </select>
                 </div>
                 <div>
-                    <button style="padding: 10px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;" onmouseover="this.style.backgroundColor='var(--primary-hover)'" onmouseout="this.style.backgroundColor='var(--primary)'">➕ Thêm Sinh Viên</button>
+                    <button id="btnThemSV" style="padding: 10px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;" onmouseover="this.style.backgroundColor='var(--primary-hover)'" onmouseout="this.style.backgroundColor='var(--primary)'">➕ Thêm Sinh Viên</button>
                     <button style="padding: 10px 16px; background: #16a34a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; margin-left: 5px;" onmouseover="this.style.backgroundColor='#15803d'" onmouseout="this.style.backgroundColor='#16a34a'">📁 Nhập Excel</button>
                 </div>
             </div>
@@ -113,30 +113,15 @@
                             <th style="padding: 16px; text-align: right; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Hành động</th>
                         </tr>
                     </thead>
-                    <tbody id="tbody-sinhvien">
-                        <!-- Code Fake data (Mockup) để bro xem trước giao diện, sau này JS sẽ ghi đè lên đây -->
-                        <tr style="border-bottom: 1px solid var(--border); transition: 0.2s;">
-                            <td style="padding: 16px; text-align: center;"><input type="checkbox"></td>
-                            <td style="padding: 16px; color: #60a5fa; font-weight: bold;">SV001</td>
-                            <td style="padding: 16px; font-weight: 500;">Nguyễn Văn A</td>
-                            <td style="padding: 16px; color: var(--text-sub);">nva@karl.edu.vn</td>
-                            <td style="padding: 16px;">CNTT1</td>
-                            <td style="padding: 16px;"><span style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;">Đang học</span></td>
-                            <td style="padding: 16px; text-align: right;">
-                                <button style="padding: 6px 12px; background: #ea580c; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; margin-right: 5px;">✏️ Sửa</button>
-                                <button style="padding: 6px 12px; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">🗑️</button>
-                            </td>
-                        </tr>
+                    <!-- ID ở đây được đổi thành bang-sinh-vien để khớp với app.js -->
+                    <tbody id="bang-sinh-vien">
                     </tbody>
                 </table>
             </div>
         </div>
     </main>
 
-    <script src="app.js"></script>
-</body>
-</html>
-<!-- Modal Thêm/Sửa Sinh Viên (Popup ẩn) -->
+    <!-- Modal Thêm/Sửa Sinh Viên (Popup ẩn) -->
     <div id="modalSinhVien" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
         <div style="background: #1e293b; padding: 24px; border-radius: 8px; width: 400px; border: 1px solid #334155; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);">
             <h2 id="modalTitle" style="margin-top: 0; margin-bottom: 20px; font-size: 20px;">Thêm Sinh Viên Mới</h2>
@@ -166,11 +151,14 @@
                 </div>
                 
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                    <!-- Nút Hủy có gán luôn sự kiện đóng Modal -->
                     <button type="button" onclick="document.getElementById('modalSinhVien').style.display='none'" style="padding: 10px 16px; background: transparent; color: white; border: 1px solid #334155; border-radius: 6px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.backgroundColor='#334155'" onmouseout="this.style.backgroundColor='transparent'">Hủy</button>
-                    
                     <button type="submit" style="padding: 10px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;" onmouseover="this.style.backgroundColor='#2563eb'" onmouseout="this.style.backgroundColor='#3b82f6'">💾 Lưu Thông Tin</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Nối file JS -->
+    <script src="app.js"></script>
+</body>
+</html>
