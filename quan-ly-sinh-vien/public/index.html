@@ -37,7 +37,7 @@
         
         /* Top Header */
         .header { height: 65px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; sticky: top; top: 0; z-index: 10; }
-        .user-info { display: flex; align-items: center; gap: 12px; border-left: 1px solid var(--border); padding-left: 20px; }
+        .user-info { display: flex; align-items: center; gap: 12px; border-left: 1px solid var(--border); padding-left: 20px; cursor: pointer; }
         .avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
 
         /* Main Area */
@@ -102,6 +102,12 @@
                 <li class="menu-item" data-tab="students">🎓 Quản Lý Sinh Viên</li>
                 <li class="menu-item" data-tab="classes">🏫 Quản Lý Lớp Học</li>
                 <li class="menu-item" data-tab="departments">🏢 Quản Lý Khoa / Ngành</li>
+                
+                <!-- Bổ sung menu cho Thành viên 2 -->
+                <li class="menu-item" data-tab="subjects">📚 Danh sách Môn học</li>
+                <li class="menu-item" data-tab="registration" id="menuRegistration">📝 Đăng ký Môn học</li>
+                <li class="menu-item" data-tab="grades">🧮 Bảng điểm Sinh viên</li>
+
                 <li class="menu-item" data-tab="users" id="menuUsers">🔐 Quản Lý Tài Khoản</li>
             </ul>
         </div>
@@ -245,7 +251,7 @@
                     </div>
                 </div>
 
-                <!-- SECTION 5: QUẢN LÝ TÀI KHOẢN (Chỉ Admin) -->
+                <!-- SECTION 5: QUẢN LÝ TÀI KHOẢN -->
                 <div id="section-users" style="display: none;">
                     <div class="page-title">
                         🔐 Quản Lý Tài Khoản Hệ Thống
@@ -268,6 +274,110 @@
                     </div>
                 </div>
 
+                <!-- SECTION 6: QUẢN LÝ MÔN HỌC -->
+                <div id="section-subjects" style="display: none;">
+                    <div class="page-title">
+                        📚 Danh sách Môn học & Học phần
+                        <button class="btn btn-primary" id="btnThemMonHoc">➕ Thêm Môn Học</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mã MH</th>
+                                    <th>Tên Môn Học</th>
+                                    <th>Số Tín Chỉ</th>
+                                    <th>Bắt buộc/Tự chọn</th>
+                                    <th class="colHanhDongChung" style="text-align: right;">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bang-mon-hoc"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SECTION 7: ĐĂNG KÝ MÔN HỌC (Dành cho Sinh Viên) -->
+                <div id="section-registration" style="display: none;">
+                    <div class="page-title">
+                        📝 Đăng ký Tín chỉ & Môn học
+                        <span style="font-size: 14px; font-weight: normal; color: var(--accent);">
+                            Tổng tín chỉ đã chọn: <strong id="tongTinChi">0</strong>
+                        </span>
+                    </div>
+                    <div class="toolbar">
+                        <div class="search-box">
+                            <input type="text" id="timKiemMonHoc" placeholder="🔍 Nhập mã hoặc tên môn học..." style="flex-grow: 1;">
+                            <button class="btn btn-success" id="btnLuuDangKy">💾 Lưu Đăng Ký</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px; text-align: center;">Chọn</th>
+                                    <th>Mã MH</th>
+                                    <th>Tên Môn Học</th>
+                                    <th>Số Tín Chỉ</th>
+                                    <th>Loại</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bang-dang-ky-mon"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SECTION 8: QUẢN LÝ BẢNG ĐIỂM & GPA -->
+                <div id="section-grades" style="display: none;">
+                    <div class="page-title" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div>🧮 Bảng điểm Sinh viên & GPA</div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" id="btnNhapDiem">📝 Cập nhật Điểm</button>
+                            <button class="btn btn-secondary" id="btnInBangDiem">🖨️ In Bảng Điểm (PDF)</button>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid" id="thongKeDiem" style="margin-bottom: 20px;">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">🏆</div>
+                            <div>
+                                <div style="color: var(--text-sub); font-size: 13px;">GPA Tích lũy</div>
+                                <div class="stat-value" id="statGPA">0.00</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;">⭐</div>
+                            <div>
+                                <div style="color: var(--text-sub); font-size: 13px;">Điểm Rèn Luyện</div>
+                                <div class="stat-value" id="statDRL">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="toolbar" id="boLocDiem">
+                        <div class="search-box">
+                            <input type="text" id="timKiemSV_Diem" placeholder="🔍 Nhập Mã SV để tra cứu bảng điểm..." style="flex-grow: 1;">
+                            <select id="filterMonHoc_Diem"><option value="">📚 Tất cả Môn học</option></select>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mã SV</th>
+                                    <th>Tên Sinh Viên</th>
+                                    <th>Môn Học</th>
+                                    <th>Điểm QT (30%)</th>
+                                    <th>Điểm Thi (70%)</th>
+                                    <th>Tổng kết</th>
+                                    <th>Điểm chữ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bang-diem-chi-tiet"></tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -275,6 +385,59 @@
     <!-- Hidden Input dùng cho Nhập Excel -->
     <input type="file" id="fileExcelInput" accept=".xlsx, .xls" style="display: none;">
 
+    <!-- ================== KHU VỰC MODAL ================== -->
+
+    <!-- MODAL MÔN HỌC (MỚI) -->
+    <div class="modal-overlay" id="modalMonHoc">
+        <div class="modal-box">
+            <h3 id="modalMonHocTitle" style="margin-bottom: 16px;">➕ Thêm Môn Học Mới</h3>
+            <form id="formMonHoc">
+                <input type="hidden" id="editMonHocIndex" value="-1">
+                <div class="form-row">
+                    <div class="form-col"><label>Mã Môn Học</label><input type="text" id="inputMaMH" required placeholder="VD: INT1001"></div>
+                    <div class="form-col"><label>Tên Môn Học</label><input type="text" id="inputTenMH" required placeholder="VD: Cấu trúc dữ liệu"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col"><label>Số Tín Chỉ</label><input type="number" id="inputTinChi" required min="1" max="10" value="3"></div>
+                    <div class="form-col">
+                        <label>Loại Môn</label>
+                        <select id="selectLoaiMon">
+                            <option value="Bắt buộc">Bắt buộc</option>
+                            <option value="Tự chọn">Tự chọn</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;">
+                    <button type="button" class="btn btn-secondary" onclick="dongModal('modalMonHoc')">Hủy</button>
+                    <button type="submit" class="btn btn-primary">💾 Lưu Môn Học</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CẬP NHẬT ĐIỂM (MỚI) -->
+    <div class="modal-overlay" id="modalNhapDiem">
+        <div class="modal-box">
+            <h3 id="modalNhapDiemTitle" style="margin-bottom: 16px;">📝 Cập nhật Điểm Số</h3>
+            <form id="formNhapDiem">
+                <input type="hidden" id="editDiemIndex" value="-1">
+                <div class="form-row">
+                    <div class="form-col"><label>Mã Sinh Viên</label><input type="text" id="inputDiemSV" readonly style="opacity:0.7"></div>
+                    <div class="form-col"><label>Mã Môn Học</label><input type="text" id="inputDiemMH" readonly style="opacity:0.7"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col"><label>Điểm Quá Trình (30%)</label><input type="number" id="inputDiemQT" step="0.1" min="0" max="10" required></div>
+                    <div class="form-col"><label>Điểm Thi Cuối Kỳ (70%)</label><input type="number" id="inputDiemThi" step="0.1" min="0" max="10" required></div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;">
+                    <button type="button" class="btn btn-secondary" onclick="dongModal('modalNhapDiem')">Hủy</button>
+                    <button type="submit" class="btn btn-primary">💾 Lưu Bảng Điểm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CÁC MODAL CŨ CỦA THÀNH VIÊN 1 (Giữ nguyên) -->
     <!-- MODAL SINH VIÊN -->
     <div class="modal-overlay" id="modalSinhVien">
         <div class="modal-box">
