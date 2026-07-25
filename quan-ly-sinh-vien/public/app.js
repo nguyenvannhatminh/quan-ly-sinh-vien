@@ -1,7 +1,8 @@
 // Danh sách dữ liệu mẫu ban đầu
 let students = [
-    { maSV: 'SV001', hoTen: 'Nguyễn Văn A', gioiTinh: 'Nam', ngaySinh: '2004-05-12', email: 'nva@karl.edu.vn', lop: 'CNTT1', trangThai: 'Đang học' }
-];
+    { maSV: 'SV001', hoTen: 'Nguyễn Văn A', gioiTinh: 'Nam', ngaySinh: '2004-05-12', email: 'nva@karl.edu.vn', lop: 'CNTT1', trangThai: 'Đang học' },
+    { maSV: 'SV002', hoTen: 'Trần Thị B', gioiTinh: 'Nữ', ngaySinh: '2005-08-20', email: 'ttb@karl.edu.vn', lop: 'CNTT2', trangThai: 'Đang học' }
+]; // Thêm 1 data mẫu nữa để bro test bộ lọc cho dễ
 
 // Biến toàn cục để biết đang Thêm mới (-1) hay Sửa (>= 0)
 let editIndex = -1;
@@ -14,14 +15,23 @@ function formatDate(dateString) {
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
 }
 
-// Hàm hiển thị danh sách sinh viên
-function renderStudents() {
+// Hàm hiển thị danh sách sinh viên (Nhận vào 1 mảng dữ liệu, mặc định là mảng students gốc)
+function renderStudents(dataToRender = students) {
     const tbody = document.getElementById('bang-sinh-vien');
     if (!tbody) return;
 
     tbody.innerHTML = '';
 
-    students.forEach((sv, index) => {
+    // Nếu không có dữ liệu nào khớp
+    if (dataToRender.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="padding: 20px; text-align: center; color: #94a3b8;">Không tìm thấy sinh viên nào!</td></tr>`;
+        return;
+    }
+
+    dataToRender.forEach((sv, index) => {
+        // Tìm vị trí thật của sinh viên này trong mảng students gốc (để Sửa/Xóa cho đúng)
+        const realIndex = students.findIndex(s => s.maSV === sv.maSV);
+
         const tr = document.createElement('tr');
         tr.style.borderBottom = '1px solid #334155';
         tr.innerHTML = `
@@ -37,30 +47,51 @@ function renderStudents() {
                 </span>
             </td>
             <td style="padding: 12px; text-align: right;">
-                <button onclick="editStudent(${index})" style="background: #f59e0b; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️ Sửa</button>
-                <button onclick="deleteStudent(${index})" style="background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">🗑️</button>
+                <button onclick="editStudent(${realIndex})" style="background: #f59e0b; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️ Sửa</button>
+                <button onclick="deleteStudent(${realIndex})" style="background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">🗑️</button>
             </td>
         `;
         tbody.appendChild(tr);
     });
 }
 
+// HÀM XỬ LÝ TÌM KIẾM VÀ LỌC
+function filterData() {
+    const searchKeyword = document.getElementById('timKiemInput').value.toLowerCase().trim();
+    const selectedClass = document.getElementById('filterLop').value;
+
+    const filtered = students.filter(sv => {
+        // Kiểm tra xem mã hoặc tên có chứa từ khóa không
+        const matchSearch = sv.maSV.toLowerCase().includes(searchKeyword) || sv.hoTen.toLowerCase().includes(searchKeyword);
+        // Kiểm tra xem có khớp lớp không (Nếu chọn "Tất cả các lớp" -> value rỗng -> luôn đúng)
+        const matchClass = selectedClass === "" || sv.lop === selectedClass;
+
+        return matchSearch && matchClass;
+    });
+
+    renderStudents(filtered);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Render danh sách ban đầu
     renderStudents();
 
-    // 2. Mở Modal Thêm Sinh Viên
+    // 2. Bắt sự kiện Tìm kiếm & Lọc
+    document.getElementById('timKiemInput').addEventListener('input', filterData);
+    document.getElementById('filterLop').addEventListener('change', filterData);
+
+    // 3. Mở Modal Thêm Sinh Viên
     const btnThem = document.getElementById('btnThemSV');
     if(btnThem) {
         btnThem.onclick = () => {
-            editIndex = -1; // Reset về trạng thái Thêm Mới
+            editIndex = -1; 
             document.getElementById('formSinhVien').reset();
             document.getElementById('modalTitle').innerText = 'Thêm Sinh Viên Mới';
             document.getElementById('modalSinhVien').style.display = 'flex';
         };
     }
 
-    // 3. Xử lý Form Submit (Cho cả Thêm và Sửa)
+    // 4. Xử lý Form Submit (Cho cả Thêm và Sửa)
     const form = document.getElementById('formSinhVien');
     if (form) {
         form.addEventListener('submit', (e) => {
@@ -73,19 +104,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 ngaySinh: document.getElementById('ngaySinh').value,
                 email: document.getElementById('email').value,
                 lop: document.getElementById('lop').value,
-                // Nếu đang sửa thì giữ nguyên trạng thái cũ, nếu thêm mới thì gán 'Đang học'
                 trangThai: editIndex === -1 ? 'Đang học' : students[editIndex].trangThai 
             };
 
             if (editIndex === -1) {
-                // Đẩy vào mảng nếu là Thêm mới
                 students.push(studentData);
             } else {
-                // Ghi đè dữ liệu cũ nếu là Sửa
                 students[editIndex] = studentData;
             }
 
-            renderStudents();
+            // Gọi lại hàm filterData thay vì renderStudents để nó giữ nguyên bộ lọc hiện tại
+            filterData(); 
             document.getElementById('modalSinhVien').style.display = 'none';
         });
     }
@@ -95,16 +124,15 @@ document.addEventListener('DOMContentLoaded', () => {
 function deleteStudent(index) {
     if (confirm(`Bro có chắc muốn xóa sinh viên ${students[index].hoTen}?`)) {
         students.splice(index, 1);
-        renderStudents();
+        filterData(); // Cập nhật lại UI dựa trên bộ lọc
     }
 }
 
-// Hàm Sửa (Đẩy data cũ lên Form)
+// Hàm Sửa 
 function editStudent(index) {
-    editIndex = index; // Ghi nhớ vị trí đang sửa
+    editIndex = index; 
     const sv = students[index];
 
-    // Đổ dữ liệu cũ vào các ô input
     document.getElementById('maSV').value = sv.maSV;
     document.getElementById('hoTen').value = sv.hoTen;
     document.getElementById('gioiTinh').value = sv.gioiTinh;
@@ -112,7 +140,6 @@ function editStudent(index) {
     document.getElementById('email').value = sv.email;
     document.getElementById('lop').value = sv.lop;
 
-    // Đổi tiêu đề Form và hiện Popup
     document.getElementById('modalTitle').innerText = '✏️ Cập nhật thông tin Sinh Viên';
     document.getElementById('modalSinhVien').style.display = 'flex';
 }
