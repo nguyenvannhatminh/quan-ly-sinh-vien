@@ -1,32 +1,52 @@
 // =============================================================
-// 1. KIỂM TRA ĐĂNG NHẬP & PHÂN QUYỀN (AUTH CHECK)
+// 1. DỮ LIỆU MẪU & KHỞI TẠO LOCALSTORAGE
 // =============================================================
-const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+const defaultStudents = [
+    { maSV: 'SV001', hoTen: 'Nguyễn Văn Anh', gioiTinh: 'Nam', ngaySinh: '2004-05-12', lop: 'CNTT1', trangThai: 'Đang học' },
+    { maSV: 'SV002', hoTen: 'Trần Thị Bảo', gioiTinh: 'Nữ', ngaySinh: '2004-08-20', lop: 'CNTT1', trangThai: 'Đang học' },
+    { maSV: 'SV003', hoTen: 'Lê Hoàng Cường', gioiTinh: 'Nam', ngaySinh: '2003-11-05', lop: 'CNTT2', trangThai: 'Đang học' },
+    { maSV: 'SV004', hoTen: 'Phạm Minh Dung', gioiTinh: 'Nữ', ngaySinh: '2004-02-14', lop: 'CNTT2', trangThai: 'Bảo lưu' },
+    { maSV: 'SV005', hoTen: 'Vũ Đức Em', gioiTinh: 'Nam', ngaySinh: '2004-09-30', lop: 'CNTT3', trangThai: 'Đang học' }
+];
 
-// Nếu chưa đăng nhập -> Đá về trang login.html ngay
-if (!currentUser) {
-    window.location.href = 'login.html';
+// Lấy dữ liệu từ localStorage, nếu rỗng thì lấy mặc định
+let danhSachSinhVien = JSON.parse(localStorage.getItem('danhSachSinhVien'));
+if (!danhSachSinhVien || danhSachSinhVien.length === 0) {
+    danhSachSinhVien = defaultStudents;
+    localStorage.setItem('danhSachSinhVien', JSON.stringify(danhSachSinhVien));
 }
 
-// Hàm đăng xuất
-function dangXuat() {
-    if (confirm('🔒 Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?')) {
-        localStorage.removeItem('currentUser');
-        window.location.href = 'login.html';
-    }
+// Kiểm tra user đăng nhập
+const currentUser = JSON.parse(localStorage.getItem('currentUser')) || { name: 'Admin', role: 'Admin' };
+
+function luuVaoLocalStorage() {
+    localStorage.setItem('danhSachSinhVien', JSON.stringify(danhSachSinhVien));
 }
 
-// Cập nhật thông tin User trên Header & Áp dụng Phân quyền
+// =============================================================
+// 2. KHỞI TẠO GIAO DIỆN & PHÂN QUYỀN
+// =============================================================
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('userNameHeader').innerText = currentUser.name;
-    const roleBadge = document.getElementById('roleBadgeHeader');
-    
-    roleBadge.innerText = currentUser.role;
-    if (currentUser.role === 'Admin') roleBadge.className = 'role-badge role-admin';
-    else if (currentUser.role === 'Giảng viên') roleBadge.className = 'role-badge role-giangvien';
-    else roleBadge.className = 'role-badge role-sinhvien';
+    // Cập nhật Topbar Header
+    if (document.getElementById('userName')) document.getElementById('userName').innerText = currentUser.name;
+    if (document.getElementById('userRole')) document.getElementById('userRole').innerText = currentUser.role.toUpperCase();
+    if (document.getElementById('userAvatar')) document.getElementById('userAvatar').innerText = currentUser.name.charAt(0).toUpperCase();
+
+    // Sự kiện Đăng xuất
+    const btnLogout = document.getElementById('btnLogout');
+    if (btnLogout) {
+        btnLogout.onclick = () => {
+            if (confirm('🔒 Bạn có chắc chắn muốn đăng xuất?')) {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
+            }
+        };
+    }
 
     apDungPhanQuyenUI();
+    initTabSwitching();
+    renderBang();
+    capNhatDashboard();
 });
 
 function apDungPhanQuyenUI() {
@@ -36,11 +56,9 @@ function apDungPhanQuyenUI() {
     const colHanhDong = document.getElementById('colHanhDong');
 
     if (currentUser.role === 'Giảng viên') {
-        // Giảng viên: Được thêm/sửa, xuất excel, KHÔNG ĐƯỢC nhập excel hoặc xóa
         if (btnNhapExcel) btnNhapExcel.style.display = 'none';
         if (colCheckAll) colCheckAll.style.display = 'none';
     } else if (currentUser.role === 'Sinh viên') {
-        // Sinh viên: Chỉ được XEM và tìm kiếm, ẩn toàn bộ nút chức năng tác động
         if (btnThemSV) btnThemSV.style.display = 'none';
         if (btnNhapExcel) btnNhapExcel.style.display = 'none';
         if (colCheckAll) colCheckAll.style.display = 'none';
@@ -49,30 +67,116 @@ function apDungPhanQuyenUI() {
 }
 
 // =============================================================
-// 2. BỘ DỮ LIỆU & RENDER BẢNG
+// 3. CHUYỂN TAB & DASHBOARD THỐNG KÊ (CHART.JS)
 // =============================================================
-const defaultStudents = [
-    { maSV: 'SV001', hoTen: 'Nguyễn Văn A', gioiTinh: 'Nam', ngaySinh: '2004-05-12', email: 'a.nguyen@truong.edu.vn', lop: 'CNTT1', trangThai: 'Đang học' },
-    { maSV: 'SV002', hoTen: 'Trần Thị B', gioiTinh: 'Nữ', ngaySinh: '2005-08-20', email: 'b.tran@truong.edu.vn', lop: 'CNTT2', trangThai: 'Đang học' }
-];
+let chartClassInstance = null;
+let chartGenderInstance = null;
 
-let danhSachSinhVien = JSON.parse(localStorage.getItem('danhSachSinhVien')) || defaultStudents;
+function initTabSwitching() {
+    const menuItems = document.querySelectorAll('.menu-item');
+    menuItems.forEach((item) => {
+        item.addEventListener('click', function() {
+            menuItems.forEach(m => m.classList.remove('active'));
+            this.classList.add('active');
 
-function luuVaoLocalStorage() {
-    localStorage.setItem('danhSachSinhVien', JSON.stringify(danhSachSinhVien));
+            const text = this.innerText.trim();
+            const tabDashboard = document.getElementById('section-dashboard');
+            const tabStudents = document.getElementById('section-students');
+
+            if (text.includes('Dashboard')) {
+                tabDashboard.style.display = 'block';
+                tabStudents.style.display = 'none';
+                capNhatDashboard();
+            } else {
+                tabDashboard.style.display = 'none';
+                tabStudents.style.display = 'block';
+            }
+        });
+    });
 }
 
+function capNhatDashboard() {
+    const total = danhSachSinhVien.length;
+    const activeCount = danhSachSinhVien.filter(sv => (sv.trangThai || 'Đang học') === 'Đang học').length;
+    const uniqueClasses = [...new Set(danhSachSinhVien.map(sv => sv.lop))].length;
+    const namCount = danhSachSinhVien.filter(sv => sv.gioiTinh === 'Nam').length;
+    const nuCount = danhSachSinhVien.filter(sv => sv.gioiTinh === 'Nữ').length;
+
+    if (document.getElementById('statTotal')) document.getElementById('statTotal').innerText = total;
+    if (document.getElementById('statActive')) document.getElementById('statActive').innerText = activeCount;
+    if (document.getElementById('statClasses')) document.getElementById('statClasses').innerText = uniqueClasses;
+    if (document.getElementById('statGenderRatio')) document.getElementById('statGenderRatio').innerText = `${namCount} / ${nuCount}`;
+
+    // Thống kê Lớp
+    const classCounts = {};
+    danhSachSinhVien.forEach(sv => {
+        classCounts[sv.lop] = (classCounts[sv.lop] || 0) + 1;
+    });
+
+    // Biểu đồ Lớp (Bar)
+    const elChartClass = document.getElementById('chartClass');
+    if (elChartClass) {
+        const ctxClass = elChartClass.getContext('2d');
+        if (chartClassInstance) chartClassInstance.destroy();
+        chartClassInstance = new Chart(ctxClass, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(classCounts),
+                datasets: [{
+                    label: 'Số sinh viên',
+                    data: Object.values(classCounts),
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+                    x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // Biểu đồ Giới tính (Doughnut)
+    const elChartGender = document.getElementById('chartGender');
+    if (elChartGender) {
+        const ctxGender = elChartGender.getContext('2d');
+        if (chartGenderInstance) chartGenderInstance.destroy();
+        chartGenderInstance = new Chart(ctxGender, {
+            type: 'doughnut',
+            data: {
+                labels: ['Nam', 'Nữ'],
+                datasets: [{
+                    data: [namCount, nuCount],
+                    backgroundColor: ['#60a5fa', '#f472b6']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#cbd5e1' } } }
+            }
+        });
+    }
+}
+
+// =============================================================
+// 4. RENDER BẢNG & LỌC TÌM KIẾM
+// =============================================================
 function renderBang(data = danhSachSinhVien) {
     const tbody = document.getElementById('bang-sinh-vien');
+    if (!tbody) return;
     tbody.innerHTML = '';
 
     const isSinhVien = currentUser.role === 'Sinh viên';
     const isGiangVien = currentUser.role === 'Giảng viên';
 
     if (data.length === 0) {
-        const colSpan = isSinhVien ? 6 : (isGiangVien ? 7 : 8);
-        tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align: center; padding: 20px; color: #94a3b8;">Không tìm thấy sinh viên nào!</td></tr>`;
-        capNhatNutXoaChon();
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 20px; color: #94a3b8;">Không tìm thấy sinh viên nào!</td></tr>`;
         return;
     }
 
@@ -86,52 +190,46 @@ function renderBang(data = danhSachSinhVien) {
         }
 
         const tr = document.createElement('tr');
-        tr.style.borderBottom = '1px solid var(--border)';
 
-        // Cột Checkbox (Chỉ Admin thấy)
         const colCheckbox = (!isSinhVien && !isGiangVien) 
-            ? `<td style="padding: 16px; text-align: center;"><input type="checkbox" class="check-item" data-index="${indexGoc}" style="cursor: pointer;" onchange="capNhatNutXoaChon()"></td>`
+            ? `<td style="text-align: center;"><input type="checkbox" class="check-item" data-index="${indexGoc}" onchange="capNhatNutXoaChon()"></td>`
             : '';
 
-        // Cột Hành động (Admin thấy Sửa+Xóa, Giảng viên chỉ thấy Sửa, Sinh viên ẩn)
         let colActions = '';
         if (currentUser.role === 'Admin') {
             colActions = `
-                <td style="padding: 16px; text-align: right;">
-                    <button class="btn-action btn-edit" onclick="suaSinhVien(${indexGoc})">✏️ Sửa</button>
-                    <button class="btn-action btn-delete" onclick="xoaSinhVien(${indexGoc})">🗑️ Xóa</button>
+                <td style="text-align: right;">
+                    <button class="btn" style="background:#f59e0b; color:white; padding:4px 8px; font-size:12px; margin-right:4px;" onclick="suaSinhVien(${indexGoc})">✏️ Sửa</button>
+                    <button class="btn" style="background:#ef4444; color:white; padding:4px 8px; font-size:12px;" onclick="xoaSinhVien(${indexGoc})">🗑️ Xóa</button>
                 </td>`;
         } else if (currentUser.role === 'Giảng viên') {
             colActions = `
-                <td style="padding: 16px; text-align: right;">
-                    <button class="btn-action btn-edit" onclick="suaSinhVien(${indexGoc})">✏️ Sửa</button>
+                <td style="text-align: right;">
+                    <button class="btn" style="background:#f59e0b; color:white; padding:4px 8px; font-size:12px;" onclick="suaSinhVien(${indexGoc})">✏️ Sửa</button>
                 </td>`;
         }
 
+        const statusClass = (sv.trangThai === 'Đang học') ? 'badge-active' : 'badge-inactive';
+
         tr.innerHTML = `
             ${colCheckbox}
-            <td style="padding: 16px; font-weight: bold; color: #60a5fa;">${sv.maSV}</td>
-            <td style="padding: 16px; font-weight: bold; color: white;">${sv.hoTen}</td>
-            <td style="padding: 16px; color: var(--text-sub);">${sv.gioiTinh}</td>
-            <td style="padding: 16px; color: var(--text-sub);">${ngaySinhFmt}</td>
-            <td style="padding: 16px; color: var(--text-sub);">${sv.lop}</td>
-            <td style="padding: 16px;"><span class="badge badge-active">${sv.trangThai || 'Đang học'}</span></td>
+            <td style="font-weight: bold; color: #60a5fa;">${sv.maSV}</td>
+            <td style="font-weight: 600;">${sv.hoTen}</td>
+            <td>${sv.gioiTinh}</td>
+            <td>${ngaySinhFmt}</td>
+            <td>${sv.lop}</td>
+            <td><span class="badge ${statusClass}">${sv.trangThai || 'Đang học'}</span></td>
             ${colActions}
         `;
         tbody.appendChild(tr);
     });
 
-    const checkAll = document.getElementById('checkAll');
-    if (checkAll) checkAll.checked = false;
     capNhatNutXoaChon();
 }
 
-// =============================================================
-// 3. TÌM KIẾM, LỌC & LỚP
-// =============================================================
 function locDuLieu() {
-    const tuKhoa = document.getElementById('timKiemInput').value.toLowerCase().trim();
-    const lopChon = document.getElementById('filterLop').value;
+    const tuKhoa = (document.getElementById('timKiemInput')?.value || '').toLowerCase().trim();
+    const lopChon = document.getElementById('filterLop')?.value || '';
 
     const ketQua = danhSachSinhVien.filter(sv => {
         const khopTuKhoa = sv.hoTen.toLowerCase().includes(tuKhoa) || sv.maSV.toLowerCase().includes(tuKhoa);
@@ -142,84 +240,90 @@ function locDuLieu() {
     renderBang(ketQua);
 }
 
-document.getElementById('timKiemInput').addEventListener('input', locDuLieu);
-document.getElementById('filterLop').addEventListener('change', locDuLieu);
+document.getElementById('timKiemInput')?.addEventListener('input', locDuLieu);
+document.getElementById('filterLop')?.addEventListener('change', locDuLieu);
 
 // =============================================================
-// 4. MODAL THÊM / SỬA / XÓA
+// 5. MODAL THÊM / SỬA / XÓA
 // =============================================================
 const modalSinhVien = document.getElementById('modalSinhVien');
 const formSinhVien = document.getElementById('formSinhVien');
 
-document.getElementById('btnThemSV').onclick = () => {
-    document.getElementById('modalTitle').innerText = 'Thêm Sinh Viên Mới';
-    document.getElementById('editIndex').value = '-1';
-    document.getElementById('maSV').readOnly = false;
-    formSinhVien.reset();
-    modalSinhVien.style.display = 'flex';
-};
+if (document.getElementById('btnThemSV')) {
+    document.getElementById('btnThemSV').onclick = () => {
+        document.getElementById('modalTitle').innerText = '➕ Thêm Sinh Viên Mới';
+        document.getElementById('editIndex').value = '-1';
+        document.getElementById('inputMaSV').readOnly = false;
+        formSinhVien.reset();
+        modalSinhVien.style.display = 'flex';
+    };
+}
 
-document.getElementById('btnHuyModal').onclick = () => { modalSinhVien.style.display = 'none'; };
+const dongModal = () => { modalSinhVien.style.display = 'none'; };
+if (document.getElementById('btnDongModal')) document.getElementById('btnDongModal').onclick = dongModal;
+if (document.getElementById('btnHuyModal')) document.getElementById('btnHuyModal').onclick = dongModal;
 
 function suaSinhVien(index) {
     const sv = danhSachSinhVien[index];
-    document.getElementById('modalTitle').innerText = 'Chỉnh Sửa Thông Tin Sinh Viên';
+    document.getElementById('modalTitle').innerText = '✏️ Chỉnh Sửa Sinh Viên';
     document.getElementById('editIndex').value = index;
     
-    document.getElementById('maSV').value = sv.maSV;
-    document.getElementById('maSV').readOnly = true;
-    document.getElementById('hoTen').value = sv.hoTen;
-    document.getElementById('gioiTinh').value = sv.gioiTinh;
-    document.getElementById('ngaySinh').value = sv.ngaySinh;
-    document.getElementById('email').value = sv.email || '';
-    document.getElementById('lop').value = sv.lop;
+    document.getElementById('inputMaSV').value = sv.maSV;
+    document.getElementById('inputMaSV').readOnly = true;
+    document.getElementById('inputHoTen').value = sv.hoTen;
+    document.getElementById('selectGioiTinh').value = sv.gioiTinh;
+    document.getElementById('inputNgaySinh').value = sv.ngaySinh;
+    document.getElementById('selectLop').value = sv.lop;
+    document.getElementById('selectTrangThai').value = sv.trangThai || 'Đang học';
 
     modalSinhVien.style.display = 'flex';
 }
 
-formSinhVien.onsubmit = (e) => {
-    e.preventDefault();
-    const index = parseInt(document.getElementById('editIndex').value);
-    
-    const studentData = {
-        maSV: document.getElementById('maSV').value.trim(),
-        hoTen: document.getElementById('hoTen').value.trim(),
-        gioiTinh: document.getElementById('gioiTinh').value,
-        ngaySinh: document.getElementById('ngaySinh').value,
-        email: document.getElementById('email').value.trim(),
-        lop: document.getElementById('lop').value,
-        trangThai: 'Đang học'
-    };
+if (formSinhVien) {
+    formSinhVien.onsubmit = (e) => {
+        e.preventDefault();
+        const index = parseInt(document.getElementById('editIndex').value);
+        
+        const studentData = {
+            maSV: document.getElementById('inputMaSV').value.trim(),
+            hoTen: document.getElementById('inputHoTen').value.trim(),
+            gioiTinh: document.getElementById('selectGioiTinh').value,
+            ngaySinh: document.getElementById('inputNgaySinh').value,
+            lop: document.getElementById('selectLop').value,
+            trangThai: document.getElementById('selectTrangThai').value
+        };
 
-    if (index === -1) {
-        if (danhSachSinhVien.some(sv => sv.maSV === studentData.maSV)) {
-            alert('Mã Sinh Viên này đã tồn tại trên hệ thống!');
-            return;
+        if (index === -1) {
+            if (danhSachSinhVien.some(sv => sv.maSV === studentData.maSV)) {
+                alert('⚠️ Mã Sinh Viên này đã tồn tại!');
+                return;
+            }
+            danhSachSinhVien.push(studentData);
+        } else {
+            danhSachSinhVien[index] = studentData;
         }
-        danhSachSinhVien.push(studentData);
-    } else {
-        danhSachSinhVien[index] = studentData;
-    }
 
-    luuVaoLocalStorage();
-    locDuLieu();
-    modalSinhVien.style.display = 'none';
-};
+        luuVaoLocalStorage();
+        locDuLieu();
+        capNhatDashboard();
+        dongModal();
+    };
+}
 
 function xoaSinhVien(index) {
-    if (confirm(`Bạn có chắc chắn muốn xóa sinh viên ${danhSachSinhVien[index].hoTen} (${danhSachSinhVien[index].maSV}) không?`)) {
+    if (confirm(`🗑️ Bạn có chắc chắn muốn xóa sinh viên ${danhSachSinhVien[index].hoTen}?`)) {
         danhSachSinhVien.splice(index, 1);
         luuVaoLocalStorage();
         locDuLieu();
+        capNhatDashboard();
     }
 }
 
-// Checkbox & Xóa hàng loạt
+// Xóa hàng loạt
 const checkAll = document.getElementById('checkAll');
 if (checkAll) {
     checkAll.addEventListener('change', function () {
-        const checkboxes = document.querySelectorAll('.check-item');
-        checkboxes.forEach(cb => cb.checked = this.checked);
+        document.querySelectorAll('.check-item').forEach(cb => cb.checked = this.checked);
         capNhatNutXoaChon();
     });
 }
@@ -232,7 +336,7 @@ function capNhatNutXoaChon() {
     if (btnXoaChon) {
         if (selectedBoxes.length > 0) {
             btnXoaChon.style.display = 'inline-block';
-            countSpan.innerText = selectedBoxes.length;
+            if (countSpan) countSpan.innerText = selectedBoxes.length;
         } else {
             btnXoaChon.style.display = 'none';
         }
@@ -243,98 +347,88 @@ const btnXoaChon = document.getElementById('btnXoaChon');
 if (btnXoaChon) {
     btnXoaChon.onclick = () => {
         const selectedBoxes = document.querySelectorAll('.check-item:checked');
-        const danhSachXoaIndices = Array.from(selectedBoxes).map(cb => parseInt(cb.getAttribute('data-index')));
+        const indices = Array.from(selectedBoxes).map(cb => parseInt(cb.getAttribute('data-index')));
 
-        if (confirm(`Bạn có chắc chắn muốn xóa ${danhSachXoaIndices.length} sinh viên đã chọn?`)) {
-            danhSachSinhVien = danhSachSinhVien.filter((_, idx) => !danhSachXoaIndices.includes(idx));
+        if (confirm(`🗑️ Bạn có chắc chắn muốn xóa ${indices.length} sinh viên đã chọn?`)) {
+            danhSachSinhVien = danhSachSinhVien.filter((_, idx) => !indices.includes(idx));
             luuVaoLocalStorage();
             locDuLieu();
+            capNhatDashboard();
         }
     };
 }
 
 // =============================================================
-// 5. EXCEL EXPORT & IMPORT
+// 6. EXCEL EXPORT & IMPORT
 // =============================================================
-document.getElementById('btnXuatExcel').onclick = () => {
-    if (danhSachSinhVien.length === 0) {
-        alert("Không có dữ liệu để xuất file!");
-        return;
-    }
-    const dataExport = danhSachSinhVien.map((sv, idx) => ({
-        "STT": idx + 1,
-        "Mã Sinh Viên": sv.maSV,
-        "Họ và Tên": sv.hoTen,
-        "Giới Tính": sv.gioiTinh,
-        "Ngày Sinh": sv.ngaySinh,
-        "Email": sv.email || '',
-        "Lớp": sv.lop,
-        "Trạng Thái": sv.trangThai || 'Đang học'
-    }));
+const btnXuatExcel = document.getElementById('btnXuatExcel');
+if (btnXuatExcel) {
+    btnXuatExcel.onclick = () => {
+        if (typeof XLSX === 'undefined') {
+            alert('Thư viện Excel chưa được tải xong, vui lòng thử lại!');
+            return;
+        }
+        const dataExport = danhSachSinhVien.map((sv, idx) => ({
+            "STT": idx + 1,
+            "Mã Sinh Viên": sv.maSV,
+            "Họ và Tên": sv.hoTen,
+            "Giới Tính": sv.gioiTinh,
+            "Ngày Sinh": sv.ngaySinh,
+            "Lớp": sv.lop,
+            "Trạng Thái": sv.trangThai || 'Đang học'
+        }));
 
-    const worksheet = XLSX.utils.json_to_sheet(dataExport);
-    worksheet['!cols'] = [{ wch: 6 }, { wch: 14 }, { wch: 24 }, { wch: 10 }, { wch: 14 }, { wch: 28 }, { wch: 12 }, { wch: 14 }];
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "DanhSachSinhVien");
-    XLSX.writeFile(workbook, "Danh_Sach_Sinh_Vien.xlsx");
-};
+        const worksheet = XLSX.utils.json_to_sheet(dataExport);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "DanhSachSinhVien");
+        XLSX.writeFile(workbook, "Danh_Sach_Sinh_Vien.xlsx");
+    };
+}
 
-const modalExcel = document.getElementById('modalExcel');
 const btnNhapExcel = document.getElementById('btnNhapExcel');
+const fileExcelInput = document.getElementById('fileExcelInput');
 
-if (btnNhapExcel) {
-    btnNhapExcel.onclick = () => {
-        document.getElementById('fileExcelInput').value = '';
-        modalExcel.style.display = 'flex';
+if (btnNhapExcel && fileExcelInput) {
+    btnNhapExcel.onclick = () => fileExcelInput.click();
+
+    fileExcelInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            try {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+
+                rows.forEach(row => {
+                    const maSV = row["Mã Sinh Viên"] || row["Mã SV"] || row["maSV"];
+                    const hoTen = row["Họ và Tên"] || row["Họ tên"] || row["hoTen"];
+
+                    if (maSV && hoTen) {
+                        const svObj = {
+                            maSV: String(maSV).trim(),
+                            hoTen: String(hoTen).trim(),
+                            gioiTinh: row["Giới Tính"] || "Nam",
+                            ngaySinh: row["Ngày Sinh"] || "2004-01-01",
+                            lop: row["Lớp"] || "CNTT1",
+                            trangThai: row["Trạng Thái"] || "Đang học"
+                        };
+                        const idx = danhSachSinhVien.findIndex(i => i.maSV === svObj.maSV);
+                        if (idx > -1) danhSachSinhVien[idx] = svObj;
+                        else danhSachSinhVien.push(svObj);
+                    }
+                });
+
+                luuVaoLocalStorage();
+                locDuLieu();
+                capNhatDashboard();
+                alert('📥 Nhập danh sách sinh viên từ Excel thành công!');
+            } catch (err) {
+                alert('❌ File Excel không hợp lệ!');
+            }
+        };
+        reader.readAsArrayBuffer(file);
     };
 }
-
-document.getElementById('btnHuyExcelModal').onclick = () => { modalExcel.style.display = 'none'; };
-
-document.getElementById('btnImportExcel').onclick = () => {
-    const fileInput = document.getElementById('fileExcelInput');
-    if (!fileInput.files || fileInput.files.length === 0) {
-        alert("Vui lòng chọn 1 file Excel!");
-        return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        try {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-
-            rows.forEach(row => {
-                const maSV = row["Mã Sinh Viên"] || row["Mã SV"] || row["maSV"];
-                const hoTen = row["Họ và Tên"] || row["Họ tên"] || row["hoTen"];
-
-                if (maSV && hoTen) {
-                    const svObj = {
-                        maSV: String(maSV).trim(),
-                        hoTen: String(hoTen).trim(),
-                        gioiTinh: row["Giới Tính"] || "Nam",
-                        ngaySinh: row["Ngày Sinh"] || "2004-01-01",
-                        email: row["Email"] || "",
-                        lop: row["Lớp"] || "CNTT1",
-                        trangThai: "Đang học"
-                    };
-                    const idx = danhSachSinhVien.findIndex(i => i.maSV === svObj.maSV);
-                    if (idx > -1) danhSachSinhVien[idx] = svObj;
-                    else danhSachSinhVien.push(svObj);
-                }
-            });
-
-            luuVaoLocalStorage();
-            locDuLieu();
-            modalExcel.style.display = 'none';
-            alert("Đã nhập thành công từ Excel!");
-        } catch (err) {
-            alert("Lỗi đọc file Excel!");
-        }
-    };
-    reader.readAsArrayBuffer(fileInput.files[0]);
-};
-
-// Khởi tạo
-renderBang();
