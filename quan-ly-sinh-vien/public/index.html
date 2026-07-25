@@ -16,6 +16,8 @@
             --primary: #4f46e5;
             --primary-hover: #4338ca;
             --border: #334155;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
         }
 
         body { background-color: var(--bg-main); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
@@ -38,9 +40,20 @@
 
         .content-area { padding: 24px; }
         .page-title { font-size: 20px; font-weight: bold; margin-bottom: 20px; }
+
+        /* Badge Trạng thái */
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; display: inline-block; }
+        .badge-active { background-color: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+
+        /* Action Buttons */
+        .btn-action { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; margin-left: 5px; transition: 0.2s; }
+        .btn-edit { background: #f59e0b; color: white; }
+        .btn-edit:hover { background: #d97706; }
+        .btn-delete { background: var(--danger); color: white; }
+        .btn-delete:hover { background: var(--danger-hover); }
     </style>
 
-    <!-- Thư viện đọc file Excel SheetJS -->
+    <!-- Thư viện đọc & xuất Excel SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
@@ -49,14 +62,12 @@
     <aside class="sidebar">
         <div class="sidebar-logo">🎓 Karl System</div>
 
-        <!-- Group: Dashboard -->
         <div class="menu-group">
             <ul class="menu-list">
                 <li class="menu-item">📊 Dashboard Tổng quan</li>
             </ul>
         </div>
 
-        <!-- Group: Quản lý sinh viên -->
         <div class="menu-group">
             <div class="menu-title">Quản lý sinh viên</div>
             <ul class="menu-list">
@@ -66,7 +77,6 @@
             </ul>
         </div>
 
-        <!-- Group: Quản lý tài khoản -->
         <div class="menu-group">
             <div class="menu-title">Quản lý tài khoản</div>
             <ul class="menu-list">
@@ -86,20 +96,23 @@
             <h1 class="page-title">Quản lý Sinh viên</h1>
             
             <!-- Thanh công cụ (Tìm kiếm & Nút bấm) -->
-            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; gap: 10px;">
-                <div style="display: flex; gap: 10px; flex: 1;">
-                    <input type="text" id="timKiemInput" placeholder="🔍 Tìm theo tên, mã SV..." style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-main); color: white; width: 300px; outline: none;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; gap: 10px; flex-wrap: wrap;">
+                <div style="display: flex; gap: 10px; flex: 1; min-width: 300px;">
+                    <input type="text" id="timKiemInput" placeholder="🔍 Tìm theo tên, mã SV..." style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-main); color: white; width: 280px; outline: none;">
                     
                     <select id="filterLop" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-main); color: white; outline: none; cursor: pointer;">
                         <option value="">🏫 Tất cả các lớp</option>
                         <option value="CNTT1">CNTT1</option>
                         <option value="CNTT2">CNTT2</option>
+                        <option value="CNTT3">CNTT3</option>
                     </select>
                 </div>
-                <div>
-                    <button id="btnThemSV" style="padding: 10px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;" onmouseover="this.style.backgroundColor='var(--primary-hover)'" onmouseout="this.style.backgroundColor='var(--primary)'">➕ Thêm Sinh Viên</button>
-                    <button id="btnNhapExcel" style="padding: 10px 16px; background: #16a34a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; margin-left: 5px;" onmouseover="this.style.backgroundColor='#15803d'" onmouseout="this.style.backgroundColor='#16a34a'">📂 Nhập Excel</button>
-                    <button id="btnXuatExcel" style="padding: 10px 16px; background: #eab308; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; margin-left: 5px;" onmouseover="this.style.backgroundColor='#ca8a04'" onmouseout="this.style.backgroundColor='#eab308'">📤 Xuất Excel</button>
+
+                <div style="display: flex; gap: 8px;">
+                    <button id="btnXoaChon" style="display: none; padding: 10px 16px; background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;">🗑️ Xóa đã chọn (<span id="countSelected">0</span>)</button>
+                    <button id="btnThemSV" style="padding: 10px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;">➕ Thêm Sinh Viên</button>
+                    <button id="btnNhapExcel" style="padding: 10px 16px; background: #16a34a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;">📂 Nhập Excel</button>
+                    <button id="btnXuatExcel" style="padding: 10px 16px; background: #eab308; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;">📤 Xuất Excel</button>
                 </div>
             </div>
 
@@ -108,7 +121,7 @@
                 <table style="width: 100%; border-collapse: collapse; text-align: left;">
                     <thead>
                         <tr style="background: #334155; border-bottom: 2px solid var(--border);">
-                            <th style="padding: 16px; width: 50px; text-align: center;"><input type="checkbox" id="checkAll"></th>
+                            <th style="padding: 16px; width: 50px; text-align: center;"><input type="checkbox" id="checkAll" style="cursor: pointer;"></th>
                             <th style="padding: 16px; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Mã SV</th>
                             <th style="padding: 16px; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Họ và Tên</th>
                             <th style="padding: 16px; color: var(--text-sub); font-size: 13px; text-transform: uppercase;">Giới tính</th>
@@ -119,19 +132,20 @@
                         </tr>
                     </thead>
                     <tbody id="bang-sinh-vien">
-                        <!-- JS sẽ render vào đây -->
+                        <!-- JS Render vào đây -->
                     </tbody>
                 </table>
             </div>
         </div>
     </main>
 
-    <!-- Modal Thêm/Sửa Sinh Viên (Popup ẩn) -->
+    <!-- Modal Thêm/Sửa Sinh Viên -->
     <div id="modalSinhVien" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
         <div style="background: #1e293b; padding: 24px; border-radius: 8px; width: 450px; border: 1px solid #334155; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);">
             <h2 id="modalTitle" style="margin-top: 0; margin-bottom: 20px; font-size: 20px;">Thêm Sinh Viên Mới</h2>
             
             <form id="formSinhVien">
+                <input type="hidden" id="editIndex" value="-1">
                 <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                     <div style="flex: 1;">
                         <label style="display: block; margin-bottom: 5px; font-size: 14px; color: #94a3b8;">Mã Sinh Viên</label>
@@ -168,28 +182,29 @@
                         <select id="lop" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; box-sizing: border-box; cursor: pointer;">
                             <option value="CNTT1">CNTT1</option>
                             <option value="CNTT2">CNTT2</option>
+                            <option value="CNTT3">CNTT3</option>
                         </select>
                     </div>
                 </div>
                 
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                    <button type="button" onclick="document.getElementById('modalSinhVien').style.display='none'" style="padding: 10px 16px; background: transparent; color: white; border: 1px solid #334155; border-radius: 6px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.backgroundColor='#334155'" onmouseout="this.style.backgroundColor='transparent'">Hủy</button>
-                    <button type="submit" style="padding: 10px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;" onmouseover="this.style.backgroundColor='#2563eb'" onmouseout="this.style.backgroundColor='#3b82f6'">💾 Lưu Thông Tin</button>
+                    <button type="button" id="btnHuyModal" style="padding: 10px 16px; background: transparent; color: white; border: 1px solid #334155; border-radius: 6px; cursor: pointer;">Hủy</button>
+                    <button type="submit" style="padding: 10px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">💾 Lưu Thông Tin</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal Popup Nhập Excel -->
+    <!-- Modal Nhập Excel -->
     <div id="modalExcel" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
         <div style="background: #1e293b; padding: 24px; border-radius: 8px; width: 420px; border: 1px solid #334155; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);">
             <h2 style="margin-top: 0; margin-bottom: 10px; font-size: 20px;">📂 Nhập Danh Sách Từ Excel</h2>
-            <p style="font-size: 13px; color: #94a3b8; margin-bottom: 15px;">Chọn file Excel (.xlsx, .xls hoặc .csv) chứa các cột: <b>Mã SV, Họ và tên, Giới tính, Ngày sinh, Email, Lớp</b>.</p>
+            <p style="font-size: 13px; color: #94a3b8; margin-bottom: 15px;">Chọn file Excel (.xlsx, .xls) chứa các cột: <b>Mã SV, Họ và tên, Giới tính, Ngày sinh, Email, Lớp</b>.</p>
 
             <input type="file" id="fileExcelInput" accept=".xlsx, .xls, .csv" style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 6px; border: 1px dashed #60a5fa; background: #0f172a; color: white; cursor: pointer; box-sizing: border-box;">
 
             <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                <button type="button" onclick="document.getElementById('modalExcel').style.display='none'" style="padding: 10px 16px; background: transparent; color: white; border: 1px solid #334155; border-radius: 6px; cursor: pointer;">Hủy</button>
+                <button type="button" id="btnHuyExcelModal" style="padding: 10px 16px; background: transparent; color: white; border: 1px solid #334155; border-radius: 6px; cursor: pointer;">Hủy</button>
                 <button type="button" id="btnImportExcel" style="padding: 10px 16px; background: #22c55e; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">📥 Nhập Data</button>
             </div>
         </div>
