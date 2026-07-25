@@ -1,12 +1,11 @@
 // =============================================================
-// 1. KIỂM TRA SESSION ĐĂNG NHẬP (Chuyển về login nếu chưa login)
+// 1. KIỂM TRA SESSION ĐĂNG NHẬP
 // =============================================================
 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 if (!currentUser) {
     window.location.href = 'login.html';
 }
 
-// Dữ liệu mẫu
 const defaultUsers = [
     { username: 'admin', password: '123456', hoTen: 'Quản trị viên', email: 'admin@truong.edu.vn', role: 'Admin' },
     { username: 'giangvien', password: '123456', hoTen: 'ThS. Nguyễn Văn A', email: 'gv.nguyenvana@truong.edu.vn', role: 'Giảng viên' },
@@ -50,9 +49,7 @@ function luuTatCaData() {
 // 2. KHỞI TẠO VÀ PHÂN QUYỀN HỆ THỐNG
 // =============================================================
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('userName')) document.getElementById('userName').innerText = currentUser.name;
-    if (document.getElementById('userRole')) document.getElementById('userRole').innerText = currentUser.role.toUpperCase();
-    if (document.getElementById('userAvatar')) document.getElementById('userAvatar').innerText = currentUser.name.charAt(0).toUpperCase();
+    capNhatUIUserInfo();
 
     document.getElementById('btnLogout').onclick = () => {
         if (confirm('🔒 Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?')) {
@@ -60,6 +57,14 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'login.html';
         }
     };
+
+    // Bấm vào User Info góc phải để mở Modal Hồ Sơ
+    const elUserInfo = document.querySelector('.user-info');
+    if (elUserInfo) {
+        elUserInfo.style.cursor = 'pointer';
+        elUserInfo.title = 'Bấm để xem hồ sơ / đổi mật khẩu';
+        elUserInfo.onclick = moModalProfile;
+    }
 
     apDungPhanQuyenRBAC();
     dongBoDropdownSelects();
@@ -69,34 +74,33 @@ document.addEventListener('DOMContentLoaded', () => {
     renderBangKhoa();
     renderBangUser();
     capNhatDashboard();
+    initExcelEvents();
 });
+
+function capNhatUIUserInfo() {
+    if (document.getElementById('userName')) document.getElementById('userName').innerText = currentUser.name;
+    if (document.getElementById('userRole')) document.getElementById('userRole').innerText = currentUser.role.toUpperCase();
+    if (document.getElementById('userAvatar')) document.getElementById('userAvatar').innerText = currentUser.name.charAt(0).toUpperCase();
+}
 
 function apDungPhanQuyenRBAC() {
     const role = currentUser.role;
 
-    // Ẩn Tab Tài khoản nếu không phải Admin
     if (role !== 'Admin') {
         const menuUsers = document.getElementById('menuUsers');
         if (menuUsers) menuUsers.style.display = 'none';
-    }
-
-    // Ẩn nút Thêm Lớp / Thêm Khoa nếu không phải Admin
-    if (role !== 'Admin') {
         if (document.getElementById('btnThemLop')) document.getElementById('btnThemLop').style.display = 'none';
         if (document.getElementById('btnThemKhoa')) document.getElementById('btnThemKhoa').style.display = 'none';
     }
 
-    // Quyền Sinh viên (chỉ xem)
     if (role === 'Sinh viên') {
         if (document.getElementById('btnThemSV')) document.getElementById('btnThemSV').style.display = 'none';
         if (document.getElementById('btnNhapExcel')) document.getElementById('btnNhapExcel').style.display = 'none';
         if (document.getElementById('colCheckAll')) document.getElementById('colCheckAll').style.display = 'none';
         if (document.getElementById('colHanhDong')) document.getElementById('colHanhDong').style.display = 'none';
-        
         document.querySelectorAll('.colHanhDongChung').forEach(el => el.style.display = 'none');
     }
 
-    // Quyền Giảng viên (Được sửa SV, không được thêm/xóa SV)
     if (role === 'Giảng viên') {
         if (document.getElementById('btnThemSV')) document.getElementById('btnThemSV').style.display = 'none';
         if (document.getElementById('btnNhapExcel')) document.getElementById('btnNhapExcel').style.display = 'none';
@@ -141,7 +145,138 @@ function dongBoDropdownSelects() {
 }
 
 // =============================================================
-// 3. ĐIỀU HƯỚNG TAB
+// 3. HỒ SƠ CÁ NHÂN & ĐỔI MẬT KHẨU
+// =============================================================
+function moModalProfile() {
+    const u = danhSachUsers.find(item => item.username === currentUser.username) || currentUser;
+    document.getElementById('profUsername').value = u.username;
+    document.getElementById('profRole').value = u.role;
+    document.getElementById('profHoTen').value = u.hoTen || u.name;
+    document.getElementById('profEmail').value = u.email || '';
+    document.getElementById('profOldPass').value = '';
+    document.getElementById('profNewPass').value = '';
+    document.getElementById('profConfirmPass').value = '';
+    document.getElementById('modalProfile').style.display = 'flex';
+}
+
+document.getElementById('formProfile').onsubmit = (e) => {
+    e.preventDefault();
+    const uIdx = danhSachUsers.findIndex(item => item.username === currentUser.username);
+    if (uIdx === -1) return;
+
+    const newHoTen = document.getElementById('profHoTen').value.trim();
+    const newEmail = document.getElementById('profEmail').value.trim();
+    const oldPass = document.getElementById('profOldPass').value.trim();
+    const newPass = document.getElementById('profNewPass').value.trim();
+    const confirmPass = document.getElementById('profConfirmPass').value.trim();
+
+    // Nếu đổi mật khẩu
+    if (oldPass || newPass || confirmPass) {
+        if (oldPass !== danhSachUsers[uIdx].password) {
+            return alert('⚠️ Mật khẩu hiện tại không chính xác!');
+        }
+        if (newPass.length < 6) {
+            return alert('⚠️ Mật khẩu mới phải có ít nhất 6 ký tự!');
+        }
+        if (newPass !== confirmPass) {
+            return alert('⚠️ Mật khẩu xác nhận không khớp!');
+        }
+        danhSachUsers[uIdx].password = newPass;
+    }
+
+    danhSachUsers[uIdx].hoTen = newHoTen;
+    danhSachUsers[uIdx].email = newEmail;
+
+    currentUser.name = newHoTen;
+    currentUser.email = newEmail;
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+    luuTatCaData();
+    capNhatUIUserInfo();
+    dongModal('modalProfile');
+    alert('🎉 Cập nhật thông tin thành công!');
+};
+
+// =============================================================
+// 4. NHẬP / XUẤT EXCEL THỰC TẾ (SheetJS)
+// =============================================================
+function initExcelEvents() {
+    const btnXuat = document.getElementById('btnXuatExcel');
+    const btnNhap = document.getElementById('btnNhapExcel');
+    const fileInput = document.getElementById('fileExcelInput');
+
+    if (btnXuat) {
+        btnXuat.onclick = () => {
+            if (danhSachSinhVien.length === 0) return alert('Không có dữ liệu để xuất Excel!');
+
+            const dataToExport = danhSachSinhVien.map((sv, idx) => ({
+                "STT": idx + 1,
+                "Mã SV": sv.maSV,
+                "Họ và Tên": sv.hoTen,
+                "Giới tính": sv.gioiTinh,
+                "Ngày sinh": sv.ngaySinh,
+                "Email": sv.email || '',
+                "Khoa / Ngành": sv.khoa || '',
+                "Lớp": sv.lop,
+                "Trạng thái": sv.trangThai || 'Đang học'
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "DanhSachSinhVien");
+            XLSX.writeFile(workbook, `Danh_Sach_Sinh_Vien_${new Date().toISOString().slice(0,10)}.xlsx`);
+        };
+    }
+
+    if (btnNhap && fileInput) {
+        btnNhap.onclick = () => fileInput.click();
+
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheetName = workbook.SheetNames[0];
+                    const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+                    let countAdded = 0;
+                    jsonData.forEach(item => {
+                        const maSV = String(item['Mã SV'] || item['maSV'] || '').trim();
+                        if (maSV && !danhSachSinhVien.some(sv => sv.maSV === maSV)) {
+                            danhSachSinhVien.push({
+                                maSV: maSV,
+                                hoTen: item['Họ và Tên'] || item['hoTen'] || 'Chưa nhập',
+                                gioiTinh: item['Giới tính'] || item['gioiTinh'] || 'Nam',
+                                ngaySinh: item['Ngày sinh'] || item['ngaySinh'] || '2004-01-01',
+                                email: item['Email'] || item['email'] || '',
+                                khoa: item['Khoa / Ngành'] || item['khoa'] || 'Công nghệ thông tin',
+                                lop: item['Lớp'] || item['lop'] || 'CNTT1',
+                                trangThai: item['Trạng thái'] || item['trangThai'] || 'Đang học'
+                            });
+                            countAdded++;
+                        }
+                    });
+
+                    luuTatCaData();
+                    locDuLieu();
+                    capNhatDashboard();
+                    alert(`✅ Đã nhập thành công ${countAdded} sinh viên mới từ Excel!`);
+                } catch (err) {
+                    alert('⚠️ Tệp Excel không đúng định dạng!');
+                }
+                fileInput.value = '';
+            };
+            reader.readAsArrayBuffer(file);
+        };
+    }
+}
+
+// =============================================================
+// 5. ĐIỀU HƯỚNG TAB
 // =============================================================
 function initTabSwitching() {
     const menuItems = document.querySelectorAll('.menu-item');
@@ -166,7 +301,7 @@ function initTabSwitching() {
 }
 
 // =============================================================
-// 4. QUẢN LÝ TÀI KHOẢN (Chỉ Admin)
+// 6. QUẢN LÝ TÀI KHOẢN (Chỉ Admin)
 // =============================================================
 function renderBangUser() {
     const tbody = document.getElementById('bang-tai-khoan');
@@ -248,7 +383,7 @@ function xoaUser(idx) {
 }
 
 // =============================================================
-// 5. QUẢN LÝ KHOA & LỚP (Renders & Actions)
+// 7. QUẢN LÝ KHOA & LỚP
 // =============================================================
 function renderBangKhoa() {
     const tbody = document.getElementById('bang-khoa');
@@ -287,7 +422,6 @@ function renderBangLop() {
     });
 }
 
-// Khoa / Lop CRUD Event Handlers
 document.getElementById('btnThemKhoa').onclick = () => {
     document.getElementById('modalKhoaTitle').innerText = '➕ Thêm Khoa Mới';
     document.getElementById('editKhoaIndex').value = '-1';
@@ -353,7 +487,7 @@ function xoaLop(idx) {
 }
 
 // =============================================================
-// 6. QUẢN LÝ SINH VIÊN
+// 8. QUẢN LÝ SINH VIÊN
 // =============================================================
 function renderBang(data = danhSachSinhVien) {
     const tbody = document.getElementById('bang-sinh-vien');
@@ -487,6 +621,16 @@ function xoaSinhVien(index) {
     }
 }
 
+// Xóa chọn hàng loạt
+const checkAllInput = document.getElementById('checkAll');
+if (checkAllInput) {
+    checkAllInput.addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.check-item');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+        capNhatNutXoaChon();
+    });
+}
+
 function capNhatNutXoaChon() {
     const selectedBoxes = document.querySelectorAll('.check-item:checked');
     const btnXoaChon = document.getElementById('btnXoaChon');
@@ -497,8 +641,25 @@ function capNhatNutXoaChon() {
     }
 }
 
+const btnXoaChon = document.getElementById('btnXoaChon');
+if (btnXoaChon) {
+    btnXoaChon.onclick = () => {
+        const selectedBoxes = document.querySelectorAll('.check-item:checked');
+        if (selectedBoxes.length === 0) return;
+
+        if (confirm(`🗑️ Bạn có chắc muốn xóa ${selectedBoxes.length} sinh viên đã chọn?`)) {
+            const indexesToDelete = Array.from(selectedBoxes).map(cb => parseInt(cb.getAttribute('data-index')));
+            danhSachSinhVien = danhSachSinhVien.filter((_, idx) => !indexesToDelete.includes(idx));
+            if (checkAllInput) checkAllInput.checked = false;
+            luuTatCaData();
+            locDuLieu();
+            capNhatDashboard();
+        }
+    };
+}
+
 // =============================================================
-// 7. DASHBOARD CHARTS
+// 9. DASHBOARD CHARTS
 // =============================================================
 let chartClassInstance = null;
 let chartGenderInstance = null;

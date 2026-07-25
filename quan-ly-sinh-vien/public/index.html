@@ -3,330 +3,415 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karl System - Quản lý Đào tạo</title>
+    <title>Hệ Thống Quản Lý Sinh Viên Pro</title>
+    <!-- Thư viện Chart.js & SheetJS Excel CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
         :root {
-            --bg-main: #0f172a; --bg-sidebar: #1e293b; --bg-card: #1e293b;
-            --text-main: #f8fafc; --text-sub: #94a3b8; --border: #334155;
-            --primary: #4f46e5; --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --accent: #38bdf8;
         }
-        body { background-color: var(--bg-main); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
-        .sidebar { width: 250px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between; }
-        .sidebar-logo { padding: 20px; font-size: 18px; font-weight: bold; color: white; border-bottom: 1px solid var(--border); }
-        .menu-list { list-style: none; margin-top: 15px; }
-        .menu-item { padding: 12px 20px; color: var(--text-sub); cursor: pointer; transition: 0.2s; font-size: 14px; display: flex; align-items: center; gap: 8px; }
-        .menu-item:hover { background-color: #334155; color: white; }
-        .menu-item.active { background-color: #312e81; color: #818cf8; border-right: 4px solid var(--primary); font-weight: bold; }
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        .header { height: 60px; background-color: var(--bg-sidebar); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
-        .user-info { display: flex; align-items: center; gap: 10px; }
-        .avatar { width: 34px; height: 34px; border-radius: 50%; background: #4f46e5; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .role-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; background: #334155; color: #818cf8; }
-        .content-area { padding: 24px; }
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .stat-card { background: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 8px; }
-        .stat-val { font-size: 28px; font-weight: bold; margin-top: 5px; color: #60a5fa; }
-        .chart-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
-        .chart-card { background: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 8px; height: 320px; }
-        .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; display: inline-block; }
-        .badge-danghoc { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
-        .badge-canhbao { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-        .badge-totnghiep { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+        /* Layout */
+        .app-container { display: flex; width: 100vw; min-height: 100vh; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background-color: var(--bg-card); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 0; shrink: 0; }
+        .sidebar-brand { font-size: 18px; font-weight: bold; color: var(--accent); padding: 0 20px 20px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+        .sidebar-menu { list-style: none; margin-top: 20px; flex-grow: 1; }
+        .menu-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: var(--text-sub); cursor: pointer; transition: all 0.2s; font-weight: 500; }
+        .menu-item:hover, .menu-item.active { background-color: rgba(79, 70, 229, 0.15); color: var(--accent); border-left: 4px solid var(--primary); }
+
+        /* Main Content */
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; background: var(--bg-dark); overflow-y: auto; height: 100vh; }
+        
+        /* Top Header */
+        .header { height: 65px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; sticky: top; top: 0; z-index: 10; }
+        .user-info { display: flex; align-items: center; gap: 12px; border-left: 1px solid var(--border); padding-left: 20px; }
+        .avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
+
+        /* Main Area */
+        .content-body { padding: 30px; flex-grow: 1; }
+        .page-title { font-size: 22px; font-weight: bold; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+
+        /* Stats Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 16px; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+        .stat-value { font-size: 24px; font-weight: bold; margin-top: 4px; }
+
+        /* Charts Section */
+        .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .chart-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; height: 320px; }
+
+        /* Toolbar & Tables */
+        .toolbar { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; justify-content: space-between; align-items: center; }
+        .search-box { display: flex; gap: 10px; flex-grow: 1; max-width: 600px; }
+        
+        input, select { background: var(--bg-card); border: 1px solid var(--border); color: white; padding: 10px 14px; border-radius: 8px; outline: none; font-size: 14px; }
+        input:focus, select:focus { border-color: var(--primary); }
+
+        .btn { padding: 10px 16px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; font-size: 14px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-success { background: #10b981; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-secondary { background: #475569; color: white; }
+
+        /* Table Style */
+        .table-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
-        th { background: #334155; color: var(--text-sub); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-box { background: #1e293b; border: 1px solid #334155; padding: 24px; border-radius: 8px; width: 500px; color: white; }
-        .form-row { display: flex; gap: 12px; margin-bottom: 12px; }
-        .form-col { flex: 1; }
-        .form-col label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 4px; }
-        .form-col input, .form-col select { width: 100%; padding: 8px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white; outline: none; }
+        th, td { padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { background: rgba(15, 23, 42, 0.6); color: var(--text-sub); font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+        tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+        /* Badges */
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; }
+        .badge-danghoc { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .badge-canhbao { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .badge-totnghiep { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.75); display: none; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
+        .modal-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 550px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .form-col { display: flex; flex-direction: column; gap: 6px; }
+        .form-col label { font-size: 12px; color: var(--text-sub); font-weight: 600; }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div>
-            <div class="sidebar-logo">🎓 Karl System</div>
-            <ul class="menu-list">
-                <li class="menu-item active" data-tab="dashboard">📊 Dashboard</li>
-                <li class="menu-item" data-tab="students">👨‍🎓 Quản lý Sinh viên</li>
-                <li class="menu-item" data-tab="classes">🏫 Quản lý Lớp học</li>
-                <li class="menu-item" data-tab="departments">🏢 Quản lý Khoa / Ngành</li>
-                <li class="menu-item" data-tab="users" id="menuUsers">👥 Quản lý Tài khoản</li>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-brand">
+                🎓 <span>EDU MANAGER</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="menu-item active" data-tab="dashboard">📊 Dashboard Thống Kê</li>
+                <li class="menu-item" data-tab="students">🎓 Quản Lý Sinh Viên</li>
+                <li class="menu-item" data-tab="classes">🏫 Quản Lý Lớp Học</li>
+                <li class="menu-item" data-tab="departments">🏢 Quản Lý Khoa / Ngành</li>
+                <li class="menu-item" data-tab="users" id="menuUsers">🔐 Quản Lý Tài Khoản</li>
             </ul>
         </div>
-        <div style="padding: 15px; border-top: 1px solid var(--border);">
-            <button id="btnLogout" style="width: 100%; padding: 8px; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; cursor: pointer; font-weight: bold;">🚪 Đăng xuất</button>
-        </div>
-    </aside>
 
-    <main class="main-content">
-        <header class="header">
-            <span style="font-size: 14px; font-weight: 500; color: var(--text-sub);">Hệ thống Quản lý Đào tạo</span>
-            <div class="user-info">
-                <div class="avatar" id="userAvatar">A</div>
-                <div>
-                    <div id="userName" style="font-size: 13px; font-weight: bold;">Admin</div>
-                    <span id="userRole" class="role-tag">ADMIN</span>
+        <!-- MAIN CONTENT AREA -->
+        <div class="main-content">
+            <!-- HEADER -->
+            <div class="header">
+                <div style="font-weight: 600; color: var(--text-sub);">Hệ thống Quản lý Đào tạo Đại học</div>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div class="user-info">
+                        <div class="avatar" id="userAvatar">A</div>
+                        <div>
+                            <div id="userName" style="font-weight: bold; font-size: 14px;">Admin User</div>
+                            <div id="userRole" style="font-size: 11px; color: var(--text-sub);">ADMINISTRATOR</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger" id="btnLogout" style="padding: 6px 12px; font-size: 12px;">🚪 Đăng xuất</button>
                 </div>
             </div>
-        </header>
 
-        <div class="content-area">
-            <!-- 1. DASHBOARD -->
-            <section id="section-dashboard">
-                <h2 style="margin-bottom: 20px;">📊 Dashboard Thống kê Tổng quan</h2>
-                <div class="stat-grid">
-                    <div class="stat-card">
-                        <div style="color: var(--text-sub); font-size: 12px;">TỔNG SỐ SINH VIÊN</div>
-                        <div class="stat-val" id="statTotal">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div style="color: var(--text-sub); font-size: 12px;">ĐANG HỌC</div>
-                        <div class="stat-val" id="statActive" style="color: #22c55e;">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div style="color: var(--text-sub); font-size: 12px;">BỊ CẢNH BÁO</div>
-                        <div class="stat-val" id="statWarning" style="color: #f59e0b;">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div style="color: var(--text-sub); font-size: 12px;">ĐÃ TỐT NGHIỆP</div>
-                        <div class="stat-val" id="statGraduated" style="color: #3b82f6;">0</div>
-                    </div>
-                </div>
-
-                <div class="chart-grid">
-                    <div class="chart-card">
-                        <div style="font-size: 14px; font-weight: bold; margin-bottom: 10px;">Phân bố sinh viên theo Lớp</div>
-                        <div style="height: 250px;"><canvas id="chartClass"></canvas></div>
-                    </div>
-                    <div class="chart-card">
-                        <div style="font-size: 14px; font-weight: bold; margin-bottom: 10px;">Tỷ lệ Giới tính</div>
-                        <div style="height: 250px;"><canvas id="chartGender"></canvas></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 2. QUẢN LÝ SINH VIÊN -->
-            <section id="section-students" style="display: none;">
-                <h2 style="margin-bottom: 20px;">👨‍🎓 Quản lý Danh sách Sinh viên</h2>
-
-                <div style="display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
-                    <div style="display: flex; gap: 8px; flex: 1; min-width: 300px;">
-                        <input type="text" id="timKiemInput" placeholder="🔍 Tìm theo Tên, Mã SV, Email..." style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-main); color: white; width: 220px;">
-                        <select id="filterKhoa" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-main); color: white;"><option value="">🏢 Tất cả Khoa</option></select>
-                        <select id="filterLop" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-main); color: white;"><option value="">🏫 Tất cả Lớp</option></select>
+            <!-- BODY CONTENT -->
+            <div class="content-body">
+                
+                <!-- SECTION 1: DASHBOARD -->
+                <div id="section-dashboard">
+                    <div class="page-title">📊 Tổng Quan Thống Kê Hệ Thống</div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(79, 70, 229, 0.2); color: #818cf8;">👥</div>
+                            <div><div style="color: var(--text-sub); font-size: 13px;">Tổng Sinh Viên</div><div class="stat-value" id="statTotal">0</div></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">✅</div>
+                            <div><div style="color: var(--text-sub); font-size: 13px;">Đang Học</div><div class="stat-value" id="statActive">0</div></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">⚠️</div>
+                            <div><div style="color: var(--text-sub); font-size: 13px;">Bị Cảnh Báo</div><div class="stat-value" id="statWarning">0</div></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;">🎓</div>
+                            <div><div style="color: var(--text-sub); font-size: 13px;">Đã Tốt Nghiệp</div><div class="stat-value" id="statGraduated">0</div></div>
+                        </div>
                     </div>
 
-                    <div style="display: flex; gap: 8px;">
-                        <button id="btnXoaChon" style="display: none; padding: 8px 14px; background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">🗑️ Xóa đã chọn (<span id="countSelected">0</span>)</button>
-                        <button id="btnThemSV" style="padding: 8px 14px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">➕ Thêm SV</button>
-                        <button id="btnNhapExcel" style="padding: 8px 14px; background: #16a34a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">📂 Nhập Excel</button>
-                        <button id="btnXuatExcel" style="padding: 8px 14px; background: #eab308; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">📤 Xuất Excel</button>
-                        <input type="file" id="fileExcelInput" accept=".xlsx, .xls, .csv" style="display: none;">
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <h4 style="margin-bottom: 15px; color: var(--text-sub);">Phân bổ Sinh viên theo Lớp</h4>
+                            <div style="position: relative; height: 230px;"><canvas id="chartClass"></canvas></div>
+                        </div>
+                        <div class="chart-card">
+                            <h4 style="margin-bottom: 15px; color: var(--text-sub);">Tỷ lệ Giới tính</h4>
+                            <div style="position: relative; height: 230px;"><canvas id="chartGender"></canvas></div>
+                        </div>
                     </div>
                 </div>
 
-                <div style="background: var(--bg-card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border);">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th id="colCheckAll" style="width: 40px; text-align: center;"><input type="checkbox" id="checkAll"></th>
-                                <th>Mã SV</th>
-                                <th>Họ và Tên</th>
-                                <th>Giới tính</th>
-                                <th>Email</th>
-                                <th>Khoa / Ngành</th>
-                                <th>Lớp</th>
-                                <th>Trạng thái</th>
-                                <th id="colHanhDong" style="text-align: right;">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody id="bang-sinh-vien"></tbody>
-                    </table>
-                </div>
-            </section>
+                <!-- SECTION 2: QUẢN LÝ SINH VIÊN -->
+                <div id="section-students" style="display: none;">
+                    <div class="page-title">
+                        🎓 Quản Lý Danh Sách Sinh Viên
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-danger" id="btnXoaChon" style="display: none;">🗑️ Xóa (<span id="countSelected">0</span>)</button>
+                            <button class="btn btn-secondary" id="btnNhapExcel">📥 Nhập Excel</button>
+                            <button class="btn btn-success" id="btnXuatExcel">📤 Xuất Excel</button>
+                            <button class="btn btn-primary" id="btnThemSV">➕ Thêm Sinh Viên</button>
+                        </div>
+                    </div>
 
-            <!-- 3. QUẢN LÝ LỚP HỌC -->
-            <section id="section-classes" style="display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2>🏫 Quản lý Danh sách Lớp học</h2>
-                    <button id="btnThemLop" style="padding: 8px 14px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">➕ Thêm Lớp Mới</button>
-                </div>
-                <div style="background: var(--bg-card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border);">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>STT</th>
-                                <th>Mã Lớp</th>
-                                <th>Tên Lớp Học</th>
-                                <th>Khoa / Ngành Trực Thuộc</th>
-                                <th>Sĩ số Sinh viên</th>
-                                <th class="colHanhDongChung" style="text-align: right;">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody id="bang-lop-hoc"></tbody>
-                    </table>
-                </div>
-            </section>
+                    <div class="toolbar">
+                        <div class="search-box">
+                            <input type="text" id="timKiemInput" placeholder="🔍 Tìm kiếm theo Mã SV, Họ tên..." style="flex-grow: 1;">
+                            <select id="filterKhoa"><option value="">🏢 Tất cả Khoa</option></select>
+                            <select id="filterLop"><option value="">🏫 Tất cả Lớp</option></select>
+                        </div>
+                    </div>
 
-            <!-- 4. QUẢN LÝ KHOA / NGÀNH -->
-            <section id="section-departments" style="display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2>🏢 Quản lý Danh sách Khoa / Ngành</h2>
-                    <button id="btnThemKhoa" style="padding: 8px 14px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">➕ Thêm Khoa Mới</button>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th id="colCheckAll" style="width: 40px; text-align: center;"><input type="checkbox" id="checkAll"></th>
+                                    <th>Mã SV</th>
+                                    <th>Họ và Tên</th>
+                                    <th>Giới tính</th>
+                                    <th>Email</th>
+                                    <th>Khoa / Ngành</th>
+                                    <th>Lớp</th>
+                                    <th>Trạng thái</th>
+                                    <th id="colHanhDong" style="text-align: right;">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bang-sinh-vien"></tbody>
+                        </table>
+                    </div>
                 </div>
-                <div style="background: var(--bg-card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border);">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>STT</th>
-                                <th>Mã Khoa</th>
-                                <th>Tên Khoa / Ngành</th>
-                                <th>Mô tả / Trưởng khoa</th>
-                                <th class="colHanhDongChung" style="text-align: right;">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody id="bang-khoa"></tbody>
-                    </table>
-                </div>
-            </section>
 
-            <!-- 5. QUẢN LÝ TÀI KHOẢN -->
-            <section id="section-users" style="display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2>👥 Quản lý Tài khoản & Phân quyền</h2>
-                    <button id="btnThemUser" style="padding: 8px 14px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">➕ Thêm Tài khoản</button>
+                <!-- SECTION 3: QUẢN LÝ LỚP HỌC -->
+                <div id="section-classes" style="display: none;">
+                    <div class="page-title">
+                        🏫 Quản Lý Danh Sách Lớp Học
+                        <button class="btn btn-primary" id="btnThemLop">➕ Thêm Lớp Mới</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Mã Lớp</th>
+                                    <th>Tên Lớp</th>
+                                    <th>Thuộc Khoa</th>
+                                    <th>Sĩ số SV</th>
+                                    <th class="colHanhDongChung" style="text-align: right;">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bang-lop-hoc"></tbody>
+                        </table>
+                    </div>
                 </div>
-                <div style="background: var(--bg-card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border);">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>STT</th>
-                                <th>Tên Đăng Nhập</th>
-                                <th>Họ và Tên</th>
-                                <th>Email</th>
-                                <th>Vai Trò (Role)</th>
-                                <th style="text-align: right;">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody id="bang-tai-khoan"></tbody>
-                    </table>
+
+                <!-- SECTION 4: QUẢN LÝ KHOA / NGÀNH -->
+                <div id="section-departments" style="display: none;">
+                    <div class="page-title">
+                        🏢 Quản Lý Khoa / Ngành Đào Tạo
+                        <button class="btn btn-primary" id="btnThemKhoa">➕ Thêm Khoa Mới</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Mã Khoa</th>
+                                    <th>Tên Khoa / Ngành</th>
+                                    <th>Mô tả</th>
+                                    <th class="colHanhDongChung" style="text-align: right;">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bang-khoa"></tbody>
+                        </table>
+                    </div>
                 </div>
-            </section>
+
+                <!-- SECTION 5: QUẢN LÝ TÀI KHOẢN (Chỉ Admin) -->
+                <div id="section-users" style="display: none;">
+                    <div class="page-title">
+                        🔐 Quản Lý Tài Khoản Hệ Thống
+                        <button class="btn btn-primary" id="btnThemUser">➕ Thêm Tài Khoản</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tên đăng nhập</th>
+                                    <th>Họ và Tên</th>
+                                    <th>Email</th>
+                                    <th>Vai trò</th>
+                                    <th style="text-align: right;">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bang-tai-khoan"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
         </div>
-    </main>
+    </div>
 
-    <!-- Modal Sinh Viên -->
+    <!-- Hidden Input dùng cho Nhập Excel -->
+    <input type="file" id="fileExcelInput" accept=".xlsx, .xls" style="display: none;">
+
+    <!-- MODAL SINH VIÊN -->
     <div class="modal-overlay" id="modalSinhVien">
         <div class="modal-box">
-            <h3 id="modalTitle" style="margin-bottom: 16px;">Thêm Sinh Viên Mới</h3>
+            <h3 id="modalTitle" style="margin-bottom: 16px;">➕ Thêm Sinh Viên Mới</h3>
             <form id="formSinhVien">
                 <input type="hidden" id="editIndex" value="-1">
                 <div class="form-row">
-                    <div class="form-col"><label>Mã SV</label><input type="text" id="inputMaSV" required placeholder="VD: SV001"></div>
-                    <div class="form-col"><label>Họ và Tên</label><input type="text" id="inputHoTen" required placeholder="Nhập tên..."></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-col"><label>Giới tính</label><select id="selectGioiTinh"><option value="Nam">Nam</option><option value="Nữ">Nữ</option></select></div>
-                    <div class="form-col"><label>Ngày sinh</label><input type="date" id="inputNgaySinh" required style="color-scheme: dark;"></div>
-                </div>
-                <div class="form-row"><div class="form-col"><label>Email</label><input type="email" id="inputEmail" placeholder="sv@truong.edu.vn" required></div></div>
-                <div class="form-row">
-                    <div class="form-col"><label>Khoa / Ngành</label><select id="selectKhoa"></select></div>
-                    <div class="form-col"><label>Lớp học</label><select id="selectLop"></select></div>
+                    <div class="form-col"><label>Mã Sinh Viên</label><input type="text" id="inputMaSV" required placeholder="VD: SV006"></div>
+                    <div class="form-col"><label>Họ và Tên</label><input type="text" id="inputHoTen" required placeholder="VD: Nguyễn Văn A"></div>
                 </div>
                 <div class="form-row">
                     <div class="form-col">
+                        <label>Giới tính</label>
+                        <select id="selectGioiTinh"><option value="Nam">Nam</option><option value="Nữ">Nữ</option></select>
+                    </div>
+                    <div class="form-col"><label>Ngày sinh</label><input type="date" id="inputNgaySinh" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col"><label>Email</label><input type="email" id="inputEmail" placeholder="sv@truong.edu.vn"></div>
+                    <div class="form-col">
                         <label>Trạng thái</label>
                         <select id="selectTrangThai">
-                            <option value="Đang học">🟢 Đang học</option>
-                            <option value="Bị cảnh báo">⚠️ Bị cảnh báo</option>
-                            <option value="Đã tốt nghiệp">🎓 Đã tốt nghiệp</option>
+                            <option value="Đang học">Đang học</option>
+                            <option value="Bị cảnh báo">Bị cảnh báo</option>
+                            <option value="Đã tốt nghiệp">Đã tốt nghiệp</option>
                         </select>
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-col"><label>Khoa / Ngành</label><select id="selectKhoa"></select></div>
+                    <div class="form-col"><label>Lớp Học</label><select id="selectLop"></select></div>
+                </div>
                 <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px;">
-                    <button type="button" onclick="dongModal('modalSinhVien')" style="padding: 8px 16px; background: transparent; border: 1px solid var(--border); color: white; border-radius: 6px; cursor: pointer;">Hủy</button>
-                    <button type="submit" style="padding: 8px 16px; background: var(--primary); border: none; color: white; border-radius: 6px; cursor: pointer; font-weight: bold;">💾 Lưu thông tin</button>
+                    <button type="button" class="btn btn-secondary" onclick="dongModal('modalSinhVien')">Hủy</button>
+                    <button type="submit" class="btn btn-primary">💾 Lưu thông tin</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal Lớp -->
+    <!-- MODAL KHOA -->
+    <div class="modal-overlay" id="modalKhoa">
+        <div class="modal-box">
+            <h3 id="modalKhoaTitle" style="margin-bottom: 16px;">➕ Thêm Khoa Mới</h3>
+            <form id="formKhoa">
+                <input type="hidden" id="editKhoaIndex" value="-1">
+                <div class="form-row">
+                    <div class="form-col"><label>Mã Khoa</label><input type="text" id="inputMaKhoa" required placeholder="VD: CNTT"></div>
+                    <div class="form-col"><label>Tên Khoa</label><input type="text" id="inputTenKhoa" required placeholder="VD: Công nghệ thông tin"></div>
+                </div>
+                <div class="form-col" style="margin-bottom: 16px;">
+                    <label>Mô tả</label><input type="text" id="inputMoTaKhoa" placeholder="Mô tả ngắn gọn về khoa...">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                    <button type="button" class="btn btn-secondary" onclick="dongModal('modalKhoa')">Hủy</button>
+                    <button type="submit" class="btn btn-primary">💾 Lưu Khoa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL LỚP -->
     <div class="modal-overlay" id="modalLop">
         <div class="modal-box">
-            <h3 id="modalLopTitle" style="margin-bottom: 16px;">Thêm Lớp Học Mới</h3>
+            <h3 id="modalLopTitle" style="margin-bottom: 16px;">➕ Thêm Lớp Mới</h3>
             <form id="formLop">
                 <input type="hidden" id="editLopIndex" value="-1">
                 <div class="form-row">
                     <div class="form-col"><label>Mã Lớp</label><input type="text" id="inputMaLop" required placeholder="VD: CNTT1"></div>
                     <div class="form-col"><label>Tên Lớp</label><input type="text" id="inputTenLop" required placeholder="VD: Công nghệ thông tin 1"></div>
                 </div>
-                <div class="form-row">
-                    <div class="form-col"><label>Khoa Trực Thuộc</label><select id="selectKhoaForLop"></select></div>
+                <div class="form-col" style="margin-bottom: 16px;">
+                    <label>Thuộc Khoa</label><select id="selectKhoaForLop"></select>
                 </div>
-                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px;">
-                    <button type="button" onclick="dongModal('modalLop')" style="padding: 8px 16px; background: transparent; border: 1px solid var(--border); color: white; border-radius: 6px; cursor: pointer;">Hủy</button>
-                    <button type="submit" style="padding: 8px 16px; background: var(--primary); border: none; color: white; border-radius: 6px; cursor: pointer; font-weight: bold;">💾 Lưu Lớp</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal Khoa -->
-    <div class="modal-overlay" id="modalKhoa">
-        <div class="modal-box">
-            <h3 id="modalKhoaTitle" style="margin-bottom: 16px;">Thêm Khoa / Ngành Mới</h3>
-            <form id="formKhoa">
-                <input type="hidden" id="editKhoaIndex" value="-1">
-                <div class="form-row">
-                    <div class="form-col"><label>Mã Khoa</label><input type="text" id="inputMaKhoa" required placeholder="VD: CNTT"></div>
-                    <div class="form-col"><label>Tên Khoa / Ngành</label><input type="text" id="inputTenKhoa" required placeholder="VD: Công nghệ thông tin"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-col"><label>Mô tả / Trưởng Khoa</label><input type="text" id="inputMoTaKhoa" placeholder="VD: Trưởng khoa: TS. Nguyễn Văn A"></div>
-                </div>
-                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px;">
-                    <button type="button" onclick="dongModal('modalKhoa')" style="padding: 8px 16px; background: transparent; border: 1px solid var(--border); color: white; border-radius: 6px; cursor: pointer;">Hủy</button>
-                    <button type="submit" style="padding: 8px 16px; background: var(--primary); border: none; color: white; border-radius: 6px; cursor: pointer; font-weight: bold;">💾 Lưu Khoa</button>
+                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                    <button type="button" class="btn btn-secondary" onclick="dongModal('modalLop')">Hủy</button>
+                    <button type="submit" class="btn btn-primary">💾 Lưu Lớp</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal Tài Khoản -->
+    <!-- MODAL USER -->
     <div class="modal-overlay" id="modalUser">
         <div class="modal-box">
-            <h3 id="modalUserTitle" style="margin-bottom: 16px;">Thêm Tài Khoản Mới</h3>
+            <h3 id="modalUserTitle" style="margin-bottom: 16px;">➕ Thêm Tài Khoản</h3>
             <form id="formUser">
                 <input type="hidden" id="editUserIndex" value="-1">
                 <div class="form-row">
-                    <div class="form-col"><label>Tên đăng nhập</label><input type="text" id="inputUsername" required placeholder="VD: gv_nguyen"></div>
-                    <div class="form-col"><label>Mật khẩu</label><input type="password" id="inputUserPassword" required placeholder="••••••••"></div>
+                    <div class="form-col"><label>Tên đăng nhập</label><input type="text" id="inputUsername" required></div>
+                    <div class="form-col"><label>Mật khẩu</label><input type="password" id="inputUserPassword" required></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-col"><label>Họ và Tên</label><input type="text" id="inputUserHoTen" required placeholder="VD: Nguyễn Văn A"></div>
-                    <div class="form-col"><label>Email</label><input type="email" id="inputUserEmail" required placeholder="user@truong.edu.vn"></div>
+                    <div class="form-col"><label>Họ và Tên</label><input type="text" id="inputUserHoTen" required></div>
+                    <div class="form-col"><label>Email</label><input type="email" id="inputUserEmail" required></div>
+                </div>
+                <div class="form-col" style="margin-bottom: 16px;">
+                    <label>Vai trò</label>
+                    <select id="selectUserRole">
+                        <option value="Admin">Admin</option>
+                        <option value="Giảng viên">Giảng viên</option>
+                        <option value="Sinh viên">Sinh viên</option>
+                    </select>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                    <button type="button" class="btn btn-secondary" onclick="dongModal('modalUser')">Hủy</button>
+                    <button type="submit" class="btn btn-primary">💾 Lưu Tài Khoản</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL HỒ SƠ & ĐỔI MẬT KHẨU -->
+    <div class="modal-overlay" id="modalProfile">
+        <div class="modal-box">
+            <h3 style="margin-bottom: 16px;">👤 Hồ Sơ Cá Nhân & Đổi Mật Khẩu</h3>
+            <form id="formProfile">
+                <div class="form-row">
+                    <div class="form-col"><label>Tên tài khoản</label><input type="text" id="profUsername" readonly style="opacity: 0.7;"></div>
+                    <div class="form-col"><label>Vai trò</label><input type="text" id="profRole" readonly style="opacity: 0.7;"></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-col">
-                        <label>Vai trò (Role)</label>
-                        <select id="selectUserRole">
-                            <option value="Admin">🔑 Admin (Toàn quyền)</option>
-                            <option value="Giảng viên">👨‍🏫 Giảng viên (Xem & Chỉnh sửa SV)</option>
-                            <option value="Sinh viên">🎓 Sinh viên (Chỉ xem)</option>
-                        </select>
-                    </div>
+                    <div class="form-col"><label>Họ và Tên</label><input type="text" id="profHoTen" required></div>
+                    <div class="form-col"><label>Email</label><input type="email" id="profEmail" required></div>
+                </div>
+                <hr style="border: 0; border-top: 1px solid var(--border); margin: 16px 0;">
+                <h4 style="font-size: 13px; color: #818cf8; margin-bottom: 12px;">🔑 Đổi mật khẩu (Bỏ trống nếu không muốn đổi)</h4>
+                <div class="form-row">
+                    <div class="form-col"><label>Mật khẩu hiện tại</label><input type="password" id="profOldPass" placeholder="••••••••"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col"><label>Mật khẩu mới</label><input type="password" id="profNewPass" placeholder="••••••••"></div>
+                    <div class="form-col"><label>Xác nhận mật khẩu mới</label><input type="password" id="profConfirmPass" placeholder="••••••••"></div>
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px;">
-                    <button type="button" onclick="dongModal('modalUser')" style="padding: 8px 16px; background: transparent; border: 1px solid var(--border); color: white; border-radius: 6px; cursor: pointer;">Hủy</button>
-                    <button type="submit" style="padding: 8px 16px; background: var(--primary); border: none; color: white; border-radius: 6px; cursor: pointer; font-weight: bold;">💾 Lưu Tài khoản</button>
+                    <button type="button" class="btn btn-secondary" onclick="dongModal('modalProfile')">Hủy</button>
+                    <button type="submit" class="btn btn-primary">💾 Cập nhật Hồ Sơ</button>
                 </div>
             </form>
         </div>
