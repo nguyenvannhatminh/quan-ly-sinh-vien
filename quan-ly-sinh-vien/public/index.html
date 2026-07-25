@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karl System - Quản lý Sinh viên</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        
+        :root {
+            --bg-main: #0f172a;
+            --bg-sidebar: #1e293b;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --border: #334155;
+        }
+
+        body { background-color: var(--bg-main); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+
+        /* Sidebar bên trái */
+        .sidebar { width: 260px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .sidebar-logo { padding: 20px; font-size: 18px; font-weight: bold; color: white; border-bottom: 1px solid var(--border); }
+        
+        .menu-group { margin-top: 15px; }
+        .menu-title { padding: 0 20px; font-size: 11px; text-transform: uppercase; color: var(--text-sub); font-weight: bold; letter-spacing: 1px; margin-bottom: 5px; }
+        .menu-list { list-style: none; }
+        .menu-item { padding: 12px 20px; color: var(--text-sub); cursor: pointer; transition: all 0.2s; font-size: 14px; }
+        .menu-item:hover { background-color: #334155; color: white; }
+        .menu-item.active { background-color: #312e81; color: #818cf8; border-right: 4px solid var(--primary); font-weight: bold; }
+
+        /* Main Content bên phải */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .header { height: 60px; background-color: var(--bg-sidebar); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; padding: 0 20px; }
+        .user-info { font-size: 14px; font-weight: 500; }
+
+        .content-area { padding: 24px; }
+        .page-title { font-size: 20px; font-weight: bold; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Thanh điều hướng (Sidebar) -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">🎓 Karl System</div>
+
+        <!-- Group: Dashboard -->
+        <div class="menu-group">
+            <ul class="menu-list">
+                <li class="menu-item">📊 Dashboard Tổng quan</li>
+            </ul>
+        </div>
+
+        <!-- Group: Quản lý sinh viên -->
+        <div class="menu-group">
+            <div class="menu-title">Quản lý sinh viên</div>
+            <ul class="menu-list">
+                <li class="menu-item active">👨‍🎓 Danh sách sinh viên</li>
+                <li class="menu-item">📁 Hồ sơ chi tiết</li>
+                <li class="menu-item">🏫 Lớp học & Khoa/Ngành</li>
+            </ul>
+        </div>
+
+        <!-- Group: Quản lý tài khoản -->
+        <div class="menu-group">
+            <div class="menu-title">Quản lý tài khoản</div>
+            <ul class="menu-list">
+                <li class="menu-item">🔐 Phân quyền người dùng</li>
+                <li class="menu-item">🚪 Đăng xuất</li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- 2. Khu vực chính -->
+    <main class="main-content">
+        <header class="header">
+            <div class="user-info">👤 admin (Quản trị viên)</div>
+        </header>
+
+        <div class="content-area">
+            <h1 class="page-title">Quản lý Sinh viên</h1>
+            <!-- Chỗ này Bước 2 chúng ta sẽ lắp Bảng + Thanh tìm kiếm vào -->
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
