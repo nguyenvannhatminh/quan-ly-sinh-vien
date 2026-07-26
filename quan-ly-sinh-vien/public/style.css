@@ -1,0 +1,155 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f4f6f9;
+}
+
+/* LOGIN SCREEN */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #34495e;
+}
+.login-box {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    width: 350px;
+    text-align: center;
+}
+.login-box h2 {
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+.login-box input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.login-box button {
+    width: 100%;
+    padding: 10px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.login-box button:hover { background: #2980b9; }
+
+/* MAIN LAYOUT */
+#main-app {
+    display: flex;
+    height: 100vh;
+}
+.sidebar {
+    width: 250px;
+    background: #2c3e50;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+.logo {
+    padding: 20px;
+    text-align: center;
+    background: #1a252f;
+    border-bottom: 1px solid #34495e;
+}
+.nav-menu {
+    list-style: none;
+    flex: 1;
+}
+.nav-menu li a {
+    display: block;
+    padding: 15px 20px;
+    color: #ecf0f1;
+    text-decoration: none;
+    border-bottom: 1px solid #34495e;
+}
+.nav-menu li a:hover {
+    background: #34495e;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+header {
+    background: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.btn-logout {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* TABS & TABLES */
+#content-area {
+    padding: 20px;
+}
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+}
+h2 {
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.data-table th, .data-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+.data-table th {
+    background: #3498db;
+    color: white;
+}
+
+/* UTILITIES (PHÂN QUYỀN) */
+.admin-only, .admin-gv-only, .sv-only {
+    display: none; /* Mặc định ẩn, JS sẽ bật lên */
+}
+
+/* IN BẢNG ĐIỂM (PRINT) */
+@media print {
+    body * { visibility: hidden; }
+    #vung-in-bang-diem, #vung-in-bang-diem * { visibility: visible; }
+    #vung-in-bang-diem {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    .btn-print, .action-bar { display: none !important; }
+    .data-table { border-collapse: collapse; width: 100%; }
+    .data-table th, .data-table td { border: 1px solid black; }
+}

@@ -18,10 +18,8 @@
             --text-sub: #94a3b8;
             --accent: #38bdf8;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg-dark); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
-
         /* Layout */
         .app-container { display: flex; width: 100vw; min-height: 100vh; }
         
@@ -31,7 +29,6 @@
         .sidebar-menu { list-style: none; margin-top: 20px; flex-grow: 1; }
         .menu-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: var(--text-sub); cursor: pointer; transition: all 0.2s; font-weight: 500; }
         .menu-item:hover, .menu-item.active { background-color: rgba(79, 70, 229, 0.15); color: var(--accent); border-left: 4px solid var(--primary); }
-
         /* Main Content */
         .main-content { flex-grow: 1; display: flex; flex-direction: column; background: var(--bg-dark); overflow-y: auto; height: 100vh; }
         
@@ -39,48 +36,40 @@
         .header { height: 65px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; sticky: top; top: 0; z-index: 10; }
         .user-info { display: flex; align-items: center; gap: 12px; border-left: 1px solid var(--border); padding-left: 20px; cursor: pointer; }
         .avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
-
         /* Main Area */
         .content-body { padding: 30px; flex-grow: 1; }
         .page-title { font-size: 22px; font-weight: bold; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-
         /* Stats Cards */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 16px; }
         .stat-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
         .stat-value { font-size: 24px; font-weight: bold; margin-top: 4px; }
-
         /* Charts Section */
         .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 30px; }
         .chart-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; height: 320px; }
-
         /* Toolbar & Tables */
         .toolbar { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; justify-content: space-between; align-items: center; }
         .search-box { display: flex; gap: 10px; flex-grow: 1; max-width: 600px; }
         
         input, select { background: var(--bg-card); border: 1px solid var(--border); color: white; padding: 10px 14px; border-radius: 8px; outline: none; font-size: 14px; }
         input:focus, select:focus { border-color: var(--primary); }
-
         .btn { padding: 10px 16px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; font-size: 14px; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-hover); }
         .btn-success { background: #10b981; color: white; }
         .btn-danger { background: #ef4444; color: white; }
         .btn-secondary { background: #475569; color: white; }
-
         /* Table Style */
         .table-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th, td { padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 14px; }
         th { background: rgba(15, 23, 42, 0.6); color: var(--text-sub); font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
         tr:hover { background: rgba(255, 255, 255, 0.02); }
-
         /* Badges */
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; }
         .badge-danghoc { background: rgba(16, 185, 129, 0.15); color: #10b981; }
         .badge-canhbao { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
         .badge-totnghiep { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
-
         /* Modals */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.75); display: none; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
         .modal-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 550px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
@@ -90,7 +79,6 @@
     </style>
 </head>
 <body>
-
     <div class="app-container">
         <!-- SIDEBAR -->
         <div class="sidebar">
@@ -107,11 +95,9 @@
                 <li class="menu-item" data-tab="subjects">📚 Danh sách Môn học</li>
                 <li class="menu-item" data-tab="registration" id="menuRegistration">📝 Đăng ký Môn học</li>
                 <li class="menu-item" data-tab="grades">🧮 Bảng điểm Sinh viên</li>
-
                 <li class="menu-item" data-tab="users" id="menuUsers">🔐 Quản Lý Tài Khoản</li>
             </ul>
         </div>
-
         <!-- MAIN CONTENT AREA -->
         <div class="main-content">
             <!-- HEADER -->
@@ -128,7 +114,6 @@
                     <button class="btn btn-danger" id="btnLogout" style="padding: 6px 12px; font-size: 12px;">🚪 Đăng xuất</button>
                 </div>
             </div>
-
             <!-- BODY CONTENT -->
             <div class="content-body">
                 
@@ -153,7 +138,6 @@
                             <div><div style="color: var(--text-sub); font-size: 13px;">Đã Tốt Nghiệp</div><div class="stat-value" id="statGraduated">0</div></div>
                         </div>
                     </div>
-
                     <div class="charts-grid">
                         <div class="chart-card">
                             <h4 style="margin-bottom: 15px; color: var(--text-sub);">Phân bổ Sinh viên theo Lớp</h4>
@@ -165,7 +149,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- SECTION 2: QUẢN LÝ SINH VIÊN -->
                 <div id="section-students" style="display: none;">
                     <div class="page-title">
@@ -177,7 +160,6 @@
                             <button class="btn btn-primary" id="btnThemSV">➕ Thêm Sinh Viên</button>
                         </div>
                     </div>
-
                     <div class="toolbar">
                         <div class="search-box">
                             <input type="text" id="timKiemInput" placeholder="🔍 Tìm kiếm theo Mã SV, Họ tên..." style="flex-grow: 1;">
@@ -185,7 +167,6 @@
                             <select id="filterLop"><option value="">🏫 Tất cả Lớp</option></select>
                         </div>
                     </div>
-
                     <div class="table-container">
                         <table>
                             <thead>
@@ -205,7 +186,6 @@
                         </table>
                     </div>
                 </div>
-
                 <!-- SECTION 3: QUẢN LÝ LỚP HỌC -->
                 <div id="section-classes" style="display: none;">
                     <div class="page-title">
@@ -228,7 +208,6 @@
                         </table>
                     </div>
                 </div>
-
                 <!-- SECTION 4: QUẢN LÝ KHOA / NGÀNH -->
                 <div id="section-departments" style="display: none;">
                     <div class="page-title">
@@ -250,7 +229,6 @@
                         </table>
                     </div>
                 </div>
-
                 <!-- SECTION 5: QUẢN LÝ TÀI KHOẢN -->
                 <div id="section-users" style="display: none;">
                     <div class="page-title">
@@ -273,7 +251,6 @@
                         </table>
                     </div>
                 </div>
-
                 <!-- SECTION 6: QUẢN LÝ MÔN HỌC -->
                 <div id="section-subjects" style="display: none;">
                     <div class="page-title">
@@ -295,7 +272,6 @@
                         </table>
                     </div>
                 </div>
-
                 <!-- SECTION 7: ĐĂNG KÝ MÔN HỌC (Dành cho Sinh Viên) -->
                 <div id="section-registration" style="display: none;">
                     <div class="page-title">
@@ -325,7 +301,6 @@
                         </table>
                     </div>
                 </div>
-
                 <!-- SECTION 8: QUẢN LÝ BẢNG ĐIỂM & GPA -->
                 <div id="section-grades" style="display: none;">
                     <div class="page-title" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
@@ -348,18 +323,16 @@
                             <div class="stat-icon" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;">⭐</div>
                             <div>
                                 <div style="color: var(--text-sub); font-size: 13px;">Điểm Rèn Luyện</div>
-                                <div class="stat-value" id="statDRL">0</div>
+                                <div class="stat-value" id="statDRL">85</div>
                             </div>
                         </div>
                     </div>
-
                     <div class="toolbar" id="boLocDiem">
                         <div class="search-box">
                             <input type="text" id="timKiemSV_Diem" placeholder="🔍 Nhập Mã SV để tra cứu bảng điểm..." style="flex-grow: 1;">
                             <select id="filterMonHoc_Diem"><option value="">📚 Tất cả Môn học</option></select>
                         </div>
                     </div>
-
                     <div class="table-container">
                         <table>
                             <thead>
@@ -377,16 +350,12 @@
                         </table>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
-
     <!-- Hidden Input dùng cho Nhập Excel -->
     <input type="file" id="fileExcelInput" accept=".xlsx, .xls" style="display: none;">
-
     <!-- ================== KHU VỰC MODAL ================== -->
-
     <!-- MODAL MÔN HỌC (MỚI) -->
     <div class="modal-overlay" id="modalMonHoc">
         <div class="modal-box">
@@ -414,7 +383,6 @@
             </form>
         </div>
     </div>
-
     <!-- MODAL CẬP NHẬT ĐIỂM (MỚI) -->
     <div class="modal-overlay" id="modalNhapDiem">
         <div class="modal-box">
@@ -422,8 +390,8 @@
             <form id="formNhapDiem">
                 <input type="hidden" id="editDiemIndex" value="-1">
                 <div class="form-row">
-                    <div class="form-col"><label>Mã Sinh Viên</label><input type="text" id="inputDiemSV" readonly style="opacity:0.7"></div>
-                    <div class="form-col"><label>Mã Môn Học</label><input type="text" id="inputDiemMH" readonly style="opacity:0.7"></div>
+                    <div class="form-col"><label>Mã Sinh Viên</label><input type="text" id="inputDiemSV" required placeholder="VD: SV001"></div>
+                    <div class="form-col"><label>Mã Môn Học</label><input type="text" id="inputDiemMH" required placeholder="VD: INT1001"></div>
                 </div>
                 <div class="form-row">
                     <div class="form-col"><label>Điểm Quá Trình (30%)</label><input type="number" id="inputDiemQT" step="0.1" min="0" max="10" required></div>
@@ -436,8 +404,7 @@
             </form>
         </div>
     </div>
-
-    <!-- CÁC MODAL CŨ CỦA THÀNH VIÊN 1 (Giữ nguyên) -->
+    <!-- CÁC MODAL CỦA THÀNH VIÊN 1 -->
     <!-- MODAL SINH VIÊN -->
     <div class="modal-overlay" id="modalSinhVien">
         <div class="modal-box">
@@ -477,7 +444,6 @@
             </form>
         </div>
     </div>
-
     <!-- MODAL KHOA -->
     <div class="modal-overlay" id="modalKhoa">
         <div class="modal-box">
@@ -498,7 +464,6 @@
             </form>
         </div>
     </div>
-
     <!-- MODAL LỚP -->
     <div class="modal-overlay" id="modalLop">
         <div class="modal-box">
@@ -519,7 +484,6 @@
             </form>
         </div>
     </div>
-
     <!-- MODAL USER -->
     <div class="modal-overlay" id="modalUser">
         <div class="modal-box">
@@ -549,7 +513,6 @@
             </form>
         </div>
     </div>
-
     <!-- MODAL HỒ SƠ & ĐỔI MẬT KHẨU -->
     <div class="modal-overlay" id="modalProfile">
         <div class="modal-box">
@@ -579,7 +542,6 @@
             </form>
         </div>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>
