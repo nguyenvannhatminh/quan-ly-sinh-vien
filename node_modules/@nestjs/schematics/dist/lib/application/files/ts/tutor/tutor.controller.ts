@@ -1,0 +1,34 @@
+import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
+import { TutorService } from './tutor.service';
+import { TUTOR } from '../entities/tutor.entity';
+
+@Controller('tutor')
+export class TutorController {
+  constructor(private readonly tutorService: TutorService) {}
+
+  @Get()
+  layDanhSach() {
+    return this.tutorService.layDanhSach();
+  }
+
+  @Get(':id')
+  layChiTiet(@Param('id') id: string) {
+    return this.tutorService.layChiTiet(id);
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  themMoi(@Body() duLieuMoi: TUTOR) {
+    return this.tutorService.themMoi(duLieuMoi);
+  }
+
+  @Put(':id')
+  capNhat(@Param('id') id: string, @Body() duLieuCapNhat: Partial<TUTOR>) {
+    return this.tutorService.capNhat(id, duLieuCapNhat);
+  }
+
+  @Delete(':id')
+  xoa(@Param('id') id: string) {
+    return this.tutorService.xoa(id);
+  }
+}
